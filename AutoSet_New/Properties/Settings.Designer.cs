@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AutoSet.Properties {
+namespace AutoSet_New.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -22,39 +22,47 @@ namespace AutoSet.Properties {
                 return defaultInstance;
             }
         }
-        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("192.168.5.217")]
-        public string IP {
-            get {
+        public string IP
+        {
+            get
+            {
                 return ((string)(this["IP"]));
             }
-            set {
+            set
+            {
                 this["IP"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string portGenerator {
-            get {
+        public string portGenerator
+        {
+            get
+            {
                 return ((string)(this["portGenerator"]));
             }
-            set {
+            set
+            {
                 this["portGenerator"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string portMultimeter {
-            get {
+        public string portMultimeter
+        {
+            get
+            {
                 return ((string)(this["portMultimeter"]));
             }
-            set {
+            set
+            {
                 this["portMultimeter"] = value;
             }
         }

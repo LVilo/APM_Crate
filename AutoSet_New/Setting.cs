@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using EasyModbus;
 using System.IO;
 
-namespace AutoSet
+namespace AutoSet_New
 {
     class Setting
     {

@@ -1,4 +1,4 @@
-﻿namespace AutoSet
+﻿namespace AutoSet_New
 {
     partial class Form1
     {
@@ -71,7 +71,6 @@
             this.Point_2_textBox = new System.Windows.Forms.TextBox();
             this.Point_1_textBox = new System.Windows.Forms.TextBox();
             this.STOP = new System.Windows.Forms.Button();
-            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.buttonReport = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
@@ -777,7 +776,7 @@
         private System.Windows.Forms.Button ResetCoef_2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox DC_textBox;
-        private System.IO.Ports.SerialPort serialPort1;
+        //private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox PLC;
         private System.Windows.Forms.CheckBox PLC_AutoCheck;

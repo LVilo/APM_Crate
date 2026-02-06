@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSet
+namespace AutoSet_New
 {
     public static class Registers
     { //Адреса регистров для работы начинаются с 0 (т.е. обычный адрес -1)

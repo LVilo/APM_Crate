@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AutoSet
+namespace AutoSet_New
 {
     public partial class Form1 : Form
     {
@@ -22,18 +22,17 @@ namespace AutoSet
         public Form1()
         {
             InitializeComponent();
-            //string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
-             //version = version.Remove(version.IndexOf('+'));
+            version = version.Remove(version.IndexOf('+'));
 
-            Version vers = typeof( Form1 ).Assembly.GetName().Version;
-            Text += " v. " + vers;
+            Text += " v. " + version;
 
             devices = new DevicesCommunication();
             devices.InitializeCrateAddress( Properties.Settings.Default.IP, 502 );
 
             Calibration = new Setting( devices );
-            PLC.Items.AddRange(new string[8] { "241", "242", "243", "511", "371", "374", "375", "Не подключен" });
+            PLC.Items.AddRange(["241", "242", "243", "511", "371", "374", "375", "Не подключен"]);
             PLC.SelectedIndex = 7;
 
             IPTextBox.Text = Properties.Settings.Default.IP;
@@ -82,7 +81,7 @@ namespace AutoSet
                             (ushort) devices.Crate.ReadReg( Registers.REGISTER_VAL_RMS_CHANNEL2 + 3 ) / 100f );
 
                         // Обновление UI в основном потоке
-                        BeginInvoke(new MethodInvoker(() =>
+                        BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                         {
                             ACC1.Text = acc1Value;
                             SPD1.Text = spd1Value;
@@ -112,7 +111,7 @@ namespace AutoSet
                         int reg = devices.Crate.ReadReg( Registers.REGISTER_CONTROLLER_TYPE );
                         if (reg >= 1 && reg <= 7)
                         {
-                            BeginInvoke(new MethodInvoker(() =>
+                            BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                             {
                                 if ( PLC.SelectedIndex != devices.Crate.ReadReg( Registers.REGISTER_CONTROLLER_TYPE ) - 1 )
                                 {
@@ -134,7 +133,7 @@ namespace AutoSet
                             LogWrite("Данный контроллер не поддерживает отображение своего типа, пожалуйста выберите нужный кионтроллер из списка. По умолчанию будет стоять 242");
 
                             PLC_AutoCheck.CheckedChanged -= PLC_AutoCheck_CheckedChanged;
-                            BeginInvoke(new MethodInvoker(() =>
+                            BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                             {
                                 PLC.SelectedIndex = 1;
                                 PLC_AutoCheck.Checked = false;
@@ -146,7 +145,7 @@ namespace AutoSet
                     }
                     else
                     {
-                        BeginInvoke(new MethodInvoker(() =>
+                        BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                         {
                             PLC.SelectedIndex = 7;
                         }));
@@ -157,7 +156,7 @@ namespace AutoSet
             }
             catch (Exception ex)
             {
-                BeginInvoke(new MethodInvoker(() =>
+                BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                 {
                     PLC.SelectedIndex = 7;
                 }));
@@ -270,7 +269,7 @@ namespace AutoSet
                 devices.CrateOpenPort();
                 Thread.Sleep(100);
 
-                BeginInvoke(new MethodInvoker(() =>
+                BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                 {
                     PLC = this.PLC.SelectedIndex;
                     Calibration.coef = Convert.ToSingle(CoefTextBox.Text);
@@ -632,7 +631,7 @@ namespace AutoSet
             {
                 try
                 {
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         ReserCoef_1.Enabled = false;
                     }));
@@ -653,7 +652,7 @@ namespace AutoSet
                 }
                 finally
                 {
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         ReserCoef_1.Enabled = true;
                     }));
@@ -726,7 +725,7 @@ namespace AutoSet
                     }
                     catch (Exception ex)
                     {
-                        BeginInvoke(new MethodInvoker(() =>
+                        BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                         {
                             PLC.SelectedIndex = 7;
                         }));
@@ -743,7 +742,7 @@ namespace AutoSet
                 try
                 {
                     Calibration.IsRunning = true;
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         Calibration.frequency = Convert.ToDouble(FreqTextBox.Text);
                     }));
@@ -755,7 +754,7 @@ namespace AutoSet
                         return;
                     }
 
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         SetButtonsEnabled( false );
                     }));
@@ -774,7 +773,7 @@ namespace AutoSet
                 }
                 finally
                 {
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         SetButtonsEnabled( true );
                     }));
@@ -789,7 +788,7 @@ namespace AutoSet
                 try
                 {
                     Calibration.IsRunning = true;
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         Calibration.frequency = Convert.ToDouble(FreqTextBox.Text);
                     }));
@@ -801,7 +800,7 @@ namespace AutoSet
                         return;
                     }
 
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         SetButtonsEnabled( false );
                     }));
@@ -820,7 +819,7 @@ namespace AutoSet
                 }
                 finally
                 {
-                    BeginInvoke(new MethodInvoker(() =>
+                    BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
                         SetButtonsEnabled( true );
                     }));

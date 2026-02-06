@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PortsWork;
 
-namespace AutoSet
+namespace AutoSet_New
 {
     class DevicesCommunication
     {

@@ -7,7 +7,7 @@ using EasyModbus;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace AutoSet
+namespace AutoSet_New
 {
     class Crate_TCP : ModbusClient
     {
