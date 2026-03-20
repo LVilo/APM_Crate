@@ -108,6 +108,7 @@ namespace AutoSet_New
             {
                 //Проверка галочки IsRunning!!
                 devices.multimeter.SetVoltage( devices.generator, Volt, frequency, 0.0005, 3 );
+
             }
             catch (InvalidOperationException)
             {
@@ -166,6 +167,7 @@ namespace AutoSet_New
 
         private void SetCoef_IEPE(int Channel)
         {
+            DevicesCommunication.Log.Write($"Настройка канала {Channel} / IEPE");
             IsRunning = true;
             if (MessageBox.Show($"Установите контакты для настройки IEPE {Channel}-го канала", 
                 "Настройка IEPE", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, 
@@ -214,19 +216,28 @@ namespace AutoSet_New
             devices.Crate.WriteCoeffs( Reg_adr_coef, A1, B1 );
             devices.Crate.WriteCoeffs( Reg_adr_coef + 4, A2, B2 );
 
+
+
             #region Проверка настройки канала
+
+
+
             Thread.Sleep(400);
             SetVolt(Point_1);
             Thread.Sleep(5000);
             float realPoint_1 = (float) ( devices.multimeter.GetVoltage( PortMultimeter.SIGNALTYPE_AC, 100 ) * 1000.0 );
-            ushort readedValue = (ushort) devices.Crate.ReadReg( Reg_adr );
+            float readedValue = (ushort) devices.Crate.ReadReg( Reg_adr ) / 100f;
 
+            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr) / 100f;
 
-
-            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr);
-            if ( readedValue / 100f <= Math.Round( realPoint_1 / coef / 1.02, 2 ) || readedValue / 100f >= Math.Round( realPoint_1 / coef / 0.98, 2 ) )
+            float relative = Math.Round(realPoint_1) >= 1000 ? ((readedValue * coef) - realPoint_1) / realPoint_1 * 100 : ((readedValue * coef) - realPoint_1) / 1000 * 100;//расчет погрешности на текущей точке. относительная / приведенная 
+            
+            if (Math.Abs(relative) >= 1)
             {
-                result = MessageBox.Show( $"Ускорение канала {Channel} настроено не корректно. Значение отклонено на {Math.Round( ( ( ( readedValue / 100f ) - ( Point_1 * 1000 / coef ) ) / ( Point_1 * 1000 / coef ) ) * 100, 2 )}%\nПродолжить настройку?",
+                DevicesCommunication.Log.Write($"Не получилось настроить ускорение устройства {relative} >= 1." +
+                    $" канал: {Channel},значение регистра: {readedValue},значение регистра без преобразования: {(ushort)devices.Crate.ReadReg(Reg_adr)},точка: {Point_1},коэффициент: {coef},прочтено с прибора: {realPoint_1}, погрешность: {relative}");
+
+                result = MessageBox.Show( $"Ускорение канала {Channel} настроено не корректно. Значение отклонено на {Math.Round(relative, 2 )}%\nПродолжить настройку?",
                     "Результат", MessageBoxButtons.OKCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly );
                 if (result == DialogResult.Cancel )
                 {
@@ -240,21 +251,30 @@ namespace AutoSet_New
             float realPoint_2 = (float)(devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_AC, 100) * 1000.0);
 
             // перенастройка перемещения.костыль
-            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr + 6);
-            if (readedValue / 100f <= Math.Round(realPoint_2 / coef * 4 / 1.01, 2))
+            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr + 6) / 10f;
+            relative = Point_2 >= 1000 ? ((readedValue * coef / 4) - realPoint_2) / realPoint_2 * 100 : ((readedValue * coef / 4) - realPoint_2) / 1000 * 100;//расчет погрешности на текущей точке. относительная / приведенная 
+
+            if (relative <= -1)
             {
+                DevicesCommunication.Log.Write($"Переписывание коэффициента перемещения");
                 devices.Crate.WriteCoeffs(Reg_adr_coef + 4, A2 + 0.04f, B2);
             }
-            else if(readedValue / 100f >= Math.Round(realPoint_2 / coef * 4 / 0.98, 2))
+            else if(relative >= 1)
             {
+                DevicesCommunication.Log.Write($"Переписывание коэффициента перемещения");
                 devices.Crate.WriteCoeffs(Reg_adr_coef + 4, A2 - 0.02f, B2);
             }
 
 
-            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr);
-            if ( readedValue / 100f <= Math.Round( realPoint_2 / coef / 1.02, 2 ) || readedValue / 100f >= Math.Round( realPoint_2 / coef / 0.98, 2 ) )
+            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr) / 100f;
+            relative = Math.Round(realPoint_2) >= 1000 ? ((readedValue * coef) - realPoint_2) / realPoint_2 * 100 : ((readedValue * coef) - realPoint_2) / 1000 * 100;//расчет погрешности на текущей точке. относительная / приведенная 
+
+            if (Math.Abs(relative) >= 1)
             {
-                result = MessageBox.Show( $"Ускорение канала {Channel} настроено не корректно. Значение отклонено на {Math.Round( ( ( ( readedValue / 100f ) - ( Point_2 / coef ) ) / ( Point_2 / coef ) ) * 100, 2 )}%\nПродолжить настройку?",
+                DevicesCommunication.Log.Write($"Не получилось настроить ускорение устройства {relative} >= 1." +
+                    $" канал: {Channel},значение регистра: {readedValue},значение регистра без преобразования: {(ushort)devices.Crate.ReadReg(Reg_adr)},точка: {Point_2},коэффициент: {coef},прочтено с прибора: {realPoint_2}, погрешность: {relative}");
+
+                result = MessageBox.Show( $"Ускорение канала {Channel} настроено не корректно. Значение отклонено на {Math.Round(relative, 2 )}%\nПродолжить настройку?",
                     "Результат", MessageBoxButtons.OKCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                 if ( result == DialogResult.Cancel )
                 {
@@ -263,10 +283,15 @@ namespace AutoSet_New
                 return;
             }
 
-            readedValue = (ushort) devices.Crate.ReadReg( Reg_adr + 3 );
-            if ( readedValue / 100f <= Math.Round( realPoint_2 / coef * 2 / 1.001, 2 ) || readedValue / 100f >= Math.Round( realPoint_2 / coef * 2 / 0.995, 2 ) )
+            readedValue = (ushort) devices.Crate.ReadReg( Reg_adr + 3 )/100f;
+            relative = Math.Round(realPoint_2) >= 1000 ? ((readedValue * coef / 2) - realPoint_2) / realPoint_2 * 100 : ((readedValue * coef / 2) - realPoint_2) / 1000 * 100;//расчет погрешности на текущей точке. относительная / приведенная 
+
+            if (Math.Abs(relative) >= 1)
             {
-                result = MessageBox.Show( $"Скорость канала {Channel} настроена не корректно. Значение отклонено на {Math.Round( ( ( ( readedValue / 100f ) - ( Point_2 / coef * 2 ) ) / ( Point_2 / coef * 2 ) ) * 100, 2 )}%\nПродолжить настройку?",
+                DevicesCommunication.Log.Write($"Не получилось настроить ускорение устройства {relative} >= 1." +
+                    $" канал: {Channel},значение регистра: {readedValue},значение регистра без преобразования: {(ushort)devices.Crate.ReadReg(Reg_adr)},точка: {Point_2},коэффициент: {coef},прочтено с прибора: {realPoint_2}, погрешность: {relative}");
+
+                result = MessageBox.Show( $"Скорость канала {Channel} настроена не корректно. Значение отклонено на {Math.Round(relative, 2 )}%\nПродолжить настройку?",
                    "Результат", MessageBoxButtons.OKCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                 if ( result == DialogResult.Cancel )
                 {
@@ -274,10 +299,15 @@ namespace AutoSet_New
                 }
                 return;
             }
-            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr + 6);
-            if (readedValue / 10f <= Math.Round(realPoint_2 / coef * 4 / 1.01, 2) || readedValue / 10f >= Math.Round(realPoint_2 / coef * 4 / 0.99, 2))
+            readedValue = (ushort)devices.Crate.ReadReg(Reg_adr + 6) /10f;
+            relative = Math.Round(realPoint_2) >= 1000 ? ((readedValue * coef / 4) - realPoint_2) / realPoint_2 * 100 : ((readedValue * coef / 4) - realPoint_2) / 1000 * 100;//расчет погрешности на текущей точке. относительная / приведенная 
+
+            if (Math.Abs(relative) >= 1)
             {
-                result = MessageBox.Show($"Перемещение канала {Channel} настроена не корректно. Значение отклонено на {Math.Round( ( ( (readedValue / 10f) - (Point_2 / coef * 4) ) / (Point_2 / coef * 4) ) * 100, 2)}%\nПродолжить настройку?",
+                DevicesCommunication.Log.Write($"Не получилось настроить ускорение устройства {relative} >= 1." +
+                    $" канал: {Channel},значение регистра: {readedValue},значение регистра без преобразования: {(ushort)devices.Crate.ReadReg(Reg_adr)},точка: {Point_2},коэффициент: {coef},прочтено с прибора: {realPoint_2}, погрешность: {relative}");
+
+                result = MessageBox.Show($"Перемещение канала {Channel} настроена не корректно. Значение отклонено на {Math.Round(relative, 2)}%\nПродолжить настройку?",
                    "Результат", MessageBoxButtons.OKCancel, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                 if (result == DialogResult.Cancel)
                 {
@@ -315,6 +345,7 @@ namespace AutoSet_New
         }
         private void SetCoef_I(int Channel)
         {
+            DevicesCommunication.Log.Write($"Настройка канала {Channel} / I");
             IsRunning = true;
             if (MessageBox.Show($"Установите контакты для настройки 4-20 мА {Channel}-го канала", "Настройка 4-20 мА",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, 
@@ -330,11 +361,11 @@ namespace AutoSet_New
                 devices.Crate.ResetCoef(Reg_adr_coef + 8, Reg_adr_on, 4);
                 if (Correct(0.4d))
                 {
-                    I1 = ModbusClient.ConvertRegistersToFloat( devices.Crate.ReadReg( Reg_adr + 8, 2 ) );
+                    I1 =  devices.Crate.ReadValue( Reg_adr + 8 );
                     if (Correct(2d))
                     {
                         devices.Crate.SetPassword();
-                        I2 = ModbusClient.ConvertRegistersToFloat(devices.Crate.ReadReg(Reg_adr + 8, 2));
+                        I2 = devices.Crate.ReadValue(Reg_adr + 8);
                         devices.Crate.WriteReg(Reg_adr_coef + 8, ModbusClient.ConvertFloatToRegisters(Convert.ToSingle(16 / (I2 - I1))));
                         Thread.Sleep(1000);
                         devices.Crate.WriteReg(Reg_adr_coef + 10, ModbusClient.ConvertFloatToRegisters(Convert.ToSingle(4 - (16 / (I2 - I1)) * I1)));
@@ -347,6 +378,7 @@ namespace AutoSet_New
         }
         private void SetCoef_T(int Channel, int type_Termo)
         {
+            DevicesCommunication.Log.Write($"Настройка канала {Channel} / T");
             float Resist_1 = 0;
             float Resist_2 = 0;
             int Need_T_1 = 0;
@@ -476,6 +508,7 @@ namespace AutoSet_New
         {
             try
             {
+                devices.generator.SetFrequency(frequency);
                 switch (PLC)
                 {
                     case 0://241

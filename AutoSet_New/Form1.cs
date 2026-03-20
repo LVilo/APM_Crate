@@ -22,17 +22,14 @@ namespace AutoSet_New
         public Form1()
         {
             InitializeComponent();
-            string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
-            version = version.Remove(version.IndexOf('+'));
 
-            Text += " v. " + version;
 
             devices = new DevicesCommunication();
-            devices.InitializeCrateAddress( Properties.Settings.Default.IP, 502 );
+            devices.InitializeCrateAddress(Properties.Settings.Default.IP, 502);
 
-            Calibration = new Setting( devices );
-            PLC.Items.AddRange(["241", "242", "243", "511", "371", "374", "375", "Не подключен"]);
+            Calibration = new Setting(devices);
+            PLC.Items.AddRange(new string[8] { "241", "242", "243", "511", "371", "374", "375", "Не подключен" });
             PLC.SelectedIndex = 7;
 
             IPTextBox.Text = Properties.Settings.Default.IP;
@@ -58,7 +55,7 @@ namespace AutoSet_New
         private void InitializeTimer()
         {
             timer = new System.Windows.Forms.Timer();
-            timer.Interval = 1000; 
+            timer.Interval = 1000;
             timer.Tick += new EventHandler(Timer_Tick);
             timer.Start();
         }
@@ -71,14 +68,14 @@ namespace AutoSet_New
                 {
                     try
                     {
-                        string acc1Value = Convert.ToString( 
-                            (ushort) devices.Crate.ReadReg( Registers.REGISTER_VAL_RMS_CHANNEL1 ) / 100f );
-                        string spd1Value = Convert.ToString( 
-                            (ushort) devices.Crate.ReadReg( Registers.REGISTER_VAL_RMS_CHANNEL1 + 3 ) / 100f );
-                        string acc2Value = Convert.ToString( 
-                            (ushort) devices.Crate.ReadReg( Registers.REGISTER_VAL_RMS_CHANNEL2 ) / 100f );
-                        string spd2Value = Convert.ToString( 
-                            (ushort) devices.Crate.ReadReg( Registers.REGISTER_VAL_RMS_CHANNEL2 + 3 ) / 100f );
+                        string acc1Value = Convert.ToString(
+                            (ushort)devices.Crate.ReadReg(Registers.REGISTER_VAL_RMS_CHANNEL1) / 100f);
+                        string spd1Value = Convert.ToString(
+                            (ushort)devices.Crate.ReadReg(Registers.REGISTER_VAL_RMS_CHANNEL1 + 3) / 100f);
+                        string acc2Value = Convert.ToString(
+                            (ushort)devices.Crate.ReadReg(Registers.REGISTER_VAL_RMS_CHANNEL2) / 100f);
+                        string spd2Value = Convert.ToString(
+                            (ushort)devices.Crate.ReadReg(Registers.REGISTER_VAL_RMS_CHANNEL2 + 3) / 100f);
 
                         // Обновление UI в основном потоке
                         BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
@@ -105,22 +102,23 @@ namespace AutoSet_New
                 devices.Crate.Connect();
                 while (!backgroundWorker3.CancellationPending)
                 {
-                    if (Convert.ToString( devices.Crate.ReadReg(108), 2).Reverse().ToArray()[0] == '0')
+                    if (Convert.ToString(devices.Crate.ReadReg(108), 2).Reverse().ToArray()[0] == '0')
                     {
                         Thread.Sleep(500);
-                        int reg = devices.Crate.ReadReg( Registers.REGISTER_CONTROLLER_TYPE );
+                        int reg = devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE);
                         if (reg >= 1 && reg <= 7)
                         {
                             BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                             {
-                                if ( PLC.SelectedIndex != devices.Crate.ReadReg( Registers.REGISTER_CONTROLLER_TYPE ) - 1 )
+                                if (PLC.SelectedIndex != devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1)
                                 {
-                                    PLC.SelectedIndex = devices.Crate.ReadReg( Registers.REGISTER_CONTROLLER_TYPE ) - 1;
-                                    float version = devices.Crate.ReadVersion( Registers.REGISTER_VERSION_PLC );
-                                    if ( (int) version == 4 )
+                                    PLC.SelectedIndex = devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1;
+                                    float version = devices.Crate.ReadVersion(Registers.REGISTER_VERSION_PLC);
+                                    if ((int)version == 4)
                                     {
                                         CoefTextBox.Text = "6,67";
-                                    } else if ( (int) version == 6 )
+                                    }
+                                    else if ((int)version == 6)
                                     {
                                         CoefTextBox.Text = "10";
                                     }
@@ -181,9 +179,9 @@ namespace AutoSet_New
         {
             devices.usbDevicesInfo = Port.FindVisaDevicesInfo();
             List<string> usbInfo = new List<string>();
-            devices.usbDevicesInfo.ForEach( t => usbInfo.Add( t.GetInfo() ) );
+            devices.usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
 
-            return usbInfo.Concat( SerialPort.GetPortNames() ).ToArray();
+            return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
         }
 
         private void PortsListReload()
@@ -191,10 +189,10 @@ namespace AutoSet_New
             string[] ports = GetAllPorts();
 
             AgillentPortBox.Items.Clear();
-            AgillentPortBox.Items.AddRange( ports );
+            AgillentPortBox.Items.AddRange(ports);
 
             comboBoxGenerator.Items.Clear();
-            comboBoxGenerator.Items.AddRange( ports );
+            comboBoxGenerator.Items.AddRange(ports);
         }
 
         private string[] GetAdditionalPorts()
@@ -212,11 +210,11 @@ namespace AutoSet_New
 
         private void FillSavedPorts()
         {
-            if ( Properties.Settings.Default.portGenerator.Contains( "COM" ) )
+            if (Properties.Settings.Default.portGenerator.Contains("COM"))
             {
                 comboBoxGenerator.SelectedItem = Properties.Settings.Default.portGenerator;
             }
-            if ( Properties.Settings.Default.portMultimeter.Contains( "COM" ) )
+            if (Properties.Settings.Default.portMultimeter.Contains("COM"))
             {
                 AgillentPortBox.SelectedItem = Properties.Settings.Default.portMultimeter;
             }
@@ -245,11 +243,11 @@ namespace AutoSet_New
             {
                 while (Calibration.IsRunning)
                 {
-                    if (devices.DC_Read && devices.multimeter.OpenPort() )
+                    if (devices.DC_Read && devices.multimeter.OpenPort())
                     {
                         try
                         {
-                            devices.currentVolt = devices.multimeter.GetVoltage( PortMultimeter.SIGNALTYPE_DC, 100 );
+                            devices.currentVolt = devices.multimeter.GetVoltage(PortMultimeter.SIGNALTYPE_DC, 100);
                         }
                         catch (InvalidOperationException ex)
                         {
@@ -265,6 +263,7 @@ namespace AutoSet_New
         {
             try
             {
+                LogWrite($"{Convert.ToSingle(CoefTextBox.Text)}");
                 int PLC = 0;
                 devices.CrateOpenPort();
                 Thread.Sleep(100);
@@ -273,21 +272,22 @@ namespace AutoSet_New
                 {
                     PLC = this.PLC.SelectedIndex;
                     Calibration.coef = Convert.ToSingle(CoefTextBox.Text);
-                    Calibration.Point_1 = Convert.ToSingle( Point_1_textBox.Text );
-                    Calibration.Point_2 = Convert.ToSingle( Point_2_textBox.Text );
+                    Calibration.Point_1 = Convert.ToSingle(Point_1_textBox.Text);
+                    Calibration.Point_2 = Convert.ToSingle(Point_2_textBox.Text);
                     Calibration.DC = DC_textBox.Text;
                     Calibration.frequency = Convert.ToDouble(FreqTextBox.Text);
                 }));
                 Thread.Sleep(2000);
                 devices.Crate.SetPassword();
 
-                int serial = 0; 
-                if ( int.TryParse( textBoxSerialNum.Text, out serial ))
+                int serial = 0;
+                if (int.TryParse(textBoxSerialNum.Text, out serial))
                 {
-                    devices.Crate.SetSerialNum( serial );
-                } else
+                    devices.Crate.SetSerialNum(serial);
+                }
+                else
                 {
-                    LogWrite( "Не указан серийный номер" );
+                    LogWrite("Не указан серийный номер");
                 }
 
                 //string compound = new string(Convert.ToString(Сalibration.Reg[0], 2).Reverse().ToArray());
@@ -295,20 +295,20 @@ namespace AutoSet_New
                 if (Convert.ToString(devices.Crate.ReadReg(108), 2).Reverse().ToArray()[0] != '0')
                     throw new Exception("Контроллер не подключен в 7 слот");
                 devices.Crate.WriteReg(108, 16382);//меняю состав корзины под 7 слот
-                if ( !( PLC == 2 || PLC == 5 ) )
+                if (!(PLC == 2 || PLC == 5))
                 {
-                    if ( !devices.generator.OpenPort() )
+                    if (!devices.generator.OpenPort())
                     {
                         LogWrite("Порт генератора не открыт");
                         return;
                     }
                 }
-                if ( !devices.multimeter.OpenPort() )
+                if (!devices.multimeter.OpenPort())
                 {
-                    LogWrite( "Порт мультиметра не открыт" );
+                    LogWrite("Порт мультиметра не открыт");
                     return;
                 }
-                if ( !backgroundWorker2.IsBusy )
+                if (!backgroundWorker2.IsBusy)
                 {
                     backgroundWorker2.RunWorkerAsync();
                 }
@@ -476,7 +476,7 @@ namespace AutoSet_New
             if (C2.Checked)
             {
                 C1.Checked = false;
-                devices.generator.SetChannel( 2 );
+                devices.generator.SetChannel(2);
             }
             C1.CheckedChanged += C1_CheckedChanged;
         }
@@ -487,7 +487,7 @@ namespace AutoSet_New
             if (C1.Checked)
             {
                 C2.Checked = false;
-                devices.generator.SetChannel( 1 );
+                devices.generator.SetChannel(1);
             }
             C2.CheckedChanged += C2_CheckedChanged;
         }
@@ -495,44 +495,43 @@ namespace AutoSet_New
         #region Кнопки
         private async void Start_Click(object sender, EventArgs e)
         {
-                
-            await (Task.Run(() =>
+            try
             {
-                if (textBoxOrderNum.Text == "")
+                await Task.Run(() =>
                 {
-                    LogWrite("Номер заказа не указан");
-                    return;
-                }
-                if (!OrderNumberCheck())
-                {
-                    LogWrite("Некорректный номер заказа:");
-                    LogWrite("Не допускаются символы \\ / ^ * ? \" < > |");
-                    LogWrite("Введите корректный номер заказа и запустите запись файла повторно");
-                    return;
-                }
-                Calibration.orderNum = textBoxOrderNum.Text;
+                    if (string.IsNullOrEmpty(textBoxOrderNum.Text)) throw new Exception("Номер заказа не указан");
+                    if (string.IsNullOrEmpty(textBoxSerialNum.Text)) throw new Exception("Серийный номер не указан");
+                    if (string.IsNullOrEmpty(CoefTextBox.Text)) throw new Exception("Коэффициент не заполнен");
 
-                if (CoefTextBox.Text != "")
-                {
-                    if (!Worker.IsBusy)
-                        Worker.RunWorkerAsync();
-                }
-                else LogWrite("Коэффициент не заполнен");
+                    if (!OrderNumberCheck())
+                    {
+                        throw new Exception("Некорректный номер заказа:\r\n\t" +
+                            "Не допускаются символы \\ / ^ * ? \" < > |\r\n\t" +
+                            "Введите корректный номер заказа и запустите запись файла повторно");
+                    }
+                    Calibration.orderNum = textBoxOrderNum.Text;
+                    if (!Worker.IsBusy) Worker.RunWorkerAsync();
 
-            }));
+                });
+            }
+            catch (Exception ex)
+            {
+                LogWrite(ex.Message);
+            }
+
         }
 
         private bool OrderNumberCheck()
         {
-            return !textBoxOrderNum.Text.Contains( "\\" ) &&
-                !textBoxOrderNum.Text.Contains( "/" ) &&
-                !textBoxOrderNum.Text.Contains( ":" ) &&
-                !textBoxOrderNum.Text.Contains( "*" ) &&
-                !textBoxOrderNum.Text.Contains( "?" ) &&
-                !textBoxOrderNum.Text.Contains( "\"" ) &&
-                !textBoxOrderNum.Text.Contains( "<" ) &&
-                !textBoxOrderNum.Text.Contains( ">" ) &&
-                !textBoxOrderNum.Text.Contains( "|" );
+            return !textBoxOrderNum.Text.Contains("\\") &&
+                !textBoxOrderNum.Text.Contains("/") &&
+                !textBoxOrderNum.Text.Contains(":") &&
+                !textBoxOrderNum.Text.Contains("*") &&
+                !textBoxOrderNum.Text.Contains("?") &&
+                !textBoxOrderNum.Text.Contains("\"") &&
+                !textBoxOrderNum.Text.Contains("<") &&
+                !textBoxOrderNum.Text.Contains(">") &&
+                !textBoxOrderNum.Text.Contains("|");
         }
 
         private async void STOP_Click(object sender, EventArgs e)
@@ -546,15 +545,15 @@ namespace AutoSet_New
             });
         }
 
-        private void AgillentPortBox_SelectedIndexChanged( object sender, EventArgs e )
+        private void AgillentPortBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             devices.multName = AgillentPortBox.Text;
         }
 
-        private void comboBoxGenerator_SelectedIndexChanged( object sender, EventArgs e )
+        private void comboBoxGenerator_SelectedIndexChanged(object sender, EventArgs e)
         {
             devices.genName = comboBoxGenerator.Text;
-            devices.generator = (PortGenerator) devices.SetMeasureDeviceName( devices.generator, devices.genName );
+            devices.generator = (PortGenerator)devices.SetMeasureDeviceName(devices.generator, devices.genName);
         }
 
         private async void Connect_Agillent_Click(object sender, EventArgs e)
@@ -563,21 +562,21 @@ namespace AutoSet_New
             {
                 try
                 {
-                    devices.multimeter = (PortMultimeter) devices.SetMeasureDeviceName( devices.multimeter, devices.multName );
-                    if ( devices.multimeter.OpenPort() )
+                    devices.multimeter = (PortMultimeter)devices.SetMeasureDeviceName(devices.multimeter, devices.multName);
+                    if (devices.multimeter.OpenPort())
                     {
-                        LogWrite( "Мультиметр подключен" );
-                        devices.multimeter.VoltmeterMode( PortMultimeter.SIGNALTYPE_DC );
+                        LogWrite("Мультиметр подключен");
+                        devices.multimeter.VoltmeterMode(PortMultimeter.SIGNALTYPE_DC);
                         backgroundWorker2.RunWorkerAsync();
                     }
                     else
                     {
-                        LogWrite( "Не удалось подключиться к мультиметру" );
+                        LogWrite("Не удалось подключиться к мультиметру");
                     }
                 }
-                catch ( Exception Ex )
+                catch (Exception Ex)
                 {
-                    LogWrite( "Multimeter:\r\n" + Ex.Message );
+                    LogWrite("Multimeter:\r\n" + Ex.Message);
                 }
             }));
         }
@@ -637,14 +636,14 @@ namespace AutoSet_New
                     }));
 
 
-                    if ( !devices.Crate.Connected )
+                    if (!devices.Crate.Connected)
                     {
                         devices.Crate.Connect();
                     }
-                    LogWrite( "Сбрасываю коэффициенты" );
-                    devices.Crate.ResetCoef( Registers.REGISTER_COEFF_A_CHANNEL1, 
-                        Registers.REGISTER_ADDR_ON_CHANNEL1, 8 );
-                    LogWrite( "Коэффициенты сброшены" );
+                    LogWrite("Сбрасываю коэффициенты");
+                    devices.Crate.ResetCoef(Registers.REGISTER_COEFF_A_CHANNEL1,
+                        Registers.REGISTER_ADDR_ON_CHANNEL1, 8);
+                    LogWrite("Коэффициенты сброшены");
                 }
                 catch (Exception ex)
                 {
@@ -668,12 +667,12 @@ namespace AutoSet_New
                     ReserCoef_1.Enabled = false;
                     if (!devices.Crate.Connected)
                     {
-                        devices.Crate.Connect();                     
+                        devices.Crate.Connect();
                     }
-                    LogWrite( "Сбрасываю коэффициенты" );
-                    devices.Crate.ResetCoef( Registers.REGISTER_COEFF_A_CHANNEL2,
-                        Registers.REGISTER_ADDR_ON_CHANNEL2, 8 );
-                    LogWrite( "Коэффициенты сброшены" );
+                    LogWrite("Сбрасываю коэффициенты");
+                    devices.Crate.ResetCoef(Registers.REGISTER_COEFF_A_CHANNEL2,
+                        Registers.REGISTER_ADDR_ON_CHANNEL2, 8);
+                    LogWrite("Коэффициенты сброшены");
                 }
                 catch (Exception ex)
                 {
@@ -734,7 +733,7 @@ namespace AutoSet_New
                 });
             }
         }
-    
+
         private async void lvl1_Click(object sender, EventArgs e)
         {
             await (Task.Run(() =>
@@ -748,24 +747,24 @@ namespace AutoSet_New
                     }));
 
                     string message;
-                    if ( !devices.CheckExtDevices( out message ))
+                    if (!devices.CheckExtDevices(out message))
                     {
-                        LogWrite( message );
+                        LogWrite(message);
                         return;
                     }
 
                     BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
-                        SetButtonsEnabled( false );
+                        SetButtonsEnabled(false);
                     }));
 
-                    Calibration.SetGeneratorPoint( Convert.ToSingle( Lvl1_textbox.Text ) );
+                    Calibration.SetGeneratorPoint(Convert.ToSingle(Lvl1_textbox.Text));
                     if (!Calibration.IsRunning)
                     {
                         LogWrite("СТОП");
                         return;
                     }
-                    LogWrite("Установлено " + Lvl1_textbox.Text);
+                    LogWrite($"Установлено {Lvl1_textbox.Text} мВ");
                 }
                 catch (Exception ex)
                 {
@@ -775,7 +774,7 @@ namespace AutoSet_New
                 {
                     BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
-                        SetButtonsEnabled( true );
+                        SetButtonsEnabled(true);
                     }));
                 }
             }));
@@ -794,24 +793,24 @@ namespace AutoSet_New
                     }));
 
                     string message;
-                    if ( !devices.CheckExtDevices( out message ) )
+                    if (!devices.CheckExtDevices(out message))
                     {
-                        LogWrite( message );
+                        LogWrite(message);
                         return;
                     }
 
                     BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
-                        SetButtonsEnabled( false );
+                        SetButtonsEnabled(false);
                     }));
 
-                    Calibration.SetGeneratorPoint( Convert.ToSingle( Lvl2_textbox.Text ) );
+                    Calibration.SetGeneratorPoint(Convert.ToSingle(Lvl2_textbox.Text));
                     if (!Calibration.IsRunning)
                     {
                         LogWrite("СТОП");
                         return;
                     }
-                    LogWrite("Установлено " + Lvl2_textbox.Text);
+                    LogWrite($"Установлено {Lvl2_textbox.Text} мВ");
                 }
                 catch (Exception ex)
                 {
@@ -821,13 +820,13 @@ namespace AutoSet_New
                 {
                     BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                     {
-                        SetButtonsEnabled( true );
+                        SetButtonsEnabled(true);
                     }));
                 }
             }));
         }
 
-        private void SetButtonsEnabled( bool enabled )
+        private void SetButtonsEnabled(bool enabled)
         {
             lvl1.Enabled = enabled;
             lvl2.Enabled = enabled;
@@ -870,8 +869,8 @@ namespace AutoSet_New
                 Lvl1_textbox.Text = "10";
                 Lvl2_textbox.Text = "3000";
             }
-            string filteredText = FilterText( CoefTextBox.Text );
-            
+            string filteredText = FilterText(CoefTextBox.Text);
+
             CoefTextBox.Text = filteredText;
             CoefTextBox.SelectionStart = filteredText.Length;
             CoefTextBox.TextChanged += CoefTextBox_TextChanged;
@@ -880,8 +879,8 @@ namespace AutoSet_New
         {
             Point_1_textBox.TextChanged -= Point_1_textBox_TextChanged;
 
-            string filteredText = FilterText( Point_1_textBox.Text );
-            
+            string filteredText = FilterText(Point_1_textBox.Text);
+
             Point_1_textBox.Text = filteredText;
             Point_1_textBox.SelectionStart = filteredText.Length;
             Point_1_textBox.TextChanged += Point_1_textBox_TextChanged;
@@ -891,7 +890,7 @@ namespace AutoSet_New
         {
             Point_2_textBox.TextChanged -= Point_2_textBox_TextChanged;
 
-            string filteredText = FilterText( Point_2_textBox.Text );
+            string filteredText = FilterText(Point_2_textBox.Text);
 
             Point_2_textBox.Text = filteredText;
             Point_2_textBox.SelectionStart = filteredText.Length;
@@ -901,7 +900,7 @@ namespace AutoSet_New
         {
             DC_textBox.TextChanged -= DC_textBox_TextChanged;
 
-            string filteredText = FilterText( DC_textBox.Text );
+            string filteredText = FilterText(DC_textBox.Text);
 
             DC_textBox.Text = filteredText;
             DC_textBox.SelectionStart = filteredText.Length;
@@ -911,44 +910,44 @@ namespace AutoSet_New
         {
             FreqTextBox.TextChanged -= FreqTextBox_TextChanged;
 
-            string filteredText = FilterText( FreqTextBox.Text );
+            string filteredText = FilterText(FreqTextBox.Text);
 
             FreqTextBox.Text = filteredText;
             FreqTextBox.SelectionStart = filteredText.Length;
             FreqTextBox.TextChanged += FreqTextBox_TextChanged;
         }
 
-        private string FilterText( string text )
+        private string FilterText(string text)
         {
             string filteredText = "";
             bool foundComma = false;
             int commaCount = 0;
-            foreach ( char c in text )
+            foreach (char c in text)
             {
-                if ( char.IsDigit( c ) || ( c == ',' && !foundComma ) )
+                if (char.IsDigit(c) || (c == ',' && !foundComma))
                 {
                     filteredText += c;
-                    if ( c == ',' )
+                    if (c == ',')
                     {
                         foundComma = true;
                         commaCount++;
                     }
                 }
             }
-            int commaIndex = filteredText.IndexOf( ',' );
-            if ( commaIndex != -1 && filteredText.Length - commaIndex > 4 ) // 3, потому что один символ для запятой
+            int commaIndex = filteredText.IndexOf(',');
+            if (commaIndex != -1 && filteredText.Length - commaIndex > 4) // 3, потому что один символ для запятой
             {
-                filteredText = filteredText.Substring( 0, commaIndex + 4 );
+                filteredText = filteredText.Substring(0, commaIndex + 4);
             }
             return filteredText;
         }
         #endregion
 
-        private void buttonReport_Click( object sender, EventArgs e )
+        private void buttonReport_Click(object sender, EventArgs e)
         {
-            Calibration.MakeReport( PLC.SelectedIndex );
+            Calibration.MakeReport(PLC.SelectedIndex);
         }
-         
+
         private void textBoxOrderNum_TextChanged(object sender, EventArgs e)
         {
 
@@ -989,5 +988,6 @@ namespace AutoSet_New
                 textBoxSerialNum.SelectionStart = cursorPos;
             }
         }
+
     }
 }

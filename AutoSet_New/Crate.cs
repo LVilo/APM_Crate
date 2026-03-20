@@ -87,14 +87,18 @@ namespace AutoSet_New
 
         public void WriteCoeffs( int start_addr, float a, float b )
         {
+            DevicesCommunication.Log.Write("Запись коэффициентов");
+            DevicesCommunication.Log.Write($"Коэффициент A: {a}");
             WriteReg( start_addr, ConvertFloatToRegisters( a ) );
             Thread.Sleep( 1000 );
+            DevicesCommunication.Log.Write($"Коэффициент B: {b}");
             WriteReg( start_addr + 2, ConvertFloatToRegisters( b ) );
             Thread.Sleep( 1000 );
         }
 
         public void ResetCoef(int start_reg_adr_coef, int reg_on, int len)
         {
+            DevicesCommunication.Log.Write("Сброс коэффициентов");
             SetPassword();
             SetOn(reg_on);
 
@@ -103,6 +107,7 @@ namespace AutoSet_New
 
         public void ResetCoef( int start_reg_adr_coef, int len )
         {
+            DevicesCommunication.Log.Write("Сброс коэффициентов");
             SetPassword();
 
             WriteCoeffs( start_reg_adr_coef, len );
@@ -110,6 +115,7 @@ namespace AutoSet_New
 
         public void SetSerialNum( int num )
         {
+            DevicesCommunication.Log.Write("Запись серийного номера");
             SetPassword();
 
             WriteReg( Registers.REGISTER_SERIAL_NUM, num );
@@ -235,6 +241,7 @@ namespace AutoSet_New
         public float ReadValue( int reg_addr )
         {
             int[] registers = ReadReg( reg_addr, 2 );
+
             return ConvertRegistersToFloat( registers );
         }
 

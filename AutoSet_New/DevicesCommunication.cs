@@ -15,6 +15,9 @@ namespace AutoSet_New
 
         public List<VisaDeviceInformation> usbDevicesInfo;
 
+
+        public static LogModel Log; 
+
         public string multName;
         public string genName;
 
@@ -26,6 +29,7 @@ namespace AutoSet_New
             multimeter = new PortMultimeter();
             generator = new PortGenerator();
             Crate = new Crate_TCP();
+            Log = new();
         }
 
         public void InitializeCrateAddress( string ip, int port )
