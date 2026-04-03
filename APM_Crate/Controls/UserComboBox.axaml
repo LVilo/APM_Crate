@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="Controls.UserComboBox"
+             x:Name="root">
+
+    <StackPanel>
+        <Label Content="{Binding Header,ElementName=root}" ZIndex="1"
+               FontSize="13"
+               Foreground="#6c7281"/>
+        <ComboBox ItemsSource="{Binding UserItems,ElementName=root}"
+                  SelectedItem="{Binding UserSelectedItem,ElementName=root}"
+                  Width="{Binding UserWidth, ElementName=root}"/>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,29 @@
+{
+  "AgilentViewModel": {
+    "PortItem": "COM1",
+    "Ports": [
+      "COM1",
+      "COM3",
+      "COM4"
+    ]
+  },
+  "GeneratorViewModel": {
+    "Chanel_1": true,
+    "Chanel_2": false,
+    "PortItem": "COM1",
+    "Ports": [
+      "COM1",
+      "COM3",
+      "COM4"
+    ]
+  },
+  "CrateViewModel": {
+    "IP": "192.168.1.99",
+    "PortItem": "COM1",
+    "Ports": [
+      "COM1",
+      "COM3",
+      "COM4"
+    ]
+  }
+}

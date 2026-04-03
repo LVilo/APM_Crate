@@ -1,0 +1,42 @@
+﻿using Avalonia.Logging;
+using ReactiveUI;
+using System;
+using System.Linq;
+using System.Reactive;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+
+namespace APM_Crate.ViewModels
+{
+    public class MainWindowViewModel : ViewModelBase
+    {
+        public ReactiveCommand<Unit, Unit> ClearLogCommand { get; set; }
+
+        public static DevicesViewModel DevicesViewModel { get; } = new DevicesViewModel();
+        public static SettingViewModel SettingViewModel { get; } = new SettingViewModel();
+        public MainWindowViewModel()
+        {
+            ClearLogCommand = ReactiveCommand.Create(LogerViewModel.ClearLog);
+            //ushort i = 0b0011_1111_1111_1110;
+            //string s = Convert.ToString(i, 2);
+            //s = new string(s.Reverse().ToArray());
+            //s += string.Concat(Enumerable.Repeat("0", 16 - s.Length));
+            //int inter = 0;
+            //foreach (char c in s)
+            //{
+            //    inter++;
+            //}
+            //LogerViewModel.Write($"{i}");
+        }
+        public LogerViewModel LogerViewModel { get; } = LogerViewModel.Instance;
+
+        public static string Version
+        {
+            get
+            {
+                string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                return version[..version.IndexOf('+')];
+            }
+        }
+    }
+}

@@ -1,0 +1,61 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:APM_Crate.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:APM_Crate.Views"
+        mc:Ignorable="d" d:DesignWidth="555" d:DesignHeight="140"
+        x:Class="APM_Crate.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        FontFamily="{DynamicResource MainFont}"
+        Background="{DynamicResource ColorBackgroundBorder}"
+        Title="{Binding Version, StringFormat='АРМ проверки и настройки контроллеров ТИК-Крейт v:{0}'}"
+        MinHeight="460"
+        MinWidth="525"
+        SizeToContent="WidthAndHeight"
+        Padding="10">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+
+      <Grid   ColumnDefinitions="Auto,*" ColumnSpacing="10"  >
+			  <local:DevicesUserControl
+              DataContext="{Binding DevicesViewModel}"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Grid.Column="0"/>
+					
+                
+          <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="10"  >
+			  <local:SettingUserControl
+              HorizontalAlignment="Left" 
+              DataContext="{Binding SettingViewModel}"
+              Grid.Row="0"/>
+          
+			   <Panel Grid.Row="1" >
+              <Button 
+              ZIndex="1"
+              Content="X"
+              Command="{Binding ClearLogCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+              MinHeight="20" Height="25" Padding="0" Width="25" MinWidth="20"/>
+        
+			<TextBox 
+            Focusable="False"
+            DataContext="{Binding LogerViewModel}"
+            Text="{Binding LogText}"
+         FontSize="12"
+         IsReadOnly="True"
+         AcceptsReturn="True"
+         AcceptsTab="True"
+         TextWrapping="Wrap"
+         BorderBrush="#A0A0A0"
+        ScrollViewer.VerticalScrollBarVisibility="Hidden"
+        ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+         </Panel>
+          </Grid>
+
+	</Grid>
+</Window>

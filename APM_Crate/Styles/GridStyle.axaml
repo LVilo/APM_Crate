@@ -1,0 +1,18 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ShowGridLines="True">
+		  <TextBlock Grid.Row="0" Grid.Column="0" Text="1"/>
+		  <TextBlock Grid.Row="0" Grid.Column="1" Text="2"/>
+		  <TextBlock Grid.Row="1" Grid.Column="0" Text="3"/>
+		  <TextBlock Grid.Row="1" Grid.Column="1" Text="4"/>
+      </Grid>
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="Grid">
+	  <Setter Property="RowSpacing" Value="5"/>
+	  <Setter Property="ColumnSpacing" Value="5"/>
+  </Style>
+</Styles>

@@ -1,0 +1,85 @@
+23.03.2026 08:29:25 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:46:52 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:46:52 [INF] OvsyannikovID 16382
+23.03.2026 08:48:14 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:48:14 [INF] OvsyannikovID 16382
+23.03.2026 08:48:24 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:48:24 [INF] OvsyannikovID 16382
+23.03.2026 08:48:35 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:48:35 [INF] OvsyannikovID 16382
+23.03.2026 08:48:48 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:48:48 [INF] OvsyannikovID 16382
+23.03.2026 08:49:15 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:49:15 [INF] OvsyannikovID 16382
+23.03.2026 08:49:25 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:49:25 [INF] OvsyannikovID 16382
+23.03.2026 08:49:29 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:49:29 [INF] OvsyannikovID 16382
+23.03.2026 08:49:32 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:49:33 [INF] OvsyannikovID 16382
+23.03.2026 08:49:51 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:49:52 [INF] OvsyannikovID 16382
+23.03.2026 08:50:03 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:03 [INF] OvsyannikovID 16382
+23.03.2026 08:50:18 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:50:18 [INF] OvsyannikovID 16382
+23.03.2026 08:50:21 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:22 [INF] OvsyannikovID 16382
+23.03.2026 08:50:24 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:24 [INF] OvsyannikovID 16382
+23.03.2026 08:50:25 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:25 [INF] OvsyannikovID 16382
+23.03.2026 08:50:26 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:29 [INF] OvsyannikovID 16382
+23.03.2026 08:50:30 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:30 [INF] OvsyannikovID 16382
+23.03.2026 08:50:44 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:50:44 [INF] OvsyannikovID 16382
+23.03.2026 08:50:46 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:46 [INF] OvsyannikovID 16382
+23.03.2026 08:50:48 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:48 [INF] OvsyannikovID 16382
+23.03.2026 08:50:51 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:50:53 [INF] OvsyannikovID 16382
+23.03.2026 08:51:36 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:51:36 [INF] OvsyannikovID 16382
+23.03.2026 08:51:38 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:51:41 [INF] OvsyannikovID 16382
+23.03.2026 08:51:49 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:51:49 [INF] OvsyannikovID 16382
+23.03.2026 08:51:51 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:51:52 [INF] OvsyannikovID 16382
+23.03.2026 08:52:01 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 08:52:02 [INF] OvsyannikovID 16382
+23.03.2026 08:52:12 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:52:12 [INF] OvsyannikovID 16382
+23.03.2026 08:52:13 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:52:18 [INF] OvsyannikovID 16382
+23.03.2026 08:52:20 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:52:20 [INF] OvsyannikovID 16382
+23.03.2026 08:52:22 [INF] OvsyannikovID Приложение закрывается
+23.03.2026 08:52:22 [INF] OvsyannikovID 16382
+23.03.2026 09:06:24 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 09:06:24 [INF] OvsyannikovID 16382
+23.03.2026 09:40:16 [INF] OvsyannikovID Приложение запущено 
+
+
+23.03.2026 09:40:16 [INF] OvsyannikovID 16382

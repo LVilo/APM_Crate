@@ -5,6 +5,8 @@ VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSet_New", "AutoSet_New\AutoSet_New.csproj", "{737B6746-7BFA-4ADB-BEB8-76462DBFEEA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APM_Crate", "APM_Crate\APM_Crate.csproj", "{50F2C06C-362B-4147-836C-0987F8B8034E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{737B6746-7BFA-4ADB-BEB8-76462DBFEEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{737B6746-7BFA-4ADB-BEB8-76462DBFEEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{737B6746-7BFA-4ADB-BEB8-76462DBFEEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50F2C06C-362B-4147-836C-0987F8B8034E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50F2C06C-362B-4147-836C-0987F8B8034E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50F2C06C-362B-4147-836C-0987F8B8034E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50F2C06C-362B-4147-836C-0987F8B8034E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

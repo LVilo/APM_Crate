@@ -221,7 +221,6 @@ namespace AutoSet_New
             #region Проверка настройки канала
 
 
-
             Thread.Sleep(400);
             SetVolt(Point_1);
             Thread.Sleep(5000);

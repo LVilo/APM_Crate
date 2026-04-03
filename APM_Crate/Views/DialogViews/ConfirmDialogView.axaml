@@ -1,0 +1,44 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="using:APM_Crate.ViewModels.DialogViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="540"
+             x:Class="APM_Crate.Views.DialogViews.ConfirmDialogView"
+             x:DataType="viewmodels:ConfirmDialogViewModel"
+             Foreground="Black"
+             Title="{Binding Title}"
+             Background="{DynamicResource ColorBackgroundBorder}"
+             CanResize="False"
+             SizeToContent="WidthAndHeight"
+             Focusable="True">
+
+  <Design.DataContext>
+      <viewmodels:ConfirmDialogViewModel/>
+  </Design.DataContext>
+
+    <Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>
+
+
+    <Border ClipToBounds="True" Margin="10" BoxShadow="0 5 20 4 #33000000">
+		<Grid RowDefinitions="Auto,Auto" RowSpacing="10">
+			<Border Grid.Row="0" Padding="20">
+				<TextBlock Text="{Binding Messege}"  TextWrapping="Wrap"/>
+            </Border>
+            <Border Grid.Row="1">
+                <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
+				<Button Content="{Binding ConfirmText}"
+                            Command="{Binding ConfirmCommand}"
+                            Background="{DynamicResource Confirm}"/>
+
+                    <Button Content="{Binding CancelText}"
+                            Command="{Binding CancelCommand}"
+                            Background="{DynamicResource Cancel}"/>
+                    </DockPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

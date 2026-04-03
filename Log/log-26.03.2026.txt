@@ -1,0 +1,13 @@
+26.03.2026 08:42:19 [INF] OvsyannikovID Приложение запущено 
+
+
+26.03.2026 08:42:19 [INF] OvsyannikovID 16382
+26.03.2026 08:43:32 [INF] OvsyannikovID Приложение запущено 
+
+
+26.03.2026 08:43:32 [INF] OvsyannikovID 16382
+26.03.2026 08:45:00 [INF] OvsyannikovID Приложение закрывается
+26.03.2026 08:45:00 [INF] OvsyannikovID 16382
+26.03.2026 08:46:02 [INF] OvsyannikovID Приложение запущено 
+
+

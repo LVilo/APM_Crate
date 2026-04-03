@@ -1,0 +1,102 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:APM_Crate.ViewModels"
+			 xmlns:controls="clr-namespace:Controls" 
+             x:Class="APM_Crate.Views.SettingUserControl"
+			 x:DataType="vm:SettingViewModel">
+
+	<Design.DataContext>
+       <vm:SettingViewModel/>
+    </Design.DataContext>
+	
+				<controls:GroupBox Header="Настройка" Color="#F0F0F0" ClipToBounds="True" IsEnabled="{Binding IsEnabledButtons}">
+							<controls:GroupBox.ContentControl >
+						<Grid  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" >
+							<!--<controls:UserComboBox Header="Настраиваемый модуль:" UserItems="{Binding Modules}" UserSelectedItem="{Binding ItemModule}" />
+							<controls:UserComboBox Header="Настраиваемый тип PLC:" UserItems="{Binding PLC}" UserSelectedItem="{Binding ItemPLC}" />-->
+							<Grid Grid.Row="0"
+								ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
+
+								<TextBlock Grid.Row="0" Grid.Column="0" Text="Модуль:" />
+								<ComboBox Grid.Row="0" Grid.Column="1" 
+								Width="{Binding WidthComboBox}" 
+										  ItemsSource="{Binding Modules}"
+										  SelectedItem="{Binding ItemModule}"/>
+
+
+								<TextBlock Grid.Row="1" Grid.Column="0" Text="Тип PLC:"/>
+								<ComboBox Grid.Row="1" Grid.Column="1" 
+								Width="{Binding WidthComboBox}"
+										  ItemsSource="{Binding PLC}"
+										  SelectedItem="{Binding ItemPLC}"/>
+							</Grid>
+
+
+							<Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto" 
+							IsEnabled="{Binding Coef_Enaibled}" ToolTip.Tip="Коэффициент преобразования ">
+								<TextBlock Text="Коэффициент:" Grid.Column="0"/>
+								<RadioButton Grid.Column="1" Content="10" IsChecked="{Binding Coef}" />
+								<RadioButton Grid.Column="2" Content="6,67"/>
+							</Grid>
+
+							<CheckBox Grid.Row="2" IsChecked="{Binding IsResetting}" Content="Перенастройка"/>
+
+							<controls:GroupBox Header="Каналы" Grid.Row="3" IsVisible="{Binding IsResetting}"
+						  ToolTip.Tip="Выбранные каналы будут настроены после нажатия на кнопку настройки.Настройки каналов будут выбраны в соответсвтии с выбраным типом PLC">
+							<controls:GroupBox.ContentControl>
+								<Grid  ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+>
+								
+								<TextBlock Grid.Column="0" Text="1:"/>
+								<CheckBox Grid.Column="1" IsChecked="{Binding SettingChannel_1}" IsEnabled="{Binding CanSettingChannel_1}"/>
+
+								<TextBlock Grid.Column="2" Text="2:"/>
+								<CheckBox Grid.Column="3" IsChecked="{Binding SettingChannel_2}" IsEnabled="{Binding CanSettingChannel_2}"/>
+
+								<TextBlock Grid.Column="4" Text="3:"/>
+								<CheckBox Grid.Column="5" IsChecked="{Binding SettingChannel_3}" IsEnabled="{Binding CanSettingChannel_3}"/>
+
+								<TextBlock Grid.Column="6" Text="4:"/>
+								<CheckBox Grid.Column="7" IsChecked="{Binding SettingChannel_4}" IsEnabled="{Binding CanSettingChannel_4}"/>
+								</Grid>
+							</controls:GroupBox.ContentControl>
+						</controls:GroupBox>
+								
+
+							
+
+
+							<controls:GroupBox Header="Заказ" Grid.Row="4">
+							<controls:GroupBox.ContentControl>
+								<StackPanel Spacing="5">
+
+									<controls:UserTextBox Header="Номер заказа:" Text="{Binding OrderNumber}" TextFilterType="OnlyLetterOrDigit" />
+									<controls:UserTextBox Header="Серийный номер:" Text="{Binding SerialNumber}" TextFilterType="OnlyDigits" IsVisible="{Binding IsResetting}"/>
+						<!--<DockPanel>
+							<TextBlock Width="{Binding WidthTextBlockTextBox}" Text="Номер заказа" />
+							<TextBox Width="{Binding WidthTextBox}"/>
+						</DockPanel>
+						<DockPanel>
+							<TextBlock Width="{Binding WidthTextBlockTextBox}" Text="Серийный номер"/>
+							<TextBox   Width="{Binding WidthTextBox}"/>
+						</DockPanel>-->
+
+					</StackPanel>
+							</controls:GroupBox.ContentControl>
+						</controls:GroupBox>
+
+							
+							<Button Width="250" Grid.Row="5" 
+						Content="Начать настройку"
+							Command="{Binding SettingALL_Command}"
+							IsEnabled="{Binding IsEnabledButtons}"/>
+						 
+						</Grid>
+						
+						
+				</controls:GroupBox.ContentControl>
+						</controls:GroupBox>
+ 
+</UserControl>

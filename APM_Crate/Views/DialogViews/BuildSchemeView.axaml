@@ -1,0 +1,78 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:APM_Crate.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="370" d:DesignHeight="570"
+             xmlns:viewmodels="using:APM_Crate.ViewModels.DialogViewModels"
+             x:Class="APM_Crate.Views.DialogViews.BuildSchemeView"
+             x:DataType="viewmodels:BuildSchemeViewModel"
+             Foreground="Black"
+             MinWidth="370"
+             MinHeight="570"
+             Width="660"
+             Height="930"
+             MaxWidth="660"
+             MaxHeight="930"
+             Title="{Binding Title}"
+             Background="{DynamicResource ColorBackgroundBorder}"
+             CanMaximize="False"
+             CanMinimize="False"
+             Focusable="True"
+             >
+
+    <Design.DataContext>
+      <viewmodels:BuildSchemeViewModel/>
+  </Design.DataContext>
+
+
+    <Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>
+
+
+
+
+    <Border ClipToBounds="True" Margin="10" BoxShadow="0 5 20 4 #33000000">
+  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*" RowSpacing="5">
+    
+    <!-- Верхний текст -->
+    <Border>
+		<TextBlock 
+        Text="{Binding Messege}"
+        HorizontalAlignment="Left"
+        Margin="10,10"
+        FontSize="20"/>
+    </Border>
+
+    <!-- Картинка -->
+    <Border Grid.Row="1">
+		<Image 
+        Source= "{Binding PathPNG}"
+        Stretch="Uniform"/>
+    </Border>
+    
+
+    <!-- Кнопки -->
+    <Border Grid.Row="2">
+		<DockPanel 
+    HorizontalSpacing="10"
+        
+        HorizontalAlignment="Center"
+        Margin="0,10">
+
+        <Button Content="{Binding ConfirmText}"
+                Command="{Binding ConfirmCommand}"
+                Background="{DynamicResource Confirm}"/>
+        <Button Content="{Binding CancelText}"
+                Command="{Binding CancelCommand}"
+                Background="{DynamicResource Cancel}"/>
+
+    </DockPanel>
+    </Border>
+    
+
+</Grid>
+</Border>
+</Window>

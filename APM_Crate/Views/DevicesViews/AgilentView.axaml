@@ -1,0 +1,40 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:APM_Crate.ViewModels.DevicesViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="APM_Crate.Views.DevicesViews.AgilentView"
+			 x:DataType="vm:AgilentViewModel"
+			 xmlns:controls="clr-namespace:Controls"
+			 FontFamily="{DynamicResource MainFont}">
+
+	<Design.DataContext>
+       <vm:AgilentViewModel/>
+    </Design.DataContext>
+	<controls:GroupBox Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+		<controls:GroupBox.ContentControl>
+	<Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
+						
+							<TextBlock Grid.Row="0" Grid.Column="0"
+							Text="Порт:"
+									   Width="{Binding WidthControl}"/>
+						
+						<ComboBox Grid.Row="0" Grid.Column="1"
+						SelectedItem="{Binding PortItem}"
+								  ItemsSource="{Binding Ports}"
+								  Width="{Binding WidthControl}"
+								  Height="25"/>
+						
+							<Button Grid.Row="1" Grid.Column="0"
+							Command="{Binding ClosePortCommand}"
+									Content="{Binding CloseText}"
+									Width="{Binding WidthControl}"/>
+							<Button Grid.Row="1" Grid.Column="1"
+									Command="{Binding OpenPortCommand}"
+									Content="{Binding OpenText}"
+									Width="{Binding WidthControl}"/>
+						
+					</Grid>
+			</controls:GroupBox.ContentControl>
+	</controls:GroupBox>
+</UserControl>

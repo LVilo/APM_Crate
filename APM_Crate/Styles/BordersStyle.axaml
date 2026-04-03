@@ -1,0 +1,78 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel>
+		   <Grid ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="CheckSetting">
+    <Border Grid.Row="0" Grid.Column="0">
+        <TextBlock Text="Ячейка 1"/>
+    </Border>
+
+    <Border Grid.Row="0" Grid.Column="1">
+        <TextBlock Text="Ячейка 2"/>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="0">
+        <TextBlock Text="Ячейка 3"/>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="1">
+        <TextBlock Text="Ячейка 4"/>
+    </Border>
+</Grid>
+
+
+          <Border/>
+
+
+          <Grid ColumnDefinitions="*,*" RowDefinitions="*,*" Classes="GlobalSettings">
+    <Border Grid.Row="0" Grid.Column="0">
+        <TextBlock Text="Ячейка 1"/>
+    </Border>
+
+    <Border Grid.Row="0" Grid.Column="1">
+        <TextBlock Text="Ячейка 2"/>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="0">
+        <TextBlock Text="Ячейка 3"/>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="1">
+        <TextBlock Text="Ячейка 4"/>
+    </Border>
+</Grid>
+
+      </StackPanel>
+         
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Add Styles Here -->
+   <Style Selector="Grid > Border">
+        <Setter Property="Background" Value="{DynamicResource ColorBackgroundBorder}"/>
+         <Setter Property="Padding" Value="10"/>
+        
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="StackPanel > Border">
+        <Setter Property="Background" Value="{DynamicResource ColorBackgroundBorder}"/>
+         <Setter Property="Padding" Value="10"/>
+        
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Grid.CheckSetting Border">
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style Selector="Border.GlobalSettings">
+        <Setter Property="Background" Value="{DynamicResource MainBorder}"/>
+         <Setter Property="Padding" Value="10"/>
+        
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+</Styles>

@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:APM_Crate.ViewModels.DevicesViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="APM_Crate.Views.DevicesViews.PrinterView"
+			 x:DataType="vm:PrinterViewModel"
+			 xmlns:controls="clr-namespace:Controls"
+			 FontFamily="{DynamicResource MainFont}">
+
+	<Design.DataContext>
+       <vm:PrinterViewModel/>
+    </Design.DataContext>
+
+	<controls:GroupBox Header="Принтер" >
+		<controls:GroupBox.ContentControl>
+	<Grid >
+						<ComboBox SelectedItem="{Binding PrinterName}"
+								  ItemsSource="{Binding Printers}"
+								  Width="210"/>
+					</Grid>
+			</controls:GroupBox.ContentControl>
+	</controls:GroupBox>
+</UserControl>

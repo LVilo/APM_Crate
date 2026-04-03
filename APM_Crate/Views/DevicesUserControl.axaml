@@ -1,0 +1,42 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:viewModels="clr-namespace:APM_Crate.ViewModels"
+        xmlns:local="using:APM_Crate.Views.DevicesViews"
+        x:Class="APM_Crate.Views.DevicesUserControl"
+		x:DataType="viewModels:DevicesViewModel"
+		xmlns:controls="clr-namespace:Controls"
+		FontFamily="{DynamicResource MainFont}">
+
+	<Design.DataContext>
+       <viewModels:DevicesViewModel/>
+    </Design.DataContext>
+	    
+	<!--<UserControl.KeyBindings>
+	  <KeyBinding Gesture="F1" Command="{Binding CNV.EscapeCommand}"/>
+	</UserControl.KeyBindings>-->
+
+		<controls:GroupBox Header="Устройства">
+			<controls:GroupBox.ContentControl>
+			<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+				<Button Grid.Row="0"
+					Command="{Binding UpdatesPortsCommand}"
+					Content="Обновить порты"
+					Width="{Binding Generator.WidthBorder}">
+				</Button>
+
+					<local:GeneratorView DataContext="{Binding Generator}" Grid.Row="1"/>
+					<local:AgilentView DataContext="{Binding Agilent}" Grid.Row="2"/>
+					<local:CrateView DataContext="{Binding Crate}" Grid.Row="3"/>
+					<local:PrinterView DataContext="{Binding Printer}" Grid.Row="4"/>
+					<!--<local:SG004View DataContext="{Binding SG004}" />-->
+					<!--<local:TIK_BISView DataContext="{Binding TIK_BIS}" />-->
+					<!--<local:MY210_402View DataContext="{Binding MY210_402}" />-->
+					
+			</Grid>
+		</controls:GroupBox.ContentControl>
+		</controls:GroupBox>
+		
+			
+</UserControl>

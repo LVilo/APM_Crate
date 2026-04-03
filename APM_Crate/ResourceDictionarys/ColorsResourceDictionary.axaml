@@ -1,0 +1,52 @@
+﻿
+
+
+
+
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+    <Border Padding="20">
+     <StackPanel>
+		 <Border Background="{DynamicResource PrimaryColorBackgroundBorder}"><TextBlock Text="1"/></Border>
+		 <Border Background="{DynamicResource ColorBackgroundBorder}"><TextBlock Text="2"/></Border>
+		 <Border Background="{DynamicResource PrimaryColorBackground}"><TextBlock Text="3"/></Border>
+		 <Border Background="{DynamicResource PrimaryColorBorderBrush}"><TextBlock Text="4"/></Border>
+		 <Border Background="{DynamicResource MainColorBorder}"><TextBlock Text="5"/></Border>
+		 <Border Background="{DynamicResource PrimaryColorButtonBorderBrush}"><TextBlock Text="6"/></Border>
+		 <Border Background="{DynamicResource ConfirmColor}"><TextBlock Text="7"/></Border>
+		 <Border Background="{DynamicResource CancelColor}"><TextBlock Text="8"/></Border>
+     </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+
+  <!-- Add Resources Here -->
+ 
+    <!--1--><Color x:Key="PrimaryColorBackgroundBorder">#F8F8F8</Color>
+        <SolidColorBrush x:Key="PrimaryBrushBorder" Color="{DynamicResource PrimaryColorBackgroundBorder}"/>
+      
+   <!--2--> <Color x:Key="ColorBackgroundBorder">#F0F0F0</Color>
+        <SolidColorBrush x:Key="BrushBorder" Color="{DynamicResource ColorBackgroundBorder}"/>
+    
+   <!--3--> <Color x:Key="PrimaryColorBackground">#E1E1E1</Color>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColorBackground}"/>
+    
+   <!--4--> <Color x:Key="PrimaryColorBorderBrush">#DCDCDC</Color>
+        <SolidColorBrush x:Key="PrimaryBorderBrush" Color="{DynamicResource PrimaryColorBorderBrush}"/>
+    
+    <!--5-->  <Color x:Key="MainColorBorder">LightGray</Color>
+        <SolidColorBrush x:Key="MainBorder" Color="{DynamicResource MainColorBorder}"/>
+
+   <!--6--> <Color x:Key="PrimaryColorButtonBorderBrush">#ACACAC</Color>
+        <SolidColorBrush x:Key="PrimaryButtonBorderBrush" Color="{DynamicResource PrimaryColorButtonBorderBrush}"/>
+
+      
+  <!--7-->  <Color x:Key="ConfirmColor">#FF1DEC1D</Color>
+        <SolidColorBrush x:Key="Confirm" Color="{DynamicResource ConfirmColor}"/>
+     
+  <!--8-->  <Color x:Key="CancelColor">Red</Color>
+        <SolidColorBrush x:Key="Cancel" Color="{DynamicResource CancelColor}"/>
+
+</ResourceDictionary>

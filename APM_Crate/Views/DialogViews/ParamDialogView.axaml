@@ -1,0 +1,70 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="480"
+             xmlns:vm="using:APM_Crate.ViewModels.DialogViewModels"
+             x:DataType="vm:ParamDialogViewModel"
+             x:Class="APM_Crate.Views.DialogViews.ParamDialogView"
+             Foreground="Black"
+             SizeToContent="WidthAndHeight"
+             Title="Настройка"
+             Background="{DynamicResource ColorBackgroundBorder}"
+             CanResize="False"
+             ClipToBounds="True"
+             Focusable="True"
+             KeyDown="OnKeyDown">
+
+
+  <Design.DataContext>
+      <vm:ParamDialogViewModel/>
+  </Design.DataContext>
+
+    <!--<Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>-->
+
+    <Border ClipToBounds="True" Margin="10">
+
+       <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+		   <Border  Grid.Row="0">
+			   <TextBlock Text="{Binding TextBorder}" HorizontalAlignment="Center"/>
+           </Border>
+
+
+           <Border Grid.Row="1">
+               <StackPanel Spacing="10">
+                   <DockPanel HorizontalSpacing="10">
+                       <Label Content="Тип датчика"/>
+					    <ComboBox ItemsSource="{Binding ItemsSource}"
+                   SelectedItem="{Binding ItemSelected}"/>
+                   </DockPanel>
+				  
+               </StackPanel>
+           </Border>
+           <Border Grid.Row="2">
+			   <DockPanel
+                                HorizontalAlignment="Center"
+                                HorizontalSpacing="10">
+                             <!--<CheckBox Content="Применить ко всем" HorizontalAlignment="Left" IsChecked="{Binding SetParamALL}" Grid.Row="1">
+								<ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock Text="Применяет настройки ко всем устройствам. Это окно не будет открываться в последующих настройках пока не открыть его в главном меню" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                 </ToolTip.Tip>
+                            </CheckBox>-->
+						<Button Name="OK"
+                        Content="{Binding ConfirmText}"
+                            Command="{Binding ConfirmCommand}"
+                            Background="{DynamicResource Confirm}"/>
+
+                    <Button Name="Cancel"
+                    Content="{Binding CancelText}"
+                            Command="{Binding CancelCommand}"
+                            Background="{DynamicResource Cancel}"/>
+                    </DockPanel>
+           </Border >
+       </Grid>
+    </Border>
+</Window>

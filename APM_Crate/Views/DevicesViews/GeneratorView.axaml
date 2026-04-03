@@ -1,0 +1,51 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:APM_Crate.ViewModels.DevicesViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="APM_Crate.Views.DevicesViews.GeneratorView"
+             x:DataType="vm:GeneratorViewModel"
+			 xmlns:controls="clr-namespace:Controls" 
+			 FontFamily="{DynamicResource MainFont}">
+
+	<Design.DataContext>
+       <vm:GeneratorViewModel/>
+    </Design.DataContext>
+
+	<controls:GroupBox  Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+		<controls:GroupBox.ContentControl>
+		<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*">
+		 
+			  <TextBlock Text="Порт:" Grid.Row="0" Grid.Column="0"
+							Width="{Binding WidthControl}"/>
+						<ComboBox Grid.Row="0" Grid.Column="1"
+						SelectedItem="{Binding PortItem}"
+						ItemsSource="{Binding Ports}"
+							Width="{Binding WidthControl}"/>
+		  
+			  <RadioButton  Grid.Row="1" Grid.Column="0"
+						 IsChecked="{Binding Chanel_1}"
+						 Content="Канал 1"
+						 GroupName="OptionsGroup"
+							Width="{Binding WidthControl}" />
+						<RadioButton Grid.Row="1" Grid.Column="1"
+						 Content="Канал 2"
+						 IsChecked="{Binding Chanel_2}"
+						 GroupName="OptionsGroup"
+							Width="{Binding WidthControl}"/>
+			  <!--<CheckBox Width="{Binding WidthControl}"  CornerRadius="0" Content="Канал 1" IsChecked="{Binding Chanel_1}"/>
+			  <CheckBox Width="{Binding WidthControl}" CornerRadius="0" Content="Канал 2" IsChecked="{Binding Chanel_2}" HorizontalAlignment="Right"/>-->
+		 
+			  <Button Grid.Row="2" Grid.Column="0"
+							Command="{Binding ClosePortCommand}"
+							Content="{Binding CloseText}"
+							Width="{Binding WidthControl}"/>
+			  <Button Grid.Row="2" Grid.Column="1"
+							Command="{Binding OpenPortCommand}"
+							Content="{Binding OpenText}"
+							Width="{Binding WidthControl}"/>
+		
+	  </Grid>	
+		</controls:GroupBox.ContentControl>
+	</controls:GroupBox>
+</UserControl>

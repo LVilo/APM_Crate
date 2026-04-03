@@ -1,0 +1,17 @@
+﻿
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="Controls.UserTextBox"
+             x:Name="root">
+
+     <StackPanel>
+        <Label Content="{Binding Header,ElementName=root}"
+               FontSize="13"
+               Foreground="#6c7281"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Top"/>
+        <TextBox Text="{Binding Text,ElementName=root}" TextChanged="OnTextBoxTextChanged"/>
+    </StackPanel>
+</UserControl>

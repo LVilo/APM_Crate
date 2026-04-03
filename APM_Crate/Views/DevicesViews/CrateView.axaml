@@ -1,0 +1,31 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:APM_Crate.ViewModels.DevicesViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="APM_Crate.Views.DevicesViews.CrateView"
+             x:DataType="vm:CrateViewModel"
+			 xmlns:controls="clr-namespace:Controls"
+			 FontFamily="{DynamicResource MainFont}">
+
+	<Design.DataContext>
+       <vm:CrateViewModel/>
+    </Design.DataContext>
+	<controls:GroupBox Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+		<controls:GroupBox.ContentControl>
+	<Grid RowDefinitions="*,*">
+							<controls:UserTextBox Text="{Binding IP}" Header="IP:" Grid.Row="0"/>
+
+						<DockPanel Grid.Row="1" >
+							<Button Command="{Binding ClosePortCommand}"
+									Content="{Binding CloseText}"
+									Width="{Binding WidthControl}"/>
+							<Button 
+									Command="{Binding OpenPortCommand}"
+									Content="{Binding OpenText}"
+									Width="{Binding WidthControl}"/>
+						</DockPanel>
+					</Grid>
+			</controls:GroupBox.ContentControl>
+	</controls:GroupBox>
+</UserControl>

@@ -1,0 +1,35 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border  Padding="20">
+		<Border Height="200">
+			<ScrollViewer>
+		  <StackPanel>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+			  <Border> <TextBox Text="Пример текста"/></Border>
+          </StackPanel>
+      </ScrollViewer>
+		</Border>
+      
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="ScrollViewer">
+		<Setter Property="AllowAutoHide" Value="true"/>
+    </Style>
+</Styles>

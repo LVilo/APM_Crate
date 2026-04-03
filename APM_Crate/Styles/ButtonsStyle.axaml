@@ -1,0 +1,55 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+      <StackPanel>
+       <DockPanel>
+            <StackPanel >
+                <Label Content="Стандартная кнопка"/>
+			<Button />
+            </StackPanel>
+            
+            <Grid Classes="Setting" RowDefinitions="Auto,Auto">
+                <Label Content="Класс Setting"/>
+				<Button Content="Кнопка" Grid.Row="0"/>
+                <Button Content="Кнопка" Grid.Row="1" />
+            </Grid>
+            <StackPanel Classes="Devices">
+                <Label Content="Класс Devices"/>
+				<Button Content="Кнопка" />
+                <Button Content="Кнопка" />
+            </StackPanel>
+
+        </DockPanel>
+        <DockPanel HorizontalSpacing="10">
+			  <Button Content="ОК" Background="{DynamicResource Confirm}"/>
+              <Button Content="Отмена" Background="{DynamicResource Cancel}"/>
+          </DockPanel>
+          </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Add Styles Here -->
+  
+      <Style Selector="Button">
+      
+          <Setter Property="Background" Value="{DynamicResource PrimaryColorBackground}"/>
+          <Setter Property="Foreground" Value="Black"/>
+          <Setter Property="BorderBrush" Value="{DynamicResource PrimaryColorButtonBorderBrush}"/>
+          <Setter Property="HorizontalContentAlignment" Value="Center"/>
+          <Setter Property="VerticalContentAlignment" Value="Center"/>
+          <Setter Property="MinHeight" Value="30"/>
+          <Setter Property="CornerRadius" Value="0"/>
+
+      </Style>
+
+    <!--<Style Selector="StackPanel.Setting Button">
+        <Setter Property="Width" Value="310"/>
+    </Style>
+
+    <Style Selector="StackPanel.Devices Button">
+        <Setter Property="Width" Value="130"/>
+    </Style>-->
+
+</Styles>

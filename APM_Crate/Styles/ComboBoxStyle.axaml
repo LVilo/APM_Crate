@@ -1,0 +1,27 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+     <ComboBox SelectedIndex="1" Width="70">
+		 <ComboBoxItem Content="Пример"/>
+     </ComboBox>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- Add Styles Here -->
+  <Style Selector="ComboBox">
+		<Setter Property="Background" Value="White"/>
+      <Setter Property="MinHeight" Value="{DynamicResource MainMinHeight}"/>
+      <Setter Property="Height" Value="{DynamicResource MainMinHeight}"/>
+      <Setter Property="Padding" Value="5"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <!--<Setter Property="FontSize" Value="12"/>-->
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <!--<Setter Property="Padding" Value="8"/>-->
+      <!--<Setter Property="Margin" Value="0"/>-->
+
+    </Style>
+    <Style Selector="ComboBox TextBlock">
+      <Setter Property="Margin" Value="0,0,0,0"/>
+    </Style>
+</Styles>

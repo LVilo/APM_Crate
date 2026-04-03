@@ -128,7 +128,7 @@ namespace AutoSet_New
                         }
                         else
                         {
-                            LogWrite("Данный контроллер не поддерживает отображение своего типа, пожалуйста выберите нужный кионтроллер из списка. По умолчанию будет стоять 242");
+                            LogWrite("Данный контроллер не поддерживает отображение своего типа, пожалуйста выберите нужный контроллер из списка. По умолчанию будет стоять 242");
 
                             PLC_AutoCheck.CheckedChanged -= PLC_AutoCheck_CheckedChanged;
                             BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
@@ -294,6 +294,7 @@ namespace AutoSet_New
 
                 if (Convert.ToString(devices.Crate.ReadReg(108), 2).Reverse().ToArray()[0] != '0')
                     throw new Exception("Контроллер не подключен в 7 слот");
+                
                 devices.Crate.WriteReg(108, 16382);//меняю состав корзины под 7 слот
                 if (!(PLC == 2 || PLC == 5))
                 {
@@ -989,5 +990,9 @@ namespace AutoSet_New
             }
         }
 
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

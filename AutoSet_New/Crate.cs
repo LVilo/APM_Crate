@@ -42,7 +42,6 @@ namespace AutoSet_New
 
         public void SetOn(int reg_on)
         {
-            WriteReg(reg_on, 1);
             Thread.Sleep(300);
             WriteReg(reg_on, 1);
             Thread.Sleep(300);

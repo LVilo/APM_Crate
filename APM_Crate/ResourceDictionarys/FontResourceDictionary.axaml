@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="using:Avalonia.Markup.Xaml.Converters"
+                    xmlns:fonts="using:Avalonia.Media.Fonts">
+ 
+  <Design.PreviewWith>
+    <Border Padding="20">
+     <TextBlock Text="Пример текста" FontFamily="{DynamicResource MainFont}"/>
+    </Border>
+  </Design.PreviewWith>
+
+      <!-- Add Resources Here -->
+    <FontFamily x:Key="MainFont">Arial</FontFamily>
+</ResourceDictionary>

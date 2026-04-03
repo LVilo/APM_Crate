@@ -1,0 +1,42 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="Controls.GroupBox"
+			 xmlns:conv="clr-namespace:Converters"
+			 x:Name="root">
+
+	<UserControl.Resources>
+        <conv:PortStatusConverter x:Key="PortStatusConverter"/>
+    </UserControl.Resources>
+
+   <Border  Background="{Binding Color,ElementName=root}"
+		  Padding="5"
+		  BorderThickness="1"
+		  BorderBrush="{DynamicResource PrimaryColorBorderBrush}"
+		  Margin="0,6,0,0"
+		  >
+		 
+	 <Panel>
+		 <TextBlock Text="{Binding Header,ElementName=root}"
+							   VerticalAlignment="Top" HorizontalAlignment="Left"
+							   Margin="0,-15,0,0">
+
+						<TextBlock.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,110%">
+								<!-- Верхняя половина - прозрачная -->
+								<GradientStop Color="Transparent" Offset="0.0"/>
+								<GradientStop Color="Transparent" Offset="0.5"/>
+								<!-- Нижняя половина - серая -->
+								<GradientStop Color="{Binding Color, Converter={StaticResource PortStatusConverter},ElementName=root}" Offset="0.5"/>
+								<GradientStop Color="{Binding Color, Converter={StaticResource PortStatusConverter},ElementName=root}" Offset="1.0"/>
+							</LinearGradientBrush>
+						</TextBlock.Background>
+					</TextBlock>
+
+
+						<ContentPresenter Content="{Binding ContentControl,ElementName=root}" Margin="0,5,0,0">
+						</ContentPresenter>
+						 </Panel>
+				</Border>
+</UserControl>
