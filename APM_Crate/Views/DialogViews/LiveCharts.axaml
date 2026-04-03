@@ -4,9 +4,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:vm="clr-namespace:APM_Crate.ViewModels.DialogViewModels"
-        xmlns:local="clr-namespace:Controls"
+        xmlns:local="using:Converters"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
         x:DataType="vm:LiveChartsViewModel"
         x:Class="APM_Crate.LiveCharts"
-        Title="LiveCharts">
-         <local:GraphControl Values="{Binding Values}"/>
+        Title="LiveCharts"
+        SizeToContent="WidthAndHeight"
+        MinHeight="400"
+        MinWidth="600"
+        MaxHeight="1080"
+        MaxWidth="1920">
+
+    <Window.Resources>
+        <local:ValuesToPointsConverter x:Key="ValuesToPointsConverter"/>
+        <local:PointXConverter x:Key="PointXConverter"/>
+        <local:PointYConverter x:Key="PointYConverter"/>
+    </Window.Resources>
+
+    <Grid PointerWheelChanged="OnPointerWheelChanged">
+		
+  
+    <ScrollViewer  HorizontalScrollBarVisibility="Visible" >
+    <!-- Ось X -->
+    <!--<Line StartPoint="0,260" EndPoint="580,260"
+          Stroke="Black" StrokeThickness="2"/>
+
+    --><!-- Ось Y --><!--
+    <Line StartPoint="0,20" EndPoint="0,260"
+          Stroke="Black" StrokeThickness="2"/>-->
+          
+			   <!-- Линия графика -->
+    <Polyline Stroke="Blue"
+              StrokeThickness="2"
+              Points="{Binding PolylinePoints}" />
+          
+   
+
+    <!-- Точки -->
+    <!--<Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="97" Canvas.Top="177"/>
+    <Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="157" Canvas.Top="187"/>
+    <Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="217" Canvas.Top="117"/>-->
+    </ScrollViewer>
+   </Grid>
 </Window>
