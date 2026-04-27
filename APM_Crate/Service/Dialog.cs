@@ -1,11 +1,17 @@
-﻿using APM_Crate.Models.DevicesModel;
+﻿using APM_Crate.Models;
+using APM_Crate.Models.DevicesModel;
 using APM_Crate.ViewModels;
 using APM_Crate.ViewModels.DialogViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Controls.LineChart;
+using DynamicData;
+using System.Reactive.Linq;
 
 namespace APM_Crate.Service
 {
@@ -24,10 +30,20 @@ namespace APM_Crate.Service
             var vm = new ParamDialogViewModel();
             await DialogService.ShowParamAsync(vm);
         }
-        public static async Task ShowLiveCharts()
+        public static async Task ShowLiveCharts(byte[] data)
         {
             var vm = new LiveChartsViewModel();
+            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel1);
+            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel2);
+
+            vm.Points_Chanel1 = new ObservableCollection<ChartPoint> { Channel1.Select((value, index) => new ChartPoint { X = index, Y = value }) };
+            vm.Points_Chanel2 = new ObservableCollection<ChartPoint> { Channel2.Select((value, index) => new ChartPoint { X = index, Y = value }) };
             await DialogService.ShowLiveChartsAsync(vm);
+        }
+        public static async Task ShowResetting()
+        {
+            var vm = new ResettingViewModel();
+            await DialogService.ShowResettingAsync(vm);
         }
         public static async Task ShowConfirm(string mes, bool YesOrNot = false)
         {
@@ -44,6 +60,11 @@ namespace APM_Crate.Service
             }
             vm.Messege = mes;
             await DialogService.ShowConfirmAsync(vm);
+        }
+        public static async Task ShowRestAPI_IP()
+        {
+            var vm = new RestAPIViewModel();
+            await DialogService.ShowRestAPIAsync(vm);
         }
     }
 }

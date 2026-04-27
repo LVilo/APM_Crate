@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using APM_Crate.Models.DevicesModel;
 using Avalonia.Fonts.Inter;
+using System.Threading.Tasks;
 
 namespace APM_Crate.Views
 {

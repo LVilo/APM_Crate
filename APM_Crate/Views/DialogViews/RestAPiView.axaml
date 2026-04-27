@@ -1,0 +1,35 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:APM_Crate.ViewModels.DialogViewModels"
+        mc:Ignorable="d"
+        xmlns:ctrl="using:Controls"
+        x:Class="APM_Crate.Views.DialogViews.RestAPIView"
+        x:DataType="vm:RestAPIViewModel"
+        Background="{DynamicResource ColorBackgroundBorder}"
+        Title="Rest API"
+        Width="220"
+        Height="110"
+        CanResize="False"
+        CanMaximize="False"
+        CanMinimize="False">
+
+    <Design.DataContext>
+      <vm:RestAPIViewModel/>
+    </Design.DataContext>
+
+  <Border>
+	  <Grid RowDefinitions="Auto,Auto">
+		  <ctrl:GroupBox Header="Rest API" Grid.Row="0">
+			  <ctrl:GroupBox.ContentControl>
+				  <ctrl:UserTextBox Header="Aдрес:" Text="{Binding IP}"/>
+              </ctrl:GroupBox.ContentControl>
+          </ctrl:GroupBox>
+          <Button Grid.Row="1" 
+                  Content="ОК"
+                  HorizontalAlignment="Center"
+                  Command="{Binding ConfirmCommand}"/>
+      </Grid>
+  </Border>
+</Window>

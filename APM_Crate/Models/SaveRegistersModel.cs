@@ -18,14 +18,16 @@ namespace APM_Crate.Models
             public string Name { get; set; }
             public byte Value { get; set; }
         }
+
         public static List<Parameter> Parameters { get; set; }
         public readonly static string PathToDirectoryServer = "\\\\files\\Общее\\Прошивки и методики проверки\\Прикладное ПО\\АРМ настройки TIK-BIS\\CommonLogs";
         public readonly static string PathToDirectoryLocal = "Log";
-        public static async Task<string> MakeReportAsync(string Device, string ordernumber,string setting, string starttime, string endtime, TimeSpan time_settings)
+        public static async Task<string> MakeReportAsync(string Device, string ordernumber, string starttime, string endtime, TimeSpan time_settings)
         {
             LogerViewModel.Instance.Write($"Запись регистров в файл");
             string date = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
             string registers = "";
+            string setting = SettingModel.IsResetting ? "Перенастройка" : "Настройка";
             await Task.Run(async () =>
             {
                 foreach (var value in Parameters)

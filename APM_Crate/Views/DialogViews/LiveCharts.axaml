@@ -5,15 +5,19 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:vm="clr-namespace:APM_Crate.ViewModels.DialogViewModels"
         xmlns:local="using:Converters"
+        xmlns:ctrl="using:Controls"
+        xmlns:ctrl2="using:Controls.LineChart"
+        xmlns:media="clr-namespace:Avalonia.Media;assembly=Avalonia.Visuals"
         xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
         x:DataType="vm:LiveChartsViewModel"
-        x:Class="APM_Crate.LiveCharts"
+        x:Class="APM_Crate.Views.DialogViews.LiveCharts"
         Title="LiveCharts"
         SizeToContent="WidthAndHeight"
         MinHeight="400"
-        MinWidth="600"
+        MinWidth="1050"
         MaxHeight="1080"
-        MaxWidth="1920">
+        MaxWidth="1920"
+        Background="{DynamicResource ColorBackgroundBorder}">
 
     <Window.Resources>
         <local:ValuesToPointsConverter x:Key="ValuesToPointsConverter"/>
@@ -21,29 +25,49 @@
         <local:PointYConverter x:Key="PointYConverter"/>
     </Window.Resources>
 
-    <Grid PointerWheelChanged="OnPointerWheelChanged">
-		
+    <Grid RowDefinitions="*,Auto">
+		<Grid Grid.Row="0" ColumnDefinitions="*,*">
+                <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                    <TextBlock Text="Канал 1" Grid.Row="0" HorizontalAlignment="Center"/>
+                    <Border Grid.Row="1" MinHeight="300" MinWidth="500">
+						
+          
+                        <!--<Polyline Stroke="Blue"
+                                  StrokeThickness="2"
+                                  Points="{Binding Points_Chanel1}" />-->
+                            <!--<lvc:CartesianChart  Series="{Binding Series1}"/>-->
+                        <ctrl2:LineChartControl Points="{Binding Points_Chanel1}"/>
+                    </Border>
+					
+                </Grid>
+
+                <Grid RowDefinitions="Auto,*" Grid.Column="1">
+                    <TextBlock Text="Канал 2" Grid.Row="0" HorizontalAlignment="Center"/>
+                    <Border Grid.Row="1" MinHeight="300" MinWidth="500">
+						
+                        
+							<!--<Polyline Stroke="Blue"
+                                  StrokeThickness="2"
+                                  Points="{Binding Points_Chanel2}" />-->
+                                  <!--<lvc:CartesianChart  Series="{Binding Series2}"/>-->
+                        <ctrl2:LineChartControl Points="{Binding Points_Chanel2}"/>
+                        
+          
+                    </Border>
+					
+                </Grid>
+        </Grid>
   
-    <ScrollViewer  HorizontalScrollBarVisibility="Visible" >
-    <!-- Ось X -->
-    <!--<Line StartPoint="0,260" EndPoint="580,260"
-          Stroke="Black" StrokeThickness="2"/>
+    <Border Grid.Row="1">
+                <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
+				<Button Content="ОК"
+                            Command="{Binding ConfirmCommand}"
+                            Background="{DynamicResource Confirm}"/>
 
-    --><!-- Ось Y --><!--
-    <Line StartPoint="0,20" EndPoint="0,260"
-          Stroke="Black" StrokeThickness="2"/>-->
-          
-			   <!-- Линия графика -->
-    <Polyline Stroke="Blue"
-              StrokeThickness="2"
-              Points="{Binding PolylinePoints}" />
-          
-   
-
-    <!-- Точки -->
-    <!--<Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="97" Canvas.Top="177"/>
-    <Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="157" Canvas.Top="187"/>
-    <Ellipse Width="6" Height="6" Fill="Orange" Canvas.Left="217" Canvas.Top="117"/>-->
-    </ScrollViewer>
+                    <Button Content="Отмена"
+                            Command="{Binding CancelCommand}"
+                            Background="{DynamicResource Cancel}"/>
+                    </DockPanel>
+            </Border>
    </Grid>
 </Window>

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using APM_Crate.ViewModels;
+using APM_Crate.Models.RestApiModel;
 
 namespace APM_Crate.Models.DevicesModel
 {
@@ -20,6 +21,7 @@ namespace APM_Crate.Models.DevicesModel
         public static PortMultimeter Multimeter { get; set; } = new PortMultimeter();
         public static Crate Crate {  get; set; } = new Crate();
         public static Printer Printer {  get; set; } = new Printer();
+        //public static RestModel Rest { get; set; } = new RestModel("");
 
         public static Port SetMeasureDeviceName(Port device, string name)
          {

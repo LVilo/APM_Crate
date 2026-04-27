@@ -11,15 +11,18 @@
         FontFamily="{DynamicResource MainFont}"
         Background="{DynamicResource ColorBackgroundBorder}"
         Title="{Binding Version, StringFormat='АРМ проверки и настройки контроллеров ТИК-Крейт v:{0}'}"
-        MinHeight="460"
-        MinWidth="525"
+        
         SizeToContent="WidthAndHeight"
+        CanMaximize="False"
+        CanResize="False"
         Padding="10">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
+    <Window.KeyBindings>
+	  <KeyBinding Command="{Binding OpenIpRestCommand}" Gesture="Ctrl+D" />
+	</Window.KeyBindings>
 
       <Grid   ColumnDefinitions="Auto,*" ColumnSpacing="10"  >
 			  <local:DevicesUserControl
@@ -42,7 +45,8 @@
               Command="{Binding ClearLogCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"
               MinHeight="20" Height="25" Padding="0" Width="25" MinWidth="20"/>
         
-			<TextBox 
+			<TextBox
+            Width="263"
             Focusable="False"
             DataContext="{Binding LogerViewModel}"
             Text="{Binding LogText}"
@@ -52,6 +56,8 @@
          AcceptsTab="True"
          TextWrapping="Wrap"
          BorderBrush="#A0A0A0"
+         HorizontalAlignment="Stretch"
+         VerticalContentAlignment="Top"
         ScrollViewer.VerticalScrollBarVisibility="Hidden"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
          </Panel>

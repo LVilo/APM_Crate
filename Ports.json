@@ -25,5 +25,6 @@
       "COM3",
       "COM4"
     ]
-  }
+  },
+  "RestAPI_IP": null
 }

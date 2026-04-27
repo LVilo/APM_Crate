@@ -1,0 +1,64 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:vm="using:APM_Crate.ViewModels.DialogViewModels"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="APM_Crate.Views.DialogViews.ResettingView"
+        xmlns:controls="clr-namespace:Controls" 
+        x:DataType="vm:ResettingViewModel"
+        Foreground="Black"
+             Title="Выбор каналов"
+             Background="{DynamicResource ColorBackgroundBorder}"
+             CanResize="False"
+             SizeToContent="WidthAndHeight"
+             Focusable="True">
+
+    <Design.DataContext>
+      <vm:ConfirmDialogViewModel/>
+  </Design.DataContext>
+
+    <Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>
+
+   <Border ClipToBounds="True" Margin="10" BoxShadow="0 5 20 4 #33000000">
+		<Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+			<Border Grid.Row="0" Padding="10" Width="300">
+				<TextBlock Text="Устройство уже было настроено. Выберите каналы для перенастройки."  TextWrapping="Wrap" />
+            </Border>
+            <controls:GroupBox Header="Каналы" Grid.Row="1"
+						  ToolTip.Tip="Выбранные каналы будут настроены после нажатия на кнопку.Настройки каналов будут выбраны в соответсвтии с выбраным типом PLC">
+							<controls:GroupBox.ContentControl>
+								<Grid  ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+>
+								
+								<TextBlock Grid.Column="0" Text="1:" IsVisible="{Binding CanSettingChannel_1}"/>
+								<CheckBox Grid.Column="1" IsChecked="{Binding SettingChannel_1}" IsVisible="{Binding CanSettingChannel_1}"/>
+
+								<TextBlock Grid.Column="2" Text="2:" IsVisible="{Binding CanSettingChannel_2}"/>
+								<CheckBox Grid.Column="3" IsChecked="{Binding SettingChannel_2}" IsVisible="{Binding CanSettingChannel_2}"/>
+
+								<TextBlock Grid.Column="4" Text="3:" IsVisible="{Binding CanSettingChannel_3}"/>
+								<CheckBox Grid.Column="5" IsChecked="{Binding SettingChannel_3}" IsVisible="{Binding CanSettingChannel_3}"/>
+
+								<TextBlock Grid.Column="6" Text="4:" IsVisible="{Binding CanSettingChannel_4}"/>
+								<CheckBox Grid.Column="7" IsChecked="{Binding SettingChannel_4}" IsVisible="{Binding CanSettingChannel_4}"/>
+								</Grid>
+							</controls:GroupBox.ContentControl>
+						</controls:GroupBox>
+            <Border Grid.Row="2">
+                <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
+				<Button Content="ОК"
+                            Command="{Binding ConfirmCommand}"
+                            Background="{DynamicResource Confirm}"/>
+
+                    <Button Content="Отмена"
+                            Command="{Binding CancelCommand}"
+                            Background="{DynamicResource Cancel}"/>
+                    </DockPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

@@ -8,33 +8,12 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using SkiaSharp;
 
-namespace APM_Crate;
+namespace APM_Crate.Views.DialogViews;
 
 public partial class LiveCharts : Window
 {
     public LiveCharts()
     {
         InitializeComponent();
-    }
-    private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
-    {
-        var isCtrlPressed = e.KeyModifiers.HasFlag(KeyModifiers.Control);
-
-        if (!isCtrlPressed)
-            return;
-
-        if (DataContext is LiveChartsViewModel vm)
-        {
-            if (e.Delta.Y > 0)
-            {
-                vm.Coef += 0.01d;
-            }
-            else if (e.Delta.Y < 0)
-            {
-                vm.Coef -= 0.01d;
-            }
-        }
-
-        e.Handled = true;
     }
 }

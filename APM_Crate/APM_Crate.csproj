@@ -41,6 +41,7 @@
     <PackageReference Include="LiveChartsCore" Version="2.0.0" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0" />
+    <PackageReference Include="MongoDB.Bson" Version="3.7.1" />
     <PackageReference Include="MySqlConnector" Version="2.5.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
       <PrivateAssets>all</PrivateAssets>
@@ -62,8 +63,14 @@
     <Compile Update="Views\DevicesViews\CrateView.axaml.cs">
       <DependentUpon>CrateView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DialogViews\LiveCharts.axaml.cs">
+      <DependentUpon>LiveCharts.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\DialogViews\ParamDialogView.axaml.cs">
       <DependentUpon>ParamDialogView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogViews\RestAPIView.axaml.cs">
+      <DependentUpon>RestAPIView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

@@ -32,13 +32,14 @@ namespace APM_Crate.Models
             }
             while (GetBigEndian());
             byte[] data = await DownloadFile();
-
-            GetValuesChannel(ref data, out ushort[] channel1);
-            GetValuesChannel(ref data, out ushort[] channel2);
+            Devices.Crate.WriteUInt16(Channel1.OnSaw, 0);
+            Devices.Crate.WriteUInt16(Channel2.OnSaw, 0);
+            GetValuesChannel( data, out ushort[] channel1);
+            GetValuesChannel( data, out ushort[] channel2);
             CheckSawChannel(channel1,out uint errors1);
             CheckSawChannel(channel2, out uint errors2);
             uint result = errors1 + errors2;
-            if (result > 0) throw new Exception($"Ошибка! Сигнал формы пилы неправильный. зафиксировано ошибок: {result}");
+            if (result > 0) throw new Exception($"Ошибка! Сигнал формы пилы неправильный. Зафиксировано ошибок: {result}");
         }
         public static bool GetBigEndian()
         {
@@ -62,14 +63,20 @@ namespace APM_Crate.Models
         public static void CheckSawChannel(ushort[] channel, out uint errors)
         {
             errors = 0;
-            int v1 = 15500;
-            int v2 = 500;
+            //int v1 = 15500;
+            //int v2 = 500;
 
             for (int i = 1; i < channel.Length; i++)
             {
                 int prev = channel[i - 1];
                 int current = channel[i];
-
+                if (current > 16384)
+                {
+                    errors++;
+                    LogerViewModel.Instance.WriteDebug("Ошибка! Значение точки пилы превышает 16384.");
+                    continue;
+                }
+                     
                 // 1) обычный рост на +1
                 if (current == prev + 1) continue;
 
@@ -80,21 +87,21 @@ namespace APM_Crate.Models
                     else
                     {
                         errors++;
-                        LogerViewModel.Instance.WriteDebug( $"Ошибка!Неправильная форма пилы индекс={i}, предыдущее значение={prev}, значение={current}");
+                        LogerViewModel.Instance.WriteDebug( $"Ошибка! Неправильная форма пилы индекс={i}, предыдущее значение={prev},текущее значение={current}");
                     }
                 }
             }
         }
-        public static void GetValuesChannel(ref byte[] data, out ushort[] channel)
+        public static void GetValuesChannel(byte[] data, out ushort[] channel)
         {
             channel = new ushort[LengthChannel];
-            for (int i = 0; i < LengthChannel; i++)
+            for (int i = 2 *IndexMudule * LengthModul; i < LengthChannel; i++)
             {
                 byte b1 = data[i * 2];
                 byte b2 = data[i * 2 + 1];
                 channel[i] = (ushort)(b1 << 8 | +b2);
             }
-            data = data[((LengthChannel + 4) * 2)..];
+            //data = data[((LengthChannel + 4) * 2)..];
         }
     }
 }

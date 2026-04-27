@@ -1,10 +1,12 @@
 ﻿using APM_Crate.Models.DevicesModel;
+using APM_Crate.Models.RestApiModel;
 using APM_Crate.Service;
 using APM_Crate.ViewModels;
 using PortsWork;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,6 +19,8 @@ namespace APM_Crate.Models
 
         public abstract class Channel
         {
+            //public Stopwatch stopwatch { get; } = new Stopwatch();
+
             public abstract string Num { get; }
             public abstract ushort Coef_ACC_A { get; }
             public abstract ushort Coef_ACC_B { get; }
@@ -50,6 +54,7 @@ namespace APM_Crate.Models
             public abstract ushort OnSaw { get; } 
 
             public bool SettingChannel = true;
+            public bool CanSetting = true;
 
             private void Reset(SettingType setting)
             {
@@ -145,6 +150,9 @@ namespace APM_Crate.Models
                 Devices.Crate.WriteSwFloat(Coef_ACC_A, A);
                 LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 Devices.Crate.WriteSwFloat(Coef_ACC_B, B);
+                WriteList("Ускорение", A,B);
+                //settings.Add(new Settings { Name = $"Канал {Num}.Ускорение Коэффициент А", Value = A.ToString() });
+                //settings.Add(new Settings { Name = $"Канал {Num}.Ускорение Коэффициент B", Value = B.ToString() });
             }
             public void WriteCoefs_Speed(float A, float B)
             {
@@ -153,6 +161,9 @@ namespace APM_Crate.Models
                 Devices.Crate.WriteSwFloat(Coef_Speed_A, A);
                 LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 Devices.Crate.WriteSwFloat(Coef_Speed_B, B);
+                WriteList("Скорость", A,B);
+                //settings.Add(new Settings { Name = $"Канал {Num}.Скорость Коэффициент А", Value = A.ToString() });
+                //settings.Add(new Settings { Name = $"Канал {Num}.Скорость Коэффициент B", Value = B.ToString() });
             }
             public void WriteCoefs_4_20(float A, float B)
             {
@@ -161,6 +172,9 @@ namespace APM_Crate.Models
                 Devices.Crate.WriteSwFloat(Coef_4_20_A, A);
                 LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 Devices.Crate.WriteSwFloat(Coef_4_20_B, B);
+                WriteList("Ток 4-20", A,B);
+                //settings.Add(new Settings { Name = $"Канал {Num}.Ток 4-20 Коэффициент А", Value = A.ToString() });
+                //settings.Add(new Settings { Name = $"Канал {Num}.Ток 4-20 Коэффициент B", Value = B.ToString() });
             }
             public void WriteCoefs_IEPE2(float A)
             {
@@ -177,20 +191,31 @@ namespace APM_Crate.Models
                 Devices.Crate.WriteSwFloat(Coef_T_A, A);
                 LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 Devices.Crate.WriteSwFloat(Coef_T_B, B);
+                WriteList("Температура",A,B);
+                //settings.Add(new Settings { Name = $"Канал {Num}.Температура Коэффициент А", Value = A.ToString() });
+                //settings.Add(new Settings { Name = $"Канал {Num}.Температура Коэффициент B", Value = B.ToString() });
             }
             public void WriteCoefs_U(float A, float B)
             {
                 LogerViewModel.Instance.Write($"Запись коэффициентов TIK_PLC 511.41 для {Num}-го канала:");
-                LogerViewModel.Instance.Write($"Коэффициент A: {A}");
-                Devices.Crate.WriteSwFloat(Coef_ACC_A, A);
-                LogerViewModel.Instance.Write($"Коэффициент B: {B}");
-                Devices.Crate.WriteSwFloat(Coef_ACC_B, B);
+                WriteCoefs_ACC(A, B);
+                //LogerViewModel.Instance.Write($"Коэффициент A: {A}");
+                //Devices.Crate.WriteSwFloat(Coef_ACC_A, A);
+                //LogerViewModel.Instance.Write($"Коэффициент B: {B}");
+                //Devices.Crate.WriteSwFloat(Coef_ACC_B, B);
+            }
+            public void WriteList(string str,float A, float B)
+            {
+                settings.Add(new Settings { Name = $"Канал {Num}.{str} Коэффициент А", Value = A.ToString() });
+                settings.Add(new Settings { Name = $"Канал {Num}.{str} Коэффициент B", Value = B.ToString() });
             }
             public async Task Setting_IEPE()
             {
                 if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
                 if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
                 if (CheckSettingFlag(SettingType.IEPE) is false) return;
+                //stopwatch.Restart();
+                //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 LogerViewModel.Instance.Write($"Настройка IEPE, канала {Num}");
                 await Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Num}-го канала");
                 Reset(SettingType.IEPE);
@@ -236,13 +261,15 @@ namespace APM_Crate.Models
                 // перенастройка перемещения.костыль
                 if (relative <= -1)
                 {
-                    LogerViewModel.Instance.Write($"Переписывание коэффициента перемещения");
-                    WriteCoefs_Speed( A2 + 0.04f, B2);
+                    LogerViewModel.Instance.Write($"Переписывание коэффициента скорости");
+                    A2 += 0.04f;
+                    WriteCoefs_Speed( A2, B2);
                 }
                 else if (relative >= 1)
                 {
-                    LogerViewModel.Instance.Write($"Переписывание коэффициента перемещения");
-                    WriteCoefs_Speed( A2 - 0.02f, B2);
+                    LogerViewModel.Instance.Write($"Переписывание коэффициента скорости");
+                    A2 -= 0.02f;
+                    WriteCoefs_Speed( A2, B2);
                 }
                 CheckSetting(ACC_RMS, V2, ValueType.ACC);
                 CheckSetting(Speed_RMS, V2, ValueType.Speed);
@@ -259,12 +286,19 @@ namespace APM_Crate.Models
                 //AverageValue(Speed_RMS, out float Move_2);
                 //CountRelative(Move_2 * Coef / 4, V2, out relative);
                 //CheckSetting(relative, SettingType.Move);
+                //stopwatch.Stop();
+                //string setting = IsResetting ? "Перенастройка IEPE" : "IEPE";
+                //string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+                //await WriteParam(setting, starttime, endtime);
+                
                 LogerViewModel.Instance.Write($"✔ Настройка IEPE, канала {Num} закончена");
             }
             public async Task Setting_4_20()
             {
                 if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
                 if (CheckSettingFlag(SettingType._4_20) is false) return;
+                //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+                //stopwatch.Restart();
                 LogerViewModel.Instance.Write($"Настройка 4-20, канала {Num}");
                 await Dialog.ShowBuild("4_20", $"Установите контакты для настройки 4-20 {Num}-го канала");
                 Reset(SettingType._4_20);
@@ -275,11 +309,19 @@ namespace APM_Crate.Models
                 float A = 16 / (I2 - I1);
                 float B = 4 - A * I1;
                 WriteCoefs_4_20(A, B);
+                //stopwatch.Stop();
+                //string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+
+                //string setting = IsResetting ? "Перенастройка 4-20" : "4-20" ;
+
+                //await WriteParam(setting, starttime, endtime);
                 LogerViewModel.Instance.Write($"✔ Настройка 4-20, канала {Num} закончена");
             }
             public async Task Setting_T()
             {
                 if (CheckSettingFlag(SettingType.T) is false) return;
+                //stopwatch.Restart();
+                //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 LogerViewModel.Instance.Write($"Настройка термопреобразователя, канала {Num}");
                 await Dialog.ShowBuild("T", $"Установите контакты для настройки термопреобразователя {Num}-го канала");
                 Reset(SettingType.T);
@@ -310,7 +352,11 @@ namespace APM_Crate.Models
                 Readed_T = Devices.Crate.ReadUInt16(T) / 10f;
                 relative = Math.Abs(Readed_T - Need_T2);
                 if (relative > 1) throw new Exception($"Точка 2 не прошла проверку, значение отклонено от нормы на {relative}");
+                //stopwatch.Stop();
+                //string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
 
+                //string setting = IsResetting ? "Перенастройка T": "T";
+                //await WriteParam(setting, starttime,endtime);
                 LogerViewModel.Instance.Write($"✔ Настройка термопреобразователя, канала {Num} закончена");
             }
             public async Task Setting_U()
@@ -318,6 +364,7 @@ namespace APM_Crate.Models
                 if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
                 if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
                 if (CheckSettingFlag(SettingType.U) is false) return;
+                //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 LogerViewModel.Instance.Write($"Настройка TIK-PLC.511, канала {Num}");
                 await Dialog.ShowBuild("U", $"Установите контакты для настройки TIK-PLC 511.41 {Num}-го канала");
                 Reset(SettingType.U);
@@ -343,8 +390,40 @@ namespace APM_Crate.Models
                 await SetVoltage(20d);
                 GetVoltageAC(out V2);
                 CheckSetting(ACC_PP, V2, ValueType.ACC);
+                //string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+
+                //string setting = IsResetting ? "Перенастройка U":"U";
+
+                //await WriteParam(setting, starttime, endtime);
                 LogerViewModel.Instance.Write($"Настройка TIK-PLC.511, канала {Num} закончена");
             }
+            //public async Task WriteParam(string settings, string starttime,string endtime)
+            //{
+            //    var setting = new ParametersSettingPLC
+            //    (
+            //        Environment.UserName,
+            //        String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
+            //        Num,
+            //        settings,
+            //        starttime,
+            //        endtime,
+            //        ItemPLC,
+            //        $"{stopwatch.Elapsed:mm\\:ss}",
+            //        SerialNumber,
+            //        MainWindowViewModel.SettingViewModel.OrderNumber,
+
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_ACC_A).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_ACC_B).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_Speed_A).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_Speed_B).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_4_20_A).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_4_20_B).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_T_A).ToString(),
+            //        Devices.Crate.ReadSwFloat(SettingModel.Channel1.Coef_T_B).ToString(),
+            //        Devices.Crate.ReadUInt16(SettingModel.Channel1.TypeTermo).ToString()
+            //    );
+            //    await SQLModel.WriteNewParameters(setting);
+            //}
         }
         public class Channel_1 : Channel
         {
@@ -505,13 +584,11 @@ namespace APM_Crate.Models
         public static double Point_2 {get{return Coef_Is_10 ? 3d : 0.1d;} }
         public static float Coef {get{return Coef_Is_10 ? 10f : 6.67f;} }
         public static double Frequency { get; } = 80d;
-        public static async Task Start(string item)
+        public static ushort SerialNumber { get; set; }
+        public static List<Settings> settings { get; set; }
+
+        public static async Task<Config> Start(string item)
         {
-            ushort type = Devices.Crate.ReadUInt16(Crate.Registers.Type);
-            if (ItemPLC != PLC[type - 1])
-            {
-                await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер как тип PLC.{PLC[type - 1]} ?", true);
-            }
             Devices.Crate.SetPassword();
             Devices.Generator.SetFrequency(Frequency);
             switch (item)
@@ -554,6 +631,10 @@ namespace APM_Crate.Models
                     Devices.Crate.WriteSwFloat(Crate.Registers.Coefficient, Coef);
                     break;
             }
+            return new Config
+            {
+
+            };
         }
         public static async Task ValidationVoltage(double V,double relative, string type = "DC")
         {

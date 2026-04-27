@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:local="using:Controls.LineChart"
+             x:Class="Controls.LineChart.LineChartControl">
+     <Border
+        Background="Transparent"
+        BorderThickness="1"
+        CornerRadius="0"
+        Padding="10">
+
+        <local:LineChartSurface Points="{Binding Points, RelativeSource={RelativeSource AncestorType=local:LineChartControl}}" />
+    </Border>
+</UserControl>
