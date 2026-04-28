@@ -2,7 +2,6 @@
 using APM_Crate.ViewModels;
 using EasyModbus;
 using PortsWork;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -41,7 +40,7 @@ namespace APM_Crate.Models.DevicesModel
 
         public void SetPassword()
         {
-            int version = ReadReg(Registers.MI_Version);
+            int version = ReadUInt16(Registers.MI_Version);
             if (version < Values.MI_Version_New)
             {
                 WritePassword(Values.Password_Old);
@@ -56,16 +55,32 @@ namespace APM_Crate.Models.DevicesModel
             for (byte j = 0; j < 20; j++)
             {
                 //пароль
-                WriteReg(Registers.Password, value);
+                WriteUInt16(Registers.Password, value);
                 Thread.Sleep(300);
-                if (ReadReg(Registers.Password) == value)
+                if (ReadUInt16(Registers.Password) == value)
                     break;
                 if (j == 19)
                     throw new Exception("Не получается записать пароль");
             }
         }
-        public void WriteReg(int adr, int valuSe)
+        public enum WriteFunctions
         {
+            One_Flag = 0x05,
+            One_Holding = 0x06,
+            Many_Holding = 0x10
+        }
+        public enum ReadFunctions
+        {
+            Coil = 0x01,
+            DiscreteInputs = 0x02,
+            Holding = 0x03,
+            Input = 0x04
+        }
+        public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
+        {
+            //byte[] b = ConvertModBus.ConvertUInt16ToByteMes(value);
+            //Write(reg, b, (byte)func);
+            
             lock (methodLock)
             {
                 while (methodRunning)
@@ -77,7 +92,8 @@ namespace APM_Crate.Models.DevicesModel
 
             try
             {
-                WriteSingleRegister(adr, value);
+                reg -= 1;
+                WriteSingleRegister(reg, value);
             }
             catch (Exception ex)
             {
@@ -92,8 +108,11 @@ namespace APM_Crate.Models.DevicesModel
                 }
             }
         }
-        public void WriteReg(int adr, int[] value)
+        public void WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
         {
+            //byte[] b = ConvertModBus.ConvertInt16ToByteMes(value);
+            //Write(reg, b, (byte)func);
+            
             lock (methodLock)
             {
                 while (methodRunning)
@@ -105,7 +124,8 @@ namespace APM_Crate.Models.DevicesModel
 
             try
             {
-                WriteMultipleRegisters(adr, value);
+                reg -= 1;
+                WriteSingleRegister(reg, value);
             }
             catch (Exception ex)
             {
@@ -120,9 +140,9 @@ namespace APM_Crate.Models.DevicesModel
                 }
             }
         }
-        public int ReadReg(int Reg_adr)
+        public void WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
-            int[] Reg = new int[1];
+            
             lock (methodLock)
             {
                 while (methodRunning)
@@ -134,8 +154,13 @@ namespace APM_Crate.Models.DevicesModel
 
             try
             {
-                Reg = ReadHoldingRegisters(Reg_adr, 1);
-                return Reg[0];
+                byte[] b = ConvertModBus.ConvertSWFloatToByteMes(value);
+                //WriteMultiple(reg, b, (byte)func);
+                int[] v = new int[2];
+                v[0] = BitConverter.ToUInt16(b, 0);
+                v[1] = BitConverter.ToUInt16(b, 2);
+                reg -= 1;
+                WriteMultipleRegisters(reg, v);
             }
             catch (Exception ex)
             {
@@ -150,8 +175,9 @@ namespace APM_Crate.Models.DevicesModel
                 }
             }
         }
-        public int[] ReadReg(int Reg_adr, int quantity)
+        public void WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
+            
             lock (methodLock)
             {
                 while (methodRunning)
@@ -163,7 +189,13 @@ namespace APM_Crate.Models.DevicesModel
 
             try
             {
-                return ReadHoldingRegisters(Reg_adr, quantity);
+                byte[] b = ConvertModBus.ConvertFloatToByteMes(value);
+                //WriteMultiple(reg, b, (byte)func);
+                int[] v = new int[2];
+                v[0] = BitConverter.ToUInt16(b, 0);
+                v[1] = BitConverter.ToUInt16(b, 2);
+                reg -= 1;
+                WriteMultipleRegisters(reg, v);
             }
             catch (Exception ex)
             {
@@ -178,12 +210,142 @@ namespace APM_Crate.Models.DevicesModel
                 }
             }
         }
-
-        public float ReadValue(int reg_addr)
+        public float ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
-            int[] registers = ReadReg(reg_addr, 2);
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
 
-            return ConvertRegistersToFloat(registers);
+            try
+            {
+                reg -= 1;
+                int[] i = ReadHoldingRegisters(reg, 2);
+                return ConvertRegistersToFloat(i);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+            //return (short)i[0];
+
+            //byte[]? b = Read(reg, (byte)func, 2);
+            //byte[] value = [b[3], b[4], b[5], b[6]];
+            //return ConvertModBus.ConvertByteMesToFloat(value);
+        }
+        public float ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            //byte[]? b = Read(reg, (byte)func, 2);
+            //byte[] value = [b[3], b[4], b[5], b[6]];
+            //return ConvertModBus.ConvertByteMesToSWFloat(value);
+            //reg -= 1;
+            
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                reg -= 1;
+                int[] i = ReadHoldingRegisters(reg, 2);
+                return ConvertRegistersToFloat(i);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+        }
+        public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            //byte[]? b = Read(reg, (byte)func, 1);
+            //return ConvertModBus.ConvertByteMesToUInt16(b);
+            //reg -= 1;
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                reg -= 1;
+                int[] i = ReadHoldingRegisters(reg, 1);
+                return (ushort)i[0];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+            
+        }
+        public short ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            //byte[] b = Read(reg, (byte)func, 1);
+            //return ConvertModBus.ConvertByteMesToInt16(b);
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                reg -= 1;
+                int[] i = ReadHoldingRegisters(reg, 1);
+                return (short)i[0];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+            
         }
     }
 }

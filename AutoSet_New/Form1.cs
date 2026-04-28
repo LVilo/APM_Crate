@@ -294,7 +294,7 @@ namespace AutoSet_New
 
                 if (Convert.ToString(devices.Crate.ReadReg(108), 2).Reverse().ToArray()[0] != '0')
                     throw new Exception("Контроллер не подключен в 7 слот");
-                
+
                 devices.Crate.WriteReg(108, 16382);//меняю состав корзины под 7 слот
                 if (!(PLC == 2 || PLC == 5))
                 {
@@ -991,6 +991,11 @@ namespace AutoSet_New
         }
 
         private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

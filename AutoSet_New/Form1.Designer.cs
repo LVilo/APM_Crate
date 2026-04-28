@@ -38,6 +38,7 @@
             UpdatePort = new Button();
             LogTextBox = new TextBox();
             backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            label1 = new Label();
             label6 = new Label();
             IPTextBox = new TextBox();
             Disconnect_Generator = new Button();
@@ -49,62 +50,35 @@
             C1 = new CheckBox();
             comboBoxGenerator = new ComboBox();
             groupBox2 = new GroupBox();
+            Save_IP = new Button();
             groupBox3 = new GroupBox();
-            PLC_AutoCheck = new CheckBox();
             label5 = new Label();
             PLC = new ComboBox();
             backgroundWorker3 = new System.ComponentModel.BackgroundWorker();
             groupBoxOrder = new GroupBox();
+            label14 = new Label();
+            textBoxSerialNum = new TextBox();
             label13 = new Label();
             textBoxOrderNum = new TextBox();
-            label7 = new Label();
-            Termo = new TextBox();
-            Point_2_textBox = new TextBox();
-            label3 = new Label();
-            label2 = new Label();
-            Point_1_textBox = new TextBox();
-            DC_textBox = new TextBox();
-            label4 = new Label();
-            label12 = new Label();
-            FreqTextBox = new TextBox();
-            label1 = new Label();
-            CoefTextBox = new TextBox();
-            buttonReport = new Button();
-            STOP = new Button();
-            ReserCoef_1 = new Button();
-            ResetCoef_2 = new Button();
-            Save_IP = new Button();
-            textBoxSerialNum = new TextBox();
-            label14 = new Label();
-            lvl1 = new Button();
-            lvl2 = new Button();
-            Lvl1_textbox = new TextBox();
-            Lvl2_textbox = new TextBox();
-            CheckSet = new GroupBox();
-            label11 = new Label();
-            label10 = new Label();
-            label9 = new Label();
             label8 = new Label();
-            ACC1 = new Label();
-            SPD1 = new Label();
-            ACC2 = new Label();
-            SPD2 = new Label();
-            IEPE = new GroupBox();
+            comboBox1 = new ComboBox();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
+            button1 = new Button();
+            label2 = new Label();
             AgillentGroupBox.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBoxOrder.SuspendLayout();
-            CheckSet.SuspendLayout();
-            IEPE.SuspendLayout();
             SuspendLayout();
             // 
             // Start
             // 
-            Start.Location = new Point(122, 279);
+            Start.Location = new Point(8, 181);
             Start.Margin = new Padding(4, 3, 4, 3);
             Start.Name = "Start";
-            Start.Size = new Size(98, 51);
+            Start.Size = new Size(211, 29);
             Start.TabIndex = 0;
             Start.Text = "Старт";
             Start.UseVisualStyleBackColor = true;
@@ -189,6 +163,16 @@
             LogTextBox.ScrollBars = ScrollBars.Both;
             LogTextBox.Size = new Size(461, 362);
             LogTextBox.TabIndex = 89;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(8, 86);
+            label1.Margin = new Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new Size(87, 15);
+            label1.TabIndex = 95;
+            label1.Text = "Коэффициент:";
             // 
             // label6
             // 
@@ -320,66 +304,54 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Крейт";
             // 
+            // Save_IP
+            // 
+            Save_IP.Location = new Point(122, 46);
+            Save_IP.Margin = new Padding(4, 3, 4, 3);
+            Save_IP.Name = "Save_IP";
+            Save_IP.Size = new Size(98, 27);
+            Save_IP.TabIndex = 113;
+            Save_IP.Text = "Сохранить IP";
+            Save_IP.UseVisualStyleBackColor = true;
+            Save_IP.Click += Save_IP_Click;
+            // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(buttonReport);
-            groupBox3.Controls.Add(label12);
-            groupBox3.Controls.Add(FreqTextBox);
-            groupBox3.Controls.Add(Termo);
-            groupBox3.Controls.Add(label7);
-            groupBox3.Controls.Add(PLC_AutoCheck);
+            groupBox3.Controls.Add(label2);
+            groupBox3.Controls.Add(button1);
+            groupBox3.Controls.Add(radioButton2);
+            groupBox3.Controls.Add(radioButton1);
+            groupBox3.Controls.Add(textBoxOrderNum);
+            groupBox3.Controls.Add(label8);
+            groupBox3.Controls.Add(comboBox1);
             groupBox3.Controls.Add(label5);
             groupBox3.Controls.Add(PLC);
             groupBox3.Controls.Add(Start);
-            groupBox3.Controls.Add(label4);
-            groupBox3.Controls.Add(STOP);
-            groupBox3.Controls.Add(CoefTextBox);
-            groupBox3.Controls.Add(DC_textBox);
-            groupBox3.Controls.Add(Point_1_textBox);
             groupBox3.Controls.Add(label1);
-            groupBox3.Controls.Add(ResetCoef_2);
-            groupBox3.Controls.Add(Point_2_textBox);
-            groupBox3.Controls.Add(label2);
-            groupBox3.Controls.Add(ReserCoef_1);
-            groupBox3.Controls.Add(label3);
-            groupBox3.Location = new Point(14, 265);
+            groupBox3.Location = new Point(13, 14);
             groupBox3.Margin = new Padding(4, 3, 4, 3);
             groupBox3.Name = "groupBox3";
             groupBox3.Padding = new Padding(4, 3, 4, 3);
-            groupBox3.Size = new Size(227, 374);
+            groupBox3.Size = new Size(227, 520);
             groupBox3.TabIndex = 109;
             groupBox3.TabStop = false;
             groupBox3.Text = "Настройка";
             // 
-            // PLC_AutoCheck
-            // 
-            PLC_AutoCheck.AutoSize = true;
-            PLC_AutoCheck.Checked = true;
-            PLC_AutoCheck.CheckState = CheckState.Checked;
-            PLC_AutoCheck.Location = new Point(57, 21);
-            PLC_AutoCheck.Margin = new Padding(4, 3, 4, 3);
-            PLC_AutoCheck.Name = "PLC_AutoCheck";
-            PLC_AutoCheck.Size = new Size(52, 19);
-            PLC_AutoCheck.TabIndex = 110;
-            PLC_AutoCheck.Text = "Авто";
-            PLC_AutoCheck.UseVisualStyleBackColor = true;
-            PLC_AutoCheck.CheckedChanged += PLC_AutoCheck_CheckedChanged;
-            // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(8, 25);
+            label5.Location = new Point(8, 56);
             label5.Margin = new Padding(4, 0, 4, 0);
             label5.Name = "label5";
-            label5.Size = new Size(28, 15);
+            label5.Size = new Size(54, 15);
             label5.TabIndex = 109;
-            label5.Text = "PLC";
+            label5.Text = "Тип PLC:";
             // 
             // PLC
             // 
             PLC.Enabled = false;
             PLC.FormattingEnabled = true;
-            PLC.Location = new Point(122, 22);
+            PLC.Location = new Point(122, 53);
             PLC.Margin = new Padding(4, 3, 4, 3);
             PLC.Name = "PLC";
             PLC.Size = new Size(97, 23);
@@ -395,7 +367,6 @@
             groupBoxOrder.Controls.Add(label14);
             groupBoxOrder.Controls.Add(textBoxSerialNum);
             groupBoxOrder.Controls.Add(label13);
-            groupBoxOrder.Controls.Add(textBoxOrderNum);
             groupBoxOrder.Location = new Point(248, 14);
             groupBoxOrder.Margin = new Padding(4, 3, 4, 3);
             groupBoxOrder.Name = "groupBoxOrder";
@@ -404,6 +375,24 @@
             groupBoxOrder.TabIndex = 112;
             groupBoxOrder.TabStop = false;
             groupBoxOrder.Text = "Заказ";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(8, 50);
+            label14.Margin = new Padding(4, 0, 4, 0);
+            label14.Name = "label14";
+            label14.Size = new Size(107, 15);
+            label14.TabIndex = 103;
+            label14.Text = "Серийный номер:";
+            // 
+            // textBoxSerialNum
+            // 
+            textBoxSerialNum.Location = new Point(122, 46);
+            textBoxSerialNum.Margin = new Padding(4, 3, 4, 3);
+            textBoxSerialNum.Name = "textBoxSerialNum";
+            textBoxSerialNum.Size = new Size(97, 23);
+            textBoxSerialNum.TabIndex = 102;
             // 
             // label13
             // 
@@ -417,357 +406,76 @@
             // 
             // textBoxOrderNum
             // 
-            textBoxOrderNum.Location = new Point(122, 16);
+            textBoxOrderNum.Location = new Point(8, 117);
             textBoxOrderNum.Margin = new Padding(4, 3, 4, 3);
             textBoxOrderNum.Name = "textBoxOrderNum";
-            textBoxOrderNum.Size = new Size(97, 23);
+            textBoxOrderNum.Size = new Size(211, 23);
             textBoxOrderNum.TabIndex = 100;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(8, 212);
-            label7.Margin = new Padding(4, 0, 4, 0);
-            label7.Name = "label7";
-            label7.Size = new Size(89, 15);
-            label7.TabIndex = 112;
-            label7.Text = "Датчик темпер";
-            // 
-            // Termo
-            // 
-            Termo.Location = new Point(122, 209);
-            Termo.Margin = new Padding(4, 3, 4, 3);
-            Termo.Name = "Termo";
-            Termo.Size = new Size(97, 23);
-            Termo.TabIndex = 111;
-            Termo.Text = "8";
-            // 
-            // Point_2_textBox
-            // 
-            Point_2_textBox.Location = new Point(122, 179);
-            Point_2_textBox.Margin = new Padding(4, 3, 4, 3);
-            Point_2_textBox.Name = "Point_2_textBox";
-            Point_2_textBox.Size = new Size(97, 23);
-            Point_2_textBox.TabIndex = 102;
-            Point_2_textBox.Text = "3000";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(8, 182);
-            label3.Margin = new Padding(4, 0, 4, 0);
-            label3.Name = "label3";
-            label3.Size = new Size(78, 15);
-            label3.TabIndex = 104;
-            label3.Text = "Точка 2 (мВ):";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(8, 153);
-            label2.Margin = new Padding(4, 0, 4, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(78, 15);
-            label2.TabIndex = 103;
-            label2.Text = "Точка 1 (мВ):";
-            // 
-            // Point_1_textBox
-            // 
-            Point_1_textBox.Location = new Point(122, 150);
-            Point_1_textBox.Margin = new Padding(4, 3, 4, 3);
-            Point_1_textBox.Name = "Point_1_textBox";
-            Point_1_textBox.Size = new Size(97, 23);
-            Point_1_textBox.TabIndex = 101;
-            Point_1_textBox.Text = "10";
-            // 
-            // DC_textBox
-            // 
-            DC_textBox.Location = new Point(122, 118);
-            DC_textBox.Margin = new Padding(4, 3, 4, 3);
-            DC_textBox.Name = "DC_textBox";
-            DC_textBox.Size = new Size(97, 23);
-            DC_textBox.TabIndex = 107;
-            DC_textBox.Text = "10";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(8, 121);
-            label4.Margin = new Padding(4, 0, 4, 0);
-            label4.Name = "label4";
-            label4.Size = new Size(44, 15);
-            label4.TabIndex = 108;
-            label4.Text = "DC (В):";
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new Point(8, 91);
-            label12.Margin = new Padding(4, 0, 4, 0);
-            label12.Name = "label12";
-            label12.Size = new Size(50, 15);
-            label12.TabIndex = 114;
-            label12.Text = "Частота";
-            // 
-            // FreqTextBox
-            // 
-            FreqTextBox.Location = new Point(122, 88);
-            FreqTextBox.Margin = new Padding(4, 3, 4, 3);
-            FreqTextBox.Name = "FreqTextBox";
-            FreqTextBox.Size = new Size(97, 23);
-            FreqTextBox.TabIndex = 113;
-            FreqTextBox.Text = "80";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(8, 57);
-            label1.Margin = new Padding(4, 0, 4, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(87, 15);
-            label1.TabIndex = 95;
-            label1.Text = "Коэффициент:";
-            // 
-            // CoefTextBox
-            // 
-            CoefTextBox.Location = new Point(122, 53);
-            CoefTextBox.Margin = new Padding(4, 3, 4, 3);
-            CoefTextBox.Name = "CoefTextBox";
-            CoefTextBox.Size = new Size(97, 23);
-            CoefTextBox.TabIndex = 94;
-            CoefTextBox.Text = "10";
-            CoefTextBox.TextChanged += CoefTextBox_TextChanged;
-            // 
-            // buttonReport
-            // 
-            buttonReport.Location = new Point(18, 337);
-            buttonReport.Margin = new Padding(4, 3, 4, 3);
-            buttonReport.Name = "buttonReport";
-            buttonReport.Size = new Size(203, 27);
-            buttonReport.TabIndex = 115;
-            buttonReport.Text = "Записать в лог";
-            buttonReport.UseVisualStyleBackColor = true;
-            buttonReport.Click += buttonReport_Click;
-            // 
-            // STOP
-            // 
-            STOP.Location = new Point(18, 279);
-            STOP.Margin = new Padding(4, 3, 4, 3);
-            STOP.Name = "STOP";
-            STOP.Size = new Size(98, 51);
-            STOP.TabIndex = 100;
-            STOP.Text = "Стоп";
-            STOP.UseVisualStyleBackColor = true;
-            STOP.Click += STOP_Click;
-            // 
-            // ReserCoef_1
-            // 
-            ReserCoef_1.Location = new Point(18, 240);
-            ReserCoef_1.Margin = new Padding(4, 3, 4, 3);
-            ReserCoef_1.Name = "ReserCoef_1";
-            ReserCoef_1.Size = new Size(98, 32);
-            ReserCoef_1.TabIndex = 105;
-            ReserCoef_1.Text = "Сброс IEPE1";
-            ReserCoef_1.UseVisualStyleBackColor = true;
-            ReserCoef_1.Click += ResetCoef_Click;
-            // 
-            // ResetCoef_2
-            // 
-            ResetCoef_2.Location = new Point(122, 240);
-            ResetCoef_2.Margin = new Padding(4, 3, 4, 3);
-            ResetCoef_2.Name = "ResetCoef_2";
-            ResetCoef_2.Size = new Size(98, 32);
-            ResetCoef_2.TabIndex = 106;
-            ResetCoef_2.Text = "Сброс IEPE2";
-            ResetCoef_2.UseVisualStyleBackColor = true;
-            ResetCoef_2.Click += ResetCoef_2_Click;
-            // 
-            // Save_IP
-            // 
-            Save_IP.Location = new Point(122, 46);
-            Save_IP.Margin = new Padding(4, 3, 4, 3);
-            Save_IP.Name = "Save_IP";
-            Save_IP.Size = new Size(98, 27);
-            Save_IP.TabIndex = 113;
-            Save_IP.Text = "Сохранить IP";
-            Save_IP.UseVisualStyleBackColor = true;
-            Save_IP.Click += Save_IP_Click;
-            // 
-            // textBoxSerialNum
-            // 
-            textBoxSerialNum.Location = new Point(122, 46);
-            textBoxSerialNum.Margin = new Padding(4, 3, 4, 3);
-            textBoxSerialNum.Name = "textBoxSerialNum";
-            textBoxSerialNum.Size = new Size(97, 23);
-            textBoxSerialNum.TabIndex = 102;
-            // 
-            // label14
-            // 
-            label14.AutoSize = true;
-            label14.Location = new Point(8, 50);
-            label14.Margin = new Padding(4, 0, 4, 0);
-            label14.Name = "label14";
-            label14.Size = new Size(107, 15);
-            label14.TabIndex = 103;
-            label14.Text = "Серийный номер:";
-            // 
-            // lvl1
-            // 
-            lvl1.Location = new Point(18, 53);
-            lvl1.Margin = new Padding(4, 3, 4, 3);
-            lvl1.Name = "lvl1";
-            lvl1.Size = new Size(98, 27);
-            lvl1.TabIndex = 0;
-            lvl1.Text = "Задать 1Ур";
-            lvl1.UseVisualStyleBackColor = true;
-            lvl1.Click += lvl1_Click;
-            // 
-            // lvl2
-            // 
-            lvl2.Location = new Point(122, 53);
-            lvl2.Margin = new Padding(4, 3, 4, 3);
-            lvl2.Name = "lvl2";
-            lvl2.Size = new Size(98, 27);
-            lvl2.TabIndex = 1;
-            lvl2.Text = "Задать 2Ур";
-            lvl2.UseVisualStyleBackColor = true;
-            lvl2.Click += lvl2_Click;
-            // 
-            // Lvl1_textbox
-            // 
-            Lvl1_textbox.Location = new Point(18, 27);
-            Lvl1_textbox.Margin = new Padding(4, 3, 4, 3);
-            Lvl1_textbox.Name = "Lvl1_textbox";
-            Lvl1_textbox.Size = new Size(97, 23);
-            Lvl1_textbox.TabIndex = 8;
-            Lvl1_textbox.Text = "10";
-            // 
-            // Lvl2_textbox
-            // 
-            Lvl2_textbox.Location = new Point(122, 27);
-            Lvl2_textbox.Margin = new Padding(4, 3, 4, 3);
-            Lvl2_textbox.Name = "Lvl2_textbox";
-            Lvl2_textbox.Size = new Size(97, 23);
-            Lvl2_textbox.TabIndex = 9;
-            Lvl2_textbox.Text = "3000";
-            // 
-            // CheckSet
-            // 
-            CheckSet.Controls.Add(Lvl2_textbox);
-            CheckSet.Controls.Add(Lvl1_textbox);
-            CheckSet.Controls.Add(lvl2);
-            CheckSet.Controls.Add(lvl1);
-            CheckSet.Location = new Point(14, 166);
-            CheckSet.Margin = new Padding(4, 3, 4, 3);
-            CheckSet.Name = "CheckSet";
-            CheckSet.Padding = new Padding(4, 3, 4, 3);
-            CheckSet.Size = new Size(227, 92);
-            CheckSet.TabIndex = 111;
-            CheckSet.TabStop = false;
-            CheckSet.Text = "Проверка";
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new Point(12, 23);
-            label11.Margin = new Padding(4, 0, 4, 0);
-            label11.Name = "label11";
-            label11.Size = new Size(85, 15);
-            label11.TabIndex = 4;
-            label11.Text = "Ускорение 1К:";
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Location = new Point(12, 53);
-            label10.Margin = new Padding(4, 0, 4, 0);
-            label10.Name = "label10";
-            label10.Size = new Size(78, 15);
-            label10.TabIndex = 5;
-            label10.Text = "Скорость 1К:";
-            // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(12, 83);
-            label9.Margin = new Padding(4, 0, 4, 0);
-            label9.Name = "label9";
-            label9.Size = new Size(85, 15);
-            label9.TabIndex = 6;
-            label9.Text = "Ускорение 2К:";
             // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(12, 113);
+            label8.Location = new Point(8, 26);
             label8.Margin = new Padding(4, 0, 4, 0);
             label8.Name = "label8";
-            label8.Size = new Size(78, 15);
-            label8.TabIndex = 7;
-            label8.Text = "Скорость 2К:";
+            label8.Size = new Size(53, 15);
+            label8.TabIndex = 117;
+            label8.Text = "Модуль:";
+            label8.Click += this.label8_Click;
             // 
-            // ACC1
+            // comboBox1
             // 
-            ACC1.AutoSize = true;
-            ACC1.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            ACC1.Location = new Point(119, 23);
-            ACC1.Margin = new Padding(4, 0, 4, 0);
-            ACC1.Name = "ACC1";
-            ACC1.Size = new Size(14, 15);
-            ACC1.TabIndex = 8;
-            ACC1.Text = "0";
+            comboBox1.Enabled = false;
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(122, 23);
+            comboBox1.Margin = new Padding(4, 3, 4, 3);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(97, 23);
+            comboBox1.TabIndex = 116;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
             // 
-            // SPD1
+            // radioButton1
             // 
-            SPD1.AutoSize = true;
-            SPD1.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            SPD1.Location = new Point(119, 53);
-            SPD1.Margin = new Padding(4, 0, 4, 0);
-            SPD1.Name = "SPD1";
-            SPD1.Size = new Size(14, 15);
-            SPD1.TabIndex = 9;
-            SPD1.Text = "0";
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(122, 86);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(37, 19);
+            radioButton1.TabIndex = 118;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "10";
+            radioButton1.UseVisualStyleBackColor = true;
             // 
-            // ACC2
+            // radioButton2
             // 
-            ACC2.AutoSize = true;
-            ACC2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            ACC2.Location = new Point(119, 83);
-            ACC2.Margin = new Padding(4, 0, 4, 0);
-            ACC2.Name = "ACC2";
-            ACC2.Size = new Size(14, 15);
-            ACC2.TabIndex = 10;
-            ACC2.Text = "0";
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(165, 86);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(46, 19);
+            radioButton2.TabIndex = 119;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "6.67";
+            radioButton2.UseVisualStyleBackColor = true;
             // 
-            // SPD2
+            // button1
             // 
-            SPD2.AutoSize = true;
-            SPD2.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            SPD2.Location = new Point(119, 113);
-            SPD2.Margin = new Padding(4, 0, 4, 0);
-            SPD2.Name = "SPD2";
-            SPD2.Size = new Size(14, 15);
-            SPD2.TabIndex = 11;
-            SPD2.Text = "0";
+            button1.Location = new Point(8, 146);
+            button1.Margin = new Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new Size(211, 29);
+            button1.TabIndex = 120;
+            button1.Text = "Выборки";
+            button1.UseVisualStyleBackColor = true;
             // 
-            // IEPE
+            // label2
             // 
-            IEPE.Controls.Add(SPD2);
-            IEPE.Controls.Add(ACC2);
-            IEPE.Controls.Add(SPD1);
-            IEPE.Controls.Add(ACC1);
-            IEPE.Controls.Add(label8);
-            IEPE.Controls.Add(label9);
-            IEPE.Controls.Add(label10);
-            IEPE.Controls.Add(label11);
-            IEPE.Location = new Point(14, 14);
-            IEPE.Margin = new Padding(4, 3, 4, 3);
-            IEPE.Name = "IEPE";
-            IEPE.Padding = new Padding(4, 3, 4, 3);
-            IEPE.Size = new Size(227, 137);
-            IEPE.TabIndex = 114;
-            IEPE.TabStop = false;
-            IEPE.Text = "IEPE";
+            label2.AutoSize = true;
+            label2.ForeColor = SystemColors.ButtonShadow;
+            label2.Location = new Point(8, 101);
+            label2.Margin = new Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(85, 15);
+            label2.TabIndex = 104;
+            label2.Text = "Номер заказа:";
             // 
             // Form1
             // 
@@ -775,9 +483,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
             ClientSize = new Size(726, 652);
-            Controls.Add(IEPE);
             Controls.Add(groupBoxOrder);
-            Controls.Add(CheckSet);
             Controls.Add(groupBox3);
             Controls.Add(UpdatePort);
             Controls.Add(groupBox2);
@@ -800,10 +506,6 @@
             groupBox3.PerformLayout();
             groupBoxOrder.ResumeLayout(false);
             groupBoxOrder.PerformLayout();
-            CheckSet.ResumeLayout(false);
-            CheckSet.PerformLayout();
-            IEPE.ResumeLayout(false);
-            IEPE.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
 
@@ -819,6 +521,7 @@
         private System.Windows.Forms.ComboBox AgillentPortBox;
         private System.Windows.Forms.TextBox LogTextBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox IPTextBox;
         private System.Windows.Forms.Button Disconnect_Generator;
@@ -830,50 +533,25 @@
         //private System.IO.Ports.SerialPort serialPort1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox PLC;
-        private System.Windows.Forms.CheckBox PLC_AutoCheck;
         private System.Windows.Forms.Label label5;
         private System.ComponentModel.BackgroundWorker backgroundWorker3;
+        private System.Windows.Forms.Button Save_IP;
         private System.Windows.Forms.CheckBox C2;
         private System.Windows.Forms.CheckBox C1;
         private System.Windows.Forms.Label labelVmAddr;
         private System.Windows.Forms.Label labelGenChannel;
         private System.Windows.Forms.Label labelGenAddr;
         private System.Windows.Forms.GroupBox groupBoxOrder;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBoxSerialNum;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox textBoxOrderNum;
-        private Button Save_IP;
-        private Button buttonReport;
-        private Label label12;
-        private TextBox FreqTextBox;
-        private TextBox Termo;
-        private Label label7;
-        private Label label4;
-        private Button STOP;
-        private TextBox CoefTextBox;
-        private TextBox DC_textBox;
-        private TextBox Point_1_textBox;
-        private Label label1;
-        private Button ResetCoef_2;
-        private TextBox Point_2_textBox;
-        private Label label2;
-        private Button ReserCoef_1;
-        private Label label3;
-        private Label label14;
-        private TextBox textBoxSerialNum;
-        private Button lvl1;
-        private Button lvl2;
-        private TextBox Lvl1_textbox;
-        private TextBox Lvl2_textbox;
-        private GroupBox CheckSet;
-        private Label label11;
-        private Label label10;
-        private Label label9;
         private Label label8;
-        private Label ACC1;
-        private Label SPD1;
-        private Label ACC2;
-        private Label SPD2;
-        private GroupBox IEPE;
+        private ComboBox comboBox1;
+        private RadioButton radioButton1;
+        private Label label2;
+        private Button button1;
+        private RadioButton radioButton2;
     }
 }
 
