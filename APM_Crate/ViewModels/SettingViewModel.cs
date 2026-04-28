@@ -68,13 +68,18 @@ namespace APM_Crate.ViewModels
         //}
         [JsonIgnore]
         public ObservableCollection<string> Modules { get => SettingModel.Moduls; set { this.RaiseAndSetIfChanged(ref SettingModel.Moduls, value); } }
+        [JsonIgnore]
         public string ItemModule
         {
             get => SettingModel.ItemModule;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value); }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value);
+            }
         }
         [JsonIgnore]
         public ObservableCollection<string> PLC { get; } = SettingModel.PLC;
+        [JsonIgnore]
         public string ItemPLC
         {
             get => SettingModel.ItemPLC;
@@ -152,9 +157,24 @@ namespace APM_Crate.ViewModels
         {
             try
             {
-                RestModel.SetUri();
+                //RestModel.SetUri();
                 IsEnabledButtons = false;
                 if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
+                switch (ItemModule)
+                {
+                    case "243" or "374":
+                    {
+                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
+                        break;
+                    }
+                    default:
+                    {
+                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
+                        if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
+                        break;
+                    }
+                }
+
                 if (string.IsNullOrEmpty(OrderNumber))
                 {
                     throw new Exception($"Введите номер заказа.");
@@ -162,7 +182,7 @@ namespace APM_Crate.ViewModels
                 ushort type = Devices.Crate.ReadUInt16(Crate.Registers.Type);
                 if (ItemPLC != PLC[type - 1])
                 {
-                    await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", true);
+                    await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
                 }
 
                 //await SQLModel.TableExistsCratePLCAsync();
@@ -192,13 +212,13 @@ namespace APM_Crate.ViewModels
                     throw new Exception($"Серийный номер должен быть в диапазоне 0-65535.");
                 }
                 
-                string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+                string starttime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
                 
                 stopwatch.Restart();
                 settings = new List<Settings>();
                 await Start(ItemPLC);
                 stopwatch.Stop();
-                string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
+                string endtime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
                 Config config = new Config
                 {
                     DeviceType = ItemPLC,

@@ -2,12 +2,15 @@
 using APM_Crate.ViewModels;
 using EasyModbus;
 using PortsWork;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,89 +18,31 @@ namespace APM_Crate.Models.DevicesModel
 {
     public class Crate : ModbusClient
     {
-        public enum WriteFunctions
-        {
-            One_Flag = 0x05,
-            One_Holding = 0x06,
-            Many_Holding = 0x10
-        }
-        public enum ReadFunctions
-        {
-            Coil = 0x01,
-            DiscreteInputs = 0x02,
-            Holding = 0x03,
-            Input = 0x04
-        }
-        public ushort ReadUInt16(ushort reg)
-        {
-            reg -= 1;
-            int[] i =ReadHoldingRegisters(reg, 1);
-            return (ushort)i[0];
-
-        }
-        public void WriteUInt16(ushort reg, ushort value)
-        {
-            reg -= 1;
-            WriteSingleRegister(reg, value);
-        }
-        public short ReadInt16(ushort reg)
-        {
-            reg -= 1;
-            int[] i = ReadHoldingRegisters(reg, 1);
-            return (short)i[0];
-        }
-        public void WriteInt16(ushort reg, short value)
-        {
-            reg -= 1;
-            WriteSingleRegister(reg, value);
-        }
-        public float ReadFloat(ushort reg)
-        {
-            reg -= 1;
-            int[] i = ReadHoldingRegisters(reg, 2);
-            return ConvertRegistersToFloat(i);
-        }
-        public void WriteFloat(ushort reg, float value)
-        {
-            reg -= 1;
-            int[] i = ConvertFloatToRegisters(value);
-            WriteMultipleRegisters(reg, i);
-        }
-        public float ReadSwFloat(ushort reg)
-        {
-            reg -= 1;
-            int[] i = ReadHoldingRegisters(reg, 2);
-            return ConvertRegistersToFloat(i);
-        }
-        public void WriteSwFloat(ushort reg, float value)
-        {
-            reg -= 1;
-            int[] i = ConvertFloatToRegisters(value);
-            WriteMultipleRegisters(reg, i);
-        }
+        private object methodLock { get; set; } = new object();
+        private bool methodRunning { get; set; } = false;
         public static class Registers
         {
-            public static ushort MI_Version { get; } = 1795;
-            public static ushort Password { get; } = 3496;
-            public static ushort StatusModules { get; } = 109;
+            public static ushort MI_Version => 1795;
+            public static ushort Password => 3496;
+            public static ushort StatusModules => 109;
             //public static ushort Type_PLC => PLC.;
-            public static ushort Type { get; } = (ushort)(60026 + 90 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
+            public static ushort Type => Convert.ToUInt16(60026 + 90 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
 
-            public static ushort Coefficient { get; } = 60056;
-            public static ushort SerialNum { get; } = (ushort)(8008 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
-            public static ushort VerPLC { get; } = (ushort)(8009 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
+            public static ushort Coefficient => 60056;
+            public static ushort SerialNum => (ushort)(8008 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
+            public static ushort VerPLC => (ushort)(8009 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
         }
         public static class Values
         {
-            public const ushort Password_New = 0xABCD;
-            public const ushort Password_Old = 0xDCBA;
+            public const ushort Password_Old = 0xABCD;
+            public const ushort Password_New = 0xDCBA;
             public const ushort MI_Version_New = 1298;
         }
 
         public void SetPassword()
         {
-            int version = ReadUInt16(Registers.MI_Version);
-            if (version  < Values.MI_Version_New)
+            int version = ReadReg(Registers.MI_Version);
+            if (version < Values.MI_Version_New)
             {
                 WritePassword(Values.Password_Old);
             }
@@ -111,14 +56,134 @@ namespace APM_Crate.Models.DevicesModel
             for (byte j = 0; j < 20; j++)
             {
                 //пароль
-                WriteUInt16(Registers.Password, value);
+                WriteReg(Registers.Password, value);
                 Thread.Sleep(300);
-                if (ReadUInt16(Registers.Password) == value)
+                if (ReadReg(Registers.Password) == value)
                     break;
                 if (j == 19)
                     throw new Exception("Не получается записать пароль");
             }
         }
-        
+        public void WriteReg(int adr, int valuSe)
+        {
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                WriteSingleRegister(adr, value);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+        }
+        public void WriteReg(int adr, int[] value)
+        {
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                WriteMultipleRegisters(adr, value);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+        }
+        public int ReadReg(int Reg_adr)
+        {
+            int[] Reg = new int[1];
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                Reg = ReadHoldingRegisters(Reg_adr, 1);
+                return Reg[0];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+        }
+        public int[] ReadReg(int Reg_adr, int quantity)
+        {
+            lock (methodLock)
+            {
+                while (methodRunning)
+                {
+                    Monitor.Wait(methodLock);
+                }
+                methodRunning = true;
+            }
+
+            try
+            {
+                return ReadHoldingRegisters(Reg_adr, quantity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                lock (methodLock)
+                {
+                    methodRunning = false;
+                    Monitor.Pulse(methodLock);
+                }
+            }
+        }
+
+        public float ReadValue(int reg_addr)
+        {
+            int[] registers = ReadReg(reg_addr, 2);
+
+            return ConvertRegistersToFloat(registers);
+        }
     }
 }

@@ -37,13 +37,13 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 return false;
             }
             PortItem = IP;
-            Devices.Crate = new Crate();
-            Devices.Crate.IPAddress = IP;
-            Devices.Crate.Connect();
-           
-                UpdateStatusModules();
+            //Devices.Crate = new Crate();
+            Devices.Crate.Connect(IP,502);
+            //Devices.Crate.ReadUInt16(60026);
+            UpdateStatusModules();
                 UpdateStatusPLC(); 
-                return true;
+            //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
+                return Devices.Crate.Connected;
         }
 
         protected override void ClosePort_abstract()
@@ -66,14 +66,19 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             {
                 if (str[i] is '0') strings.Add($"{i+1}");
             }
-            if (strings.Count is 0) { strings.Add("Не обнаружено"); }
+            if (strings.Count is 0) { strings = new(); }
             if (SettingModel.Moduls != strings) MainWindowViewModel.SettingViewModel.Modules = strings;
         }
         public void UpdateStatusPLC()
         {
-            ushort value = Devices.Crate.ReadUInt16(Registers.Type);
+
+            if(SettingModel.Moduls.Contains(SettingModel.ItemModule) is false)
+            {
+                MainWindowViewModel.SettingViewModel.ItemModule = SettingModel.Moduls[0];
+            }
+            //ushort value = Devices.Crate.ReadUInt16(Registers.Type);
             
-            MainWindowViewModel.SettingViewModel.ItemPLC = MainWindowViewModel.SettingViewModel.PLC[value - 1];
+            //MainWindowViewModel.SettingViewModel.ItemPLC = MainWindowViewModel.SettingViewModel.PLC[value - 1];
         }
     }
 }

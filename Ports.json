@@ -2,9 +2,10 @@
   "AgilentViewModel": {
     "PortItem": "COM1",
     "Ports": [
+      "V7-78/1: TW00055833",
       "COM1",
-      "COM3",
-      "COM4"
+      "COM4",
+      "COM3"
     ]
   },
   "GeneratorViewModel": {
@@ -12,18 +13,20 @@
     "Chanel_2": false,
     "PortItem": "COM1",
     "Ports": [
+      "V7-78/1: TW00055833",
       "COM1",
-      "COM3",
-      "COM4"
+      "COM4",
+      "COM3"
     ]
   },
   "CrateViewModel": {
     "IP": "192.168.1.99",
     "PortItem": "COM1",
     "Ports": [
+      "V7-78/1: TW00055833",
       "COM1",
-      "COM3",
-      "COM4"
+      "COM4",
+      "COM3"
     ]
   },
   "RestAPI_IP": null

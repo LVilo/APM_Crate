@@ -15,8 +15,55 @@ using System.Reactive.Linq;
 
 namespace APM_Crate.Service
 {
+    public interface IGetVoltege
+    {
+        Task GetVolt();
+    }
+    public class ADC : IGetVoltege
+    {
+        public async Task GetVolt()
+        {
+            Devices.Multimeter.GetAmperage();
+            await Task.Delay(500);
+        }
+    }
+    public class DC : IGetVoltege
+    {
+        public async Task GetVolt()
+        {
+            Devices.Multimeter.GetVoltage("DC", 100);
+            await Task.Delay(500);
+        }
+    }
+    public class AC : IGetVoltege
+    {
+        public async Task GetVolt()
+        {
+            Devices.Multimeter.GetVoltage("AC", 100);
+            await Task.Delay(500);
+        }
+    }
+    public class Delay : IGetVoltege
+    {
+        public async Task GetVolt() => await Task.Delay(2000);
+    }
     public static class Dialog
     {
+        public static IGetVoltege Mult = new Delay();
+        public static async Task WhileGetVoltAsync()
+        {
+            try
+            {
+                while (true)
+                {
+                    await Mult.GetVolt();
+                }
+            }
+            catch
+            {
+
+            }
+        }
         public static DialogService DialogService;
         public static async Task ShowBuild(string settings,string mes="Соберите схему.")
         {
@@ -45,8 +92,9 @@ namespace APM_Crate.Service
             var vm = new ResettingViewModel();
             await DialogService.ShowResettingAsync(vm);
         }
-        public static async Task ShowConfirm(string mes, bool YesOrNot = false)
+        public static async Task ShowConfirm(string mes, IGetVoltege type, bool YesOrNot = false)
         {
+            Mult = type;
             var vm = new ConfirmDialogViewModel();
             if (YesOrNot)
             {
@@ -60,6 +108,7 @@ namespace APM_Crate.Service
             }
             vm.Messege = mes;
             await DialogService.ShowConfirmAsync(vm);
+            Mult = new Delay();
         }
         public static async Task ShowRestAPI_IP()
         {

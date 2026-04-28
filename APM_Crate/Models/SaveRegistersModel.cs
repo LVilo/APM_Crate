@@ -79,7 +79,7 @@ namespace APM_Crate.Models
             }
             catch (IOException)
             {
-                await Dialog.ShowConfirm( "Файл занят другим процессом. Закройте файл, или нажмите \"Отмена\", но в таком случае данные не сохранятся в файл", false);
+                await Dialog.ShowConfirm( "Файл занят другим процессом. Закройте файл, или нажмите \"Отмена\", но в таком случае данные не сохранятся в файл",new Delay(), false);
                 return await WriteLineToFile(line, fileName);
             }
 

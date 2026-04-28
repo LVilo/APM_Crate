@@ -105,28 +105,27 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         {
             try
             {
-                //RestModel.IP = "http://127.0.0.1:5000/";
-                RestModel.SetUri();
-                Config conf = new Config
-                {
-                    DeviceType = "241",
-                    SerialNumber = 2315,
-                    OrderNumber = "2314",
-                    Settings = [new Settings { Name = "param1", Value = "321235" }]
-                };
+                ////RestModel.IP = "http://127.0.0.1:5000/";
+                //RestModel.SetUri();
+                //Config conf = new Config
+                //{
+                //    DeviceType = "241",
+                //    SerialNumber = 2320,
+                //    OrderNumber = "2314",
+                //    Settings = [new Settings { Name = "param1", Value = "321235" }]
+                //};
 
-                //string json = JsonSerializer.Serialize(conf);
-                //HttpClient http = new HttpClient();
-                //http.BaseAddress = new Uri("http://localhost:5000/");
-                //var content = new StringContent(json, Encoding.UTF8, "application/json");
-                //HttpResponseMessage response = await http.PostAsJsonAsync("Configurations", content);
-                //string errorBody = await response.Content.ReadAsStringAsync();
+                ////string json = JsonSerializer.Serialize(conf);
+                ////HttpClient http = new HttpClient();
+                ////http.BaseAddress = new Uri("http://localhost:5000/");
+                ////var content = new StringContent(json, Encoding.UTF8, "application/json");
+                ////HttpResponseMessage response = await http.PostAsJsonAsync("Configurations", content);
+                ////string errorBody = await response.Content.ReadAsStringAsync();
 
 
+                //await RestModel.Post(conf);
+                //await RestModel.GetLastSerialNumber();
 
-                await RestModel.Post(conf);
-
-                LogerViewModel.Instance.Write(RestModel.GetListRecord());
 
                 //await http.PostAsJsonAsync("http://localhost:5186/swagger/", content);
 

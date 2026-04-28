@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using APM_Crate.Service;
+using APM_Crate.Models;
 
 
 
@@ -29,8 +30,8 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
            if(Devices.Multimeter.OpenPort() is true)
             {
-                //Settings.Mult = new Delay();
-                //Settings.WhileGetVoltAsync();
+                Dialog.Mult = new Delay();
+                Dialog.WhileGetVoltAsync();
                 return Devices.Multimeter.IsOpened();
             }
             return false;

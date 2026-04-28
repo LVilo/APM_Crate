@@ -8,6 +8,7 @@
         x:Class="APM_Crate.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
+
         FontFamily="{DynamicResource MainFont}"
         Background="{DynamicResource ColorBackgroundBorder}"
         Title="{Binding Version, StringFormat='АРМ проверки и настройки контроллеров ТИК-Крейт v:{0}'}"
@@ -47,6 +48,7 @@
         
 			<TextBox
             Width="263"
+            Height="182"
             Focusable="False"
             DataContext="{Binding LogerViewModel}"
             Text="{Binding LogText}"

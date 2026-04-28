@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PortsWork
 {
-    public class ModbusRTU : Modbus
+    public class ModbusRTU : Port
     {
         public byte SlaveAddress { get; set; } = 1;
 
@@ -16,10 +16,9 @@ namespace PortsWork
         {
             BaudRate = baudrate;
             StopBits = stop;
-
         }
 
-        protected override byte[] Exchange(byte[] frame, int expectedLength, uint attempt = 0)
+        public byte[] Exchange(byte[] frame, int expectedLength, uint attempt = 0)
         {
             DiscardInBuffer();
             DiscardOutBuffer();
@@ -76,7 +75,7 @@ namespace PortsWork
             return frame.Concat(new byte[] { (byte)(crc & 0xFF), (byte)(crc >> 8) }).ToArray();
         }
 
-        protected override bool Write(ushort reg, byte[] value, byte func)
+        public bool Write(ushort reg, byte[] value, byte func)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -101,7 +100,7 @@ namespace PortsWork
             else return false;
         }
 
-        protected override byte[] Read(ushort reg, byte func, ushort len)
+        public byte[] Read(ushort reg, byte func, ushort len)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -123,7 +122,7 @@ namespace PortsWork
 
             return Exchange(frame, expected);
         }
-        protected override void WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
+        public void WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -147,6 +146,61 @@ namespace PortsWork
 
             Exchange(frame, 8);
 
+        }
+        public enum WriteFunctions
+        {
+            One_Flag = 0x05,
+            One_Holding = 0x06,
+            Many_Holding = 0x10
+        }
+        public enum ReadFunctions
+        {
+            Coil = 0x01,
+            DiscreteInputs = 0x02,
+            Holding = 0x03,
+            Input = 0x04
+        }
+        public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertUInt16ToByteMes(value);
+            Write(reg, b, (byte)func);
+        }
+        public void WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertInt16ToByteMes(value);
+            Write(reg, b, (byte)func);
+        }
+        public void WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertSWFloatToByteMes(value);
+            WriteMultiple(reg, b, (byte)func);
+        }
+        public void WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertFloatToByteMes(value);
+            WriteMultiple(reg, b, (byte)func);
+        }
+        public float ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 2);
+            byte[] value = [b[3], b[4], b[5], b[6]];
+            return ConvertModBus.ConvertByteMesToFloat(value);
+        }
+        public float ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 2);
+            byte[] value = [b[3], b[4], b[5], b[6]];
+            return ConvertModBus.ConvertByteMesToSWFloat(value);
+        }
+        public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 1);
+            return ConvertModBus.ConvertByteMesToUInt16(b);
+        }
+        public short ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[] b = Read(reg, (byte)func, 1);
+            return ConvertModBus.ConvertByteMesToInt16(b);
         }
     }
 }

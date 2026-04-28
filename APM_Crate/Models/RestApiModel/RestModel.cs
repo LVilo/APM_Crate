@@ -28,10 +28,10 @@ namespace APM_Crate.Models.RestApiModel
 
         public static string IP = "https://172.22.64.138:5000/";
 
-        public static void SetUri()
-        {
-            client.BaseAddress = new Uri(IP);
-        }
+        //public static void SetUri()
+        //{
+        //    client.BaseAddress = new Uri(IP);
+        //}
         public static async Task<string> Post(Config config)
         {
             HttpResponseMessage response = await client.PostAsJsonAsync(mes, config);
@@ -40,7 +40,7 @@ namespace APM_Crate.Models.RestApiModel
         }
         public static async Task<string> GetLastSerialNumber()
         {
-            HttpResponseMessage response = await client.GetAsync($"{mes}/last-serial/{DeviceFamily}");
+            HttpResponseMessage response = await client.GetAsync($"{IP}{mes}/last-serial/{DeviceFamily}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
@@ -63,7 +63,7 @@ namespace APM_Crate.Models.RestApiModel
             if (isActual.HasValue) queryParams.Add($"isActual={isActual.Value.ToString().ToLower()}");
 
             string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
-            string requestUrl = $"{mes}/{queryString}";
+            string requestUrl = $"{IP}{mes}/{queryString}";
 
             HttpResponseMessage response = await client.GetAsync(requestUrl);
             response.EnsureSuccessStatusCode();
@@ -79,15 +79,15 @@ namespace APM_Crate.Models.RestApiModel
         }
         public static async Task<Config> GetRecordByID(string ID)
         {
-            return await client.GetFromJsonAsync<Config>($"{mes}/{ID}");
+            return await client.GetFromJsonAsync<Config>($"{IP}{mes}/{ID}");
         }
         public static async Task Put(string Id,Config config)
         {
-            await client.PutAsJsonAsync($"{mes}/{Id}", config);
+            await client.PutAsJsonAsync($"{IP}{mes}/{Id}", config);
         }
         public static async Task Delete(string Id)
         {
-            await client.DeleteAsync($"{mes}/{Id}");
+            await client.DeleteAsync($"{IP}{mes}/{Id}");
         }
         
     }

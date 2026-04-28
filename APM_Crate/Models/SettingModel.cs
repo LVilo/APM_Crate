@@ -211,17 +211,17 @@ namespace APM_Crate.Models
             }
             public async Task Setting_IEPE()
             {
-                if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
-                if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
                 if (CheckSettingFlag(SettingType.IEPE) is false) return;
                 //stopwatch.Restart();
                 //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 LogerViewModel.Instance.Write($"Настройка IEPE, канала {Num}");
                 await Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Num}-го канала");
+
+                Devices.Crate.WriteUInt16(OnChannel,1);
                 Reset(SettingType.IEPE);
 
                 await ValidationVoltage(DC_Value, 0.5d);
-
+                Devices.Multimeter.VoltmeterMode("AC");
                 await SetVoltage(Point_1);
                 GetVoltageAC(out float V1);
                 AverageValue(ACC_RMS, out float Signal_1);
@@ -295,7 +295,6 @@ namespace APM_Crate.Models
             }
             public async Task Setting_4_20()
             {
-                if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
                 if (CheckSettingFlag(SettingType._4_20) is false) return;
                 //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 //stopwatch.Restart();
@@ -331,23 +330,23 @@ namespace APM_Crate.Models
                 ushort typetermo = (ushort)(TermoTypes.IndexOf(TermoType) + 1);
                 SetTermoValues(out float R1, out float R2, out float Need_T1, out float Need_T2);
                 Devices.Crate.WriteUInt16(TypeTermo, typetermo);
-                await Dialog.ShowConfirm($"Установите на магазине сопротивлений 100 Ом");
+                await Dialog.ShowConfirm($"Установите на магазине сопротивлений 100 Ом", new Delay());
                 await Task.Delay(15000); // стоит потому что долго обновляется значение в крейте
                 T1 = Devices.Crate.ReadUInt16(ResistTermo) / 1000f;
-                await Dialog.ShowConfirm($"Установите на магазине сопротивлений 400 Ом");
+                await Dialog.ShowConfirm($"Установите на магазине сопротивлений 400 Ом", new Delay());
                 await Task.Delay(25000); // стоит потому что долго обновляется значение в крейте
                 T2 = Devices.Crate.ReadUInt16(ResistTermo) / 1000f;
                 float A = 3 / (T2 - T1);
                 float B = 1 - A * T1;
                 WriteCoefs_T(A,B);
 
-                await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R1} Ом");
+                await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R1} Ом", new Delay());
                 Thread.Sleep(15000);// стоит потому что долго обновляется значение в крейте
                 Readed_T = Devices.Crate.ReadUInt16(T) / 10f;
                 float relative = Math.Abs(Readed_T - Need_T1);
                 if (relative > 1) throw new Exception($"Точка 1 не прошла проверку, значение отклонено от нормы на {relative}");
 
-                await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R2} Ом");
+                await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R2} Ом", new Delay());
                 Thread.Sleep(15000);// стоит потому что долго обновляется значение в крейте
                 Readed_T = Devices.Crate.ReadUInt16(T) / 10f;
                 relative = Math.Abs(Readed_T - Need_T2);
@@ -361,8 +360,6 @@ namespace APM_Crate.Models
             }
             public async Task Setting_U()
             {
-                if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
-                if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
                 if (CheckSettingFlag(SettingType.U) is false) return;
                 //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
                 LogerViewModel.Instance.Write($"Настройка TIK-PLC.511, канала {Num}");
@@ -372,6 +369,7 @@ namespace APM_Crate.Models
                 //await Dialog.ShowConfirm("Установите на калибраторе смещение 10В");
                 Devices.Generator.SetFrequency(79.6);
                 Devices.Generator.SetOffset(0);
+                Devices.Multimeter.VoltmeterMode("AC");
                 await SetVoltage(0.5d);
                 float Signal_1 = Devices.Crate.ReadUInt16(ACC_PP) / 100f;
                 await SetVoltage(20);
@@ -427,129 +425,129 @@ namespace APM_Crate.Models
         }
         public class Channel_1 : Channel
         {
-            public override string Num { get; } = "1";
-            public override ushort Coef_ACC_A { get; } = (ushort)(60000 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B { get; } = (ushort)(60002 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A { get; } = (ushort)(60004 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B { get; } = (ushort)(60006 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A { get; } = (ushort)(60008 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B { get; } = (ushort)(60010 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A { get; } = (ushort)(60012 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_B { get; } = (ushort)(60014 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo { get; } = (ushort)(60016 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override string Num => "1";
+            public override ushort Coef_ACC_A => (ushort)(60000 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_B => (ushort)(60002 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_A => (ushort)(60004 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_B => (ushort)(60006 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_A => (ushort)(60008 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_B => (ushort)(60010 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_T_A => (ushort)(60012 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_T_B => (ushort)(60014 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort TypeTermo => (ushort)(60016 + 90 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort PhysicalB0 { get; } = (ushort) (8018 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical { get; } = (ushort) (8020 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A { get; } = (ushort)(8021 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS { get; } = (ushort)(8022 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP { get; } = (ushort)(8023 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A { get; } = (ushort)(8024 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS { get; } = (ushort)(8025 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP { get; } = (ushort)(8026 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A { get; } = (ushort)(8027 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS { get; } = (ushort)(8028 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP { get; } = (ushort)(8029 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC { get; } = (ushort)(8030 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T { get; } = (ushort)(8032 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo { get; } = (ushort)(8036 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort) (8018 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Physical => (ushort) (8020 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_A => (ushort)(8021 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_RMS => (ushort)(8022 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_PP => (ushort)(8023 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_A => (ushort)(8024 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_RMS => (ushort)(8025 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_PP => (ushort)(8026 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_A => (ushort)(8027 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_RMS => (ushort)(8028 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_PP => (ushort)(8029 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort DC => (ushort)(8030 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort T => (ushort)(8032 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ResistTermo => (ushort)(8036 + 100 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort OnChannel { get; } = (ushort)(11056 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw { get; } = (ushort)(11110 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11056 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnSaw => (ushort)(11110 + 600 * (Convert.ToInt16(ItemModule) - 1));
         }
         public class Channel_2 : Channel
         {
-            public override string Num { get; } = "2";
-            public override ushort Coef_ACC_A { get; } = (ushort)(60030 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B { get; } = (ushort)(60032 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A { get; } = (ushort)(60034 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B { get; } = (ushort)(60036 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A { get; } = (ushort)(60038 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B { get; } = (ushort)(60040 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A { get; } = (ushort)(60042 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B { get; } = (ushort)(60044 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo { get; } = (ushort)(60046 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override string Num => "2";
+            public override ushort Coef_ACC_A => (ushort)(60030 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_B => (ushort)(60032 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_A => (ushort)(60034 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_B => (ushort)(60036 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_A => (ushort)(60038 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_B => (ushort)(60040 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_T_A => (ushort)(60042 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
+            public override ushort Coef_T_B => (ushort)(60044 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort TypeTermo => (ushort)(60046 + 90 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort PhysicalB0 { get; } = (ushort) (8043 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical { get; } = (ushort) (8045 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A { get; } = (ushort)(8046 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS { get; } = (ushort)(8047 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP { get; } = (ushort)(8048 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A { get; } = (ushort)(8049 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS { get; } = (ushort)(8050 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP { get; } = (ushort)(8051 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A { get; } = (ushort)(8052 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS { get; } = (ushort)(8053 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP { get; } = (ushort)(8054 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC { get; } = (ushort)(8055 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T { get; } = (ushort)(8057 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo { get; } = (ushort)(8061 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort) (8043 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Physical => (ushort) (8045 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_A => (ushort)(8046 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_RMS => (ushort)(8047 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_PP => (ushort)(8048 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_A => (ushort)(8049 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_RMS => (ushort)(8050 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_PP => (ushort)(8051 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_A => (ushort)(8052 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_RMS => (ushort)(8053 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_PP => (ushort)(8054 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort DC => (ushort)(8055 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort T => (ushort)(8057 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ResistTermo => (ushort)(8061 + 100 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort OnChannel { get; } = (ushort)(11256 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw { get; } = (ushort)(11310 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11256 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnSaw => (ushort)(11310 + 600 * (Convert.ToInt16(ItemModule) - 1));
         }
         public class Channel_3 : Channel
         {
-            public override string Num { get; } = "3";
-            public override ushort Coef_ACC_A { get; } = (ushort)(60060 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B { get; } = (ushort)(60062 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A { get; } = (ushort)(60064 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B { get; } = (ushort)(60066 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A { get; } = (ushort)(60068 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B { get; } = (ushort)(60070 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A { get; } = (ushort)(60072 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B { get; } = (ushort)(60074 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo { get; } = (ushort)(60076 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override string Num => "3";
+            public override ushort Coef_ACC_A => (ushort)(60060 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_B => (ushort)(60062 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_A => (ushort)(60064 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_B => (ushort)(60066 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_A => (ushort)(60068 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_B => (ushort)(60070 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_T_A => (ushort)(60072 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
+            public override ushort Coef_T_B => (ushort)(60074 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort TypeTermo => (ushort)(60076 + 90 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort PhysicalB0 { get; } = (ushort) (8068 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical { get; } = (ushort) (8070 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A { get; } = (ushort)(8071 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS { get; } = (ushort)(8072 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP { get; } = (ushort)(8073 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A { get; } = (ushort)(8074 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS { get; } = (ushort)(8075 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP { get; } = (ushort)(8076 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A { get; } = (ushort)(8077 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS { get; } = (ushort)(8078 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP { get; } = (ushort)(8079 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC { get; } = (ushort)(8080 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T { get; } = (ushort)(8082 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort) (8068 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Physical => (ushort) (8070 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_A => (ushort)(8071 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_RMS => (ushort)(8072 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_PP => (ushort)(8073 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_A => (ushort)(8074 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_RMS => (ushort)(8075 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_PP => (ushort)(8076 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_A => (ushort)(8077 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_RMS => (ushort)(8078 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_PP => (ushort)(8079 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort DC => (ushort)(8080 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort T => (ushort)(8082 + 100 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort ResistTermo { get; } = (ushort)(8086 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ResistTermo => (ushort)(8086 + 100 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort OnChannel { get; } = (ushort)(11456 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw { get; } = (ushort)(11510 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11456 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnSaw => (ushort)(11510 + 600 * (Convert.ToInt16(ItemModule) - 1));
         }
         public class Channel_4 : Channel
         {
-            public override string Num { get; } = "4";
-            public override ushort Coef_ACC_A { get; } = (ushort)(61260 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B { get; } = (ushort)(61262 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A { get; } = (ushort)(61264 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B { get; } = (ushort)(61266 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A { get; } = (ushort)(61268 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B { get; } = (ushort)(61270 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A { get; } = (ushort)(61272 + 30 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B { get; } = (ushort)(61274 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo { get; } = (ushort)(61276 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override string Num => "4";
+            public override ushort Coef_ACC_A => (ushort)(61260 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_B => (ushort)(61262 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_A => (ushort)(61264 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_Speed_B => (ushort)(61266 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_A => (ushort)(61268 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_4_20_B => (ushort)(61270 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_T_A => (ushort)(61272 + 30 * (Convert.ToInt16(ItemModule) - 1)); 
+            public override ushort Coef_T_B => (ushort)(61274 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort TypeTermo => (ushort)(61276 + 30 * (Convert.ToInt16(ItemModule) - 1));
 
-            public override ushort PhysicalB0 { get; } = (ushort) (9406 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical { get; } = (ushort) (9408 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A { get; } = (ushort)(9409 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS { get; } = (ushort)(9410 + 25 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP { get; } = (ushort)(9411 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort) (9406 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Physical => (ushort) (9408 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_A => (ushort)(9409 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_RMS => (ushort)(9410 + 25 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ACC_PP => (ushort)(9411 + 100 * (Convert.ToInt16(ItemModule) - 1));
             #region Резерв
-            public override ushort Speed_A { get; } = (ushort)(9412 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS { get; } = (ushort)(9413 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP { get; } = (ushort)(9414 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A { get; } = (ushort)(9415 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS { get; } = (ushort)(9416 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP { get; } = (ushort)(9417 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_A => (ushort)(9412 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_RMS => (ushort)(9413 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_PP => (ushort)(9414 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_A => (ushort)(9415 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_RMS => (ushort)(9416 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Move_PP => (ushort)(9417 + 100 * (Convert.ToInt16(ItemModule) - 1));
             #endregion
-            public override ushort DC { get; } = (ushort)(9418 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T { get; } = (ushort)(9420 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo { get; } = (ushort)(9424 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnChannel { get; } = 0;
-            public override ushort OnSaw { get; } = (ushort)(19510 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort DC => (ushort)(9418 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort T => (ushort)(9420 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ResistTermo => (ushort)(9424 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => 0;
+            public override ushort OnSaw => (ushort)(19510 + 600 * (Convert.ToInt16(ItemModule) - 1));
         }
 
         public static Channel Channel1 { get; } = new Channel_1();
@@ -557,7 +555,7 @@ namespace APM_Crate.Models
         public static Channel Channel3 { get; } = new Channel_3();
         public static Channel Channel4 { get; } = new Channel_4();
 
-        public static ObservableCollection<string> Moduls = ["Не обнаружено","1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
+        public static ObservableCollection<string> Moduls = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
         public static string ItemModule = "1";
         public static ObservableCollection<string> PLC { get; } = ["241", "242", "243","511", "371", "374", "375"];
         public static string ItemPLC = "241";
@@ -642,7 +640,8 @@ namespace APM_Crate.Models
             string mes = $"При помощи магазина сопротивлений задайте {V} В";
             do
             {
-                await Dialog.ShowConfirm(mes);
+                IGetVoltege mult = type is "DC" ? new DC() : new AC();
+                await Dialog.ShowConfirm(mes, mult);
                 double value = Devices.Multimeter.GetVoltage(type, 500);
                 Valid = Math.Abs(value - V) < relative ? true : false;
                 mes = $"Неправильное значение! Пожалуйста, установите напряжение в диапазоне от {V - relative} до {V + relative} В.";
@@ -655,7 +654,7 @@ namespace APM_Crate.Models
             string mes = $"При помощи калибратора задайте смещение {V} В";
             do
             {
-                await Dialog.ShowConfirm(mes);
+                await Dialog.ShowConfirm(mes, new Delay());
                 double value = Devices.Crate.ReadUInt16(reg);
                 Valid = Math.Abs(value - V) < relative ? true : false;
                 mes = $"Неправильное значение! Пожалуйста, установите напряжение в диапазоне от {V - relative} до {V + relative} В.";
@@ -780,7 +779,7 @@ namespace APM_Crate.Models
         public static async Task SetVoltage(double V)
         {
             Devices.Generator.SetVoltage(ConvertValue.ToPP(V));
-            await Task.Delay(5000);
+            await Task.Delay(15000);
         }
         public static void GetVoltageAC(out float V) => V = (float)Devices.Multimeter.GetVoltage("AC", 1000);
         public static void CountRelative(float value, float V, out float relative) => relative = Point_2 >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность

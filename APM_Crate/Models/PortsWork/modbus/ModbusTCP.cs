@@ -5,75 +5,94 @@ using System.Net.Sockets;
 
 namespace PortsWork
 {
-    public class ModbusTCP : Modbus
+    public class ModbusTCP
     {
-        public const int PORT_CONNECTION = 502;
+        private TcpClient _client;
+        private NetworkStream _stream;
 
-        private TcpClient client = new TcpClient();
-        private NetworkStream stream;
+        private ushort _transactionId = 0;
 
-        public byte SlaveAddress { get; set; } = 1;
+        public string IpAddress { get; set; }
+        public int Port { get; set; } = 502;
 
-        private ushort transactionId = 0;
-        
-        public override bool OpenPort()
+        public byte UnitId { get; set; } = 1;
+
+        public void Connect(string ip)
         {
-            client = new TcpClient(PortName, PORT_CONNECTION);
-            IPAddress ip = IPAddress.Parse(PortName);
-            client.Connect(ip, PORT_CONNECTION);
-            stream = client.GetStream();
-            return client.Connected;
+            IpAddress = ip;
+            _client = new TcpClient();
+            _client.Connect(IpAddress, Port);
+            _stream = _client.GetStream();
         }
 
-        public override void ClosePort()
+        public void Disconnect()
         {
-            stream?.Close();
-            client?.Close();
+            _stream?.Close();
+            _client?.Close();
         }
 
-        public override bool IsOpened()
+        public bool IsConnected()
         {
-            return client.Connected;
+            return _client?.Connected ?? false;
         }
-        private byte[] BuildMBAP(byte[] pdu)
+
+        public byte[] Exchange(byte[] pdu, int expectedLength, uint attempt = 0)
         {
-            transactionId++;
+            if (!IsConnected())
+            {
+               _client.Connect(IpAddress, Port);
+                if (!IsConnected())
+                {
+                    throw new Exception("TCP not connected");
+                }
+            }
+
+            byte[] frame = BuildMbapHeader(pdu);
+
+            _stream.Write(frame, 0, frame.Length);
+
+            byte[] response = new byte[expectedLength + 7]; // +MBAP
+            int read = 0;
+
+            try
+            {
+                while (read < response.Length)
+                    read += _stream.Read(response, read, response.Length - read);
+            }
+            catch
+            {
+                if (attempt == 3)
+                    throw;
+
+                return Exchange(pdu, expectedLength, attempt + 1);
+            }
+
+            // убираем MBAP
+            return response.Skip(7).ToArray();
+        }
+
+        private byte[] BuildMbapHeader(byte[] pdu)
+        {
+            _transactionId++;
 
             byte[] header = new byte[7];
 
-            header[0] = (byte)(transactionId >> 8);
-            header[1] = (byte)(transactionId & 0xFF);
+            header[0] = (byte)(_transactionId >> 8);
+            header[1] = (byte)(_transactionId & 0xFF);
 
             header[2] = 0;
             header[3] = 0;
 
-            ushort len = (ushort)(pdu.Length + 1);
+            ushort length = (ushort)(pdu.Length + 1); // + UnitId
+            header[4] = (byte)(length >> 8);
+            header[5] = (byte)(length & 0xFF);
 
-            header[4] = (byte)(len >> 8);
-            header[5] = (byte)(len & 0xFF);
-
-            header[6] = SlaveAddress;
+            header[6] = UnitId;
 
             return header.Concat(pdu).ToArray();
         }
 
-        protected override byte[] Exchange(byte[] frame, int expectedLength, uint attempt = 0)
-        {
-            if (client == null || !client.Connected)
-                throw new Exception("Устройство не подключено");
-
-            stream.Write(frame, 0, frame.Length);
-
-            byte[] resp = new byte[expectedLength];
-            int read = 0;
-
-            while (read < expectedLength)
-                read += stream.Read(resp, read, expectedLength - read);
-
-            return resp;
-        }
-        
-        protected override bool Write(ushort reg, byte[] value, byte func)
+        public bool Write(ushort reg, byte[] value, byte func)
         {
             ushort addr = (ushort)(reg - 1);
             ushort val = (ushort)(value[1] << 8 | value[0]);
@@ -87,15 +106,13 @@ namespace PortsWork
                 (byte)(val & 0xFF)
             };
 
-            byte[] frame = BuildMBAP(pdu);
+            byte[] resp = Exchange(pdu, 5);
 
-            byte[] b = Exchange(frame, 12);
-            byte[] result = [b[5], b[4]];
-            if (result.SequenceEqual(value)) return true;
-            else return false;
+            byte[] result = [resp[3], resp[4]];
+            return result.SequenceEqual(value);
         }
 
-        protected override byte[] Read(ushort reg, byte func, ushort len)
+        public byte[] Read(ushort reg, byte func, ushort len)
         {
             ushort addr = (ushort)(reg - 1);
 
@@ -108,14 +125,12 @@ namespace PortsWork
                 (byte)(len & 0xFF)
             };
 
-            byte[] frame = BuildMBAP(pdu);
+            int expected = 2 + len * 2; // func + byte count + data
 
-            int expected = 9 + len * 2;
-
-            return Exchange(frame, expected);
+            return Exchange(pdu, expected);
         }
 
-        protected override void WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
+        public void WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
         {
             ushort addr = (ushort)(reg - 1);
             ushort count = (ushort)(values.Length / 2);
@@ -127,14 +142,67 @@ namespace PortsWork
             pdu[2] = (byte)(addr & 0xFF);
             pdu[3] = (byte)(count >> 8);
             pdu[4] = (byte)(count & 0xFF);
-            pdu[5] = (byte)values.Length;
+            pdu[5] = (byte)(values.Length);
 
             for (int i = 0; i < values.Length; i++)
                 pdu[6 + i] = values[i];
 
-            byte[] frame = BuildMBAP(pdu);
-
-            Exchange(frame, 12);
+            Exchange(pdu, 5);
+        }
+        public enum WriteFunctions
+        {
+            One_Flag = 0x05,
+            One_Holding = 0x06,
+            Many_Holding = 0x10
+        }
+        public enum ReadFunctions
+        {
+            Coil = 0x01,
+            DiscreteInputs = 0x02,
+            Holding = 0x03,
+            Input = 0x04
+        }
+        public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertUInt16ToByteMes(value);
+            Write(reg, b, (byte)func);
+        }
+        public void WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertInt16ToByteMes(value);
+            Write(reg, b, (byte)func);
+        }
+        public void WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertSWFloatToByteMes(value);
+            WriteMultiple(reg, b, (byte)func);
+        }
+        public void WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        {
+            byte[] b = ConvertModBus.ConvertFloatToByteMes(value);
+            WriteMultiple(reg, b, (byte)func);
+        }
+        public float ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 2);
+            byte[] value = [b[3], b[4], b[5], b[6]];
+            return ConvertModBus.ConvertByteMesToFloat(value);
+        }
+        public float ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 2);
+            byte[] value = [b[3], b[4], b[5], b[6]];
+            return ConvertModBus.ConvertByteMesToSWFloat(value);
+        }
+        public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[]? b = Read(reg, (byte)func, 1);
+            return ConvertModBus.ConvertByteMesToUInt16(b);
+        }
+        public short ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        {
+            byte[] b = Read(reg, (byte)func, 1);
+            return ConvertModBus.ConvertByteMesToInt16(b);
         }
     }
 }

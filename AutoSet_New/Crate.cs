@@ -11,8 +11,8 @@ namespace AutoSet_New
 {
     class Crate_TCP : ModbusClient
     {
-        private object methodLock = new object();
-        private bool methodRunning = false;
+        private object methodLock { get; set; } = new object();
+        private bool methodRunning { get; set; } = false;
         public void SetPassword()
         {
             int version = ReadReg( Registers.REGISTER_VERSION_MI );
