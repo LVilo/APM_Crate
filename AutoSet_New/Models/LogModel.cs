@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSet_New
+namespace AutoSet_New.Models
 {
     public class LogModel
     {
@@ -16,7 +16,7 @@ namespace AutoSet_New
                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") // настройка записи в файл
 
 
-               .WriteTo.File($@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки крейтов\CommonLogs\log-{DateTime.Now:dd.MM.yyyy}.txt",
+               .WriteTo.File($@"\\files\Общее\Прошивки и методики проверки\Прикладное ПО\АРМ настройки CNV\CommonLogs\log-{DateTime.Now:dd.MM.yyyy}.txt",
                outputTemplate: "{Timestamp:dd.MM.yyyy HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                .CreateLogger();
             Write("Приложение запущено \n\n");
