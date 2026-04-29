@@ -18,7 +18,7 @@ namespace PortsWork
         public static byte[] ConvertSWFloatToByteMes(float value)
         {
             byte[] b = BitConverter.GetBytes(value);
-            return [b[1], b[0], b[3], b[2]];
+            return [b[0], b[1], b[2], b[3]];
         }
 
         public static byte[] ConvertUInt16ToByteMes(ushort value)

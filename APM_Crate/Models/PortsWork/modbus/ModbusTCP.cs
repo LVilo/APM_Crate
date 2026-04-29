@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
     public class ModbusTCP
     {
-        private TcpClient _client;
+        private TcpClient _client = new TcpClient();
         private NetworkStream _stream;
 
         private ushort _transactionId = 0;
@@ -17,20 +18,33 @@ namespace PortsWork
 
         public byte UnitId { get; set; } = 1;
 
-        public void Connect(string ip)
+        public async Task Connect(string ip)
         {
             IpAddress = ip;
             _client = new TcpClient();
-            _client.Connect(IpAddress, Port);
+           await _client.ConnectAsync(IpAddress, Port);
             _stream = _client.GetStream();
         }
-
+        public async Task Connect(string ip, int port)
+        {
+            IpAddress = ip;
+            Port = port;
+            _client = new TcpClient();
+            await _client.ConnectAsync(IpAddress, Port);
+            _stream = _client.GetStream();
+        }
+        public async Task Connect()
+        {
+            _client = new TcpClient();
+            await _client.ConnectAsync(IpAddress, Port);
+            _stream = _client.GetStream();
+        }
         public void Disconnect()
         {
             _stream?.Close();
             _client?.Close();
         }
-
+        public bool Connected => _client.Connected;
         public bool IsConnected()
         {
             return _client?.Connected ?? false;
@@ -61,9 +75,10 @@ namespace PortsWork
             }
             catch
             {
-                if (attempt == 3)
+                if (attempt == 10)
                     throw;
 
+               _client.Connect(IpAddress, Port);
                 return Exchange(pdu, expectedLength, attempt + 1);
             }
 

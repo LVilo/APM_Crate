@@ -1,6 +1,4 @@
 ﻿using APM_Crate.Models;
-using APM_Crate.Models.DevicesModel;
-
 using ReactiveUI;
 using System;
 using System.Collections.Generic;

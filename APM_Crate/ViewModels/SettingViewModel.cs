@@ -27,7 +27,6 @@ namespace APM_Crate.ViewModels
 {
     public partial class SettingViewModel : ViewModelBase
     {
-
         [JsonIgnore]
         public ReactiveCommand<Unit, Unit> SettingALL_Command { get; }
         [JsonIgnore]
@@ -67,33 +66,43 @@ namespace APM_Crate.ViewModels
         //    }
         //}
         [JsonIgnore]
-        public ObservableCollection<string> Modules { get => SettingModel.Moduls; set { this.RaiseAndSetIfChanged(ref SettingModel.Moduls, value); } }
+        public ObservableCollection<string> Modules => SettingModel.Moduls; 
         [JsonIgnore]
         public string ItemModule
         {
             get => SettingModel.ItemModule;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value);
+                if(Devices.Crate.Connected)
+                {
+                   ushort type = Devices.Crate.ReadUInt16(Registers.Type);
+                    if(type>0 && type < 8) ItemPLC = PLC[type-1];
+                }
+              if(IsEnabledButtons) this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value);
             }
         }
         [JsonIgnore]
-        public ObservableCollection<string> PLC { get; } = SettingModel.PLC;
+        public ObservableCollection<string> PLC  => SettingModel.PLC;
         [JsonIgnore]
         public string ItemPLC
         {
             get => SettingModel.ItemPLC;
             set
-            { 
-                Coef_Enaibled = value is "241" or "242" or "371" or "375";
-                Channel1.CanSetting = true;
-                Channel2.CanSetting = true;
-                Channel3.CanSetting = value is "371" or "374" or "375" or "511";
-                Channel4.CanSetting = value is "511";
+            {
+                if (IsEnabledButtons)
+                {
 
-                Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
-                Channel4.SettingChannel = value is "511";
-                this.RaiseAndSetIfChanged(ref SettingModel.ItemPLC, value);
+
+                    Coef_Enaibled = value is "241" or "242" or "371" or "375";
+                    Channel1.CanSetting = true;
+                    Channel2.CanSetting = true;
+                    Channel3.CanSetting = value is "371" or "374" or "375" or "511";
+                    Channel4.CanSetting = value is "511";
+
+                    Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
+                    Channel4.SettingChannel = value is "511";
+                    this.RaiseAndSetIfChanged(ref SettingModel.ItemPLC, value);
+                }
             }
         }
         [JsonIgnore]
@@ -156,8 +165,8 @@ namespace APM_Crate.ViewModels
         private async Task Setting()
         {
             try
-            {
-                //RestModel.SetUri();
+            { 
+
                 IsEnabledButtons = false;
                 if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
                 switch (ItemModule)
@@ -179,12 +188,44 @@ namespace APM_Crate.ViewModels
                 {
                     throw new Exception($"Введите номер заказа.");
                 }
+                if(string.IsNullOrEmpty(ItemModule))
+                {
+                    throw new Exception($"Выберите модуль для настройки.");
+                }
+               
+
+                // меняю состав корзины под выбранный модуль
+
+                string str = "0000000000000000";
+                StringBuilder sb = new StringBuilder(new string(str.Reverse().ToArray()));
+                sb[Convert.ToInt32(ItemModule) - 1] = '1';
+                str = sb.ToString();
+                str = new string(str.Reverse().ToArray());
+                ushort value = Convert.ToUInt16(str, 2);
+
+                Devices.Crate.SetPassword();
+                Devices.Crate.WriteUInt16(Registers.Basket, value);
+
+                await Task.Delay(2000);
+
+                //смотрю состояние модулей после изменения состава
+                ushort status = Devices.Crate.ReadUInt16(Registers.StatusModules);
+                string s = new string(Convert.ToString(status,2).Reverse().ToArray());
+                if (s[Convert.ToInt32(ItemModule) - 1] is not '0')
+                {
+                    throw new Exception($"Выбранный модуль для настройки не подключен в корзину или не включен. Убедитесь в подключении модуля в слоте {Convert.ToInt32(ItemModule) + 6}");
+                }
+
                 ushort type = Devices.Crate.ReadUInt16(Crate.Registers.Type);
+                if (type ==0 || type > 7)
+                {
+
+                    await Dialog.ShowConfirm($"В выбранном контроллере записан тип контроллера {type}. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
+                }
                 if (ItemPLC != PLC[type - 1])
                 {
                     await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
                 }
-
                 //await SQLModel.TableExistsCratePLCAsync();
 
                 SerialNumber = Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
@@ -195,7 +236,7 @@ namespace APM_Crate.ViewModels
                 }
                 else
                 {
-                    SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
+                    //SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
                     IsResetting = false;
                 }
 
@@ -230,20 +271,23 @@ namespace APM_Crate.ViewModels
                 await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
 
 
-                if (IsResetting is false)
-                {
-                    await RestModel.Post(config);
-                    //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
-                    await Devices.Printer.PrintText(SettingModel.SerialNumber.ToString());
-                    Devices.Crate.WriteUInt16(Crate.Registers.SerialNum, SettingModel.SerialNumber);
-                }
-                else
-                {
-                    List<Config>list =  await RestModel.GetListRecord(50, SerialNumber, OrderNumber, ItemPLC);
-                    string id = list[0].Id;
-                    await RestModel.Delete(id);
-                    await RestModel.Post(config);
-                }
+                //if (IsResetting is false)
+                //{
+                //    await RestModel.Post(config);
+                //    //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
+                //    await Devices.Printer.PrintText(SettingModel.SerialNumber.ToString());
+                //    Devices.Crate.WriteUInt16(Crate.Registers.SerialNum, SettingModel.SerialNumber);
+                //}
+                //else
+                //{
+                //    List<Config>list =  await RestModel.GetListRecord(50, SerialNumber, OrderNumber, ItemPLC);
+                //    string id = list[0].Id;
+                //    await RestModel.Delete(id);
+                //    await RestModel.Post(config);
+                //}
+
+
+
                 //LogerViewModel.Instance.Write($"Настройка заняла {stopwatch.Elapsed:mm\\ss}");
             }
             catch (Exception e)

@@ -224,13 +224,22 @@ namespace APM_Crate.Models
                 Devices.Multimeter.VoltmeterMode("AC");
                 await SetVoltage(Point_1);
                 GetVoltageAC(out float V1);
-                AverageValue(ACC_RMS, out float Signal_1);
-                AverageValue(Speed_RMS, out float Integral_1);
+                float Signal_1 = Devices.Crate.ReadUInt16(ACC_RMS) / 100;
+                float Integral_1 = Devices.Crate.ReadUInt16(Speed_RMS) / 100;
+
+                //ModbusTCP cc = new ModbusTCP();
+                //cc.Connect("10.21.12.67");
+                //ushort reg = cc.ReadUInt16(8022);
+                //ushort reg1 = cc.ReadUInt16(8023);
+                //AverageValue(ACC_RMS, out float Signal_1);
+                //AverageValue(Speed_RMS, out float Integral_1);
 
                 await SetVoltage(Point_2);
                 GetVoltageAC(out float V2);
-                AverageValue(ACC_RMS, out float Signal_2);
-                AverageValue(Speed_RMS, out float Integral_2);
+                float Signal_2 = Devices.Crate.ReadUInt16(ACC_RMS) / 100;
+                float Integral_2 = Devices.Crate.ReadUInt16(Speed_RMS) / 100;
+                //AverageValue(ACC_RMS, out float Signal_2);
+                //AverageValue(Speed_RMS, out float Integral_2);
 
                 float A1 = (V2 - V1) / Coef / (Signal_2 - Signal_1);
                 float B1 = V1 / Coef - A1 * Signal_1;
@@ -555,9 +564,9 @@ namespace APM_Crate.Models
         public static Channel Channel3 { get; } = new Channel_3();
         public static Channel Channel4 { get; } = new Channel_4();
 
-        public static ObservableCollection<string> Moduls = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
+        public static ObservableCollection<string> Moduls => ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
         public static string ItemModule = "1";
-        public static ObservableCollection<string> PLC { get; } = ["241", "242", "243","511", "371", "374", "375"];
+        public static ObservableCollection<string> PLC => ["241", "242", "243","511", "371", "374", "375"];
         public static string ItemPLC = "241";
 
         public static ObservableCollection<string> TermoTypes { get; } =
@@ -578,8 +587,8 @@ namespace APM_Crate.Models
         public static bool CoefEnaibled = true;
 
         public static double DC_Value {get{return Coef_Is_10 ? 10d : 12d;}}
-        public static double Point_1 {get{return Coef_Is_10 ? 0.01d : 0.00667d;}}
-        public static double Point_2 {get{return Coef_Is_10 ? 3d : 0.1d;} }
+        public static double Point_1 {get{return Coef_Is_10 ? 10d : 6.67;}}
+        public static double Point_2 {get{return Coef_Is_10 ? 3000d : 100d;} }
         public static float Coef {get{return Coef_Is_10 ? 10f : 6.67f;} }
         public static double Frequency { get; } = 80d;
         public static ushort SerialNumber { get; set; }
@@ -778,10 +787,11 @@ namespace APM_Crate.Models
         }
         public static async Task SetVoltage(double V)
         {
-            Devices.Generator.SetVoltage(ConvertValue.ToPP(V));
-            await Task.Delay(15000);
+            //Devices.Generator.SetVoltage(ConvertValue.ToPP(V));
+            Devices.Multimeter.SetVoltage(Devices.Generator, V, Frequency, 0.0005, 3);
+            await Task.Delay(5000);
         }
-        public static void GetVoltageAC(out float V) => V = (float)Devices.Multimeter.GetVoltage("AC", 1000);
+        public static void GetVoltageAC(out float V) => V = (float)Devices.Multimeter.GetVoltage("AC", 1000) * 1000;
         public static void CountRelative(float value, float V, out float relative) => relative = Point_2 >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность
     }
 }

@@ -989,15 +989,5 @@ namespace AutoSet_New
                 textBoxSerialNum.SelectionStart = cursorPos;
             }
         }
-
-        private void label15_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

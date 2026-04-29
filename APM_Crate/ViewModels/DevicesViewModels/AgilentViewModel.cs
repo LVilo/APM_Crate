@@ -23,7 +23,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //PortText = "мультиметра";
             HeaderText = "Мультиметр";
         }
-        protected override bool OpenPort_abstract()
+        protected override async Task<bool> OpenPort_abstract()
         {
             Devices.Multimeter = new PortMultimeter();
             Devices.Multimeter = (PortMultimeter)Devices.SetMeasureDeviceName(Devices.Multimeter, PortItem);

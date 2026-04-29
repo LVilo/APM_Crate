@@ -54,7 +54,7 @@ namespace APM_Crate.Models
         }
         public static async Task<byte[]> DownloadFile()
         {
-            string url = $"http://{Devices.Crate.IPAddress}/fast.dat";
+            string url = $"http://{Devices.Crate.IpAddress}/fast.dat";
             //string path = "Log";
             using HttpClient client = new HttpClient();
             return await client.GetByteArrayAsync(url);

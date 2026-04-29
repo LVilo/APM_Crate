@@ -47,7 +47,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             }
         }
 
-        protected override bool OpenPort_abstract()
+        protected override async Task<bool> OpenPort_abstract()
         {
             if (string.IsNullOrEmpty(PortItem))
             {

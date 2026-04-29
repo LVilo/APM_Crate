@@ -78,7 +78,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             }
         }
 
-        protected abstract bool OpenPort_abstract();
+        protected abstract Task<bool> OpenPort_abstract();
         protected abstract void ClosePort_abstract();
         public abstract bool IsOpened();
 
@@ -177,7 +177,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                         LogerViewModel.Instance.Write($"{PortItem} уже подключен.");
                         return;
                     }
-                    if (OpenPort_abstract() is true)
+                    if (await OpenPort_abstract() is true)
                     {
                         DeviceStateColor = "#1DEC1D";
                         LogerViewModel.Instance.Write($"{PortItem} подключен.");
