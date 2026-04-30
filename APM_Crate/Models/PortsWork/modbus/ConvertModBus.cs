@@ -48,5 +48,31 @@ namespace PortsWork
         {
             return (short)(value[2] << 8 | value[3]);
         }
+        public static ushort[] ConvertSwFloatToUInt16(float value)
+        {
+            ushort[] result = new ushort[2];
+            byte[] data = BitConverter.GetBytes(value);
+            result[0] = BitConverter.ToUInt16(data, 0);
+            result[1] = BitConverter.ToUInt16(data, 2);
+            return result;
+        }
+        public static float ConvertRegistersToSwFloat(ushort[] value)
+        {
+            float result;
+            byte[] data1 = BitConverter.GetBytes(value[0]);
+            byte[] data2 = BitConverter.GetBytes(value[1]);
+            byte[] data = { data1[0], data1[1], data2[0], data2[1] };
+            result = BitConverter.ToSingle(data);
+            return result;
+        }
+        public static float ConvertRegistersToFloat(ushort[] value)
+        {
+            float result;
+            byte[] data1 = BitConverter.GetBytes(value[0]);
+            byte[] data2 = BitConverter.GetBytes(value[1]);
+            byte[] data = { data2[0], data2[1], data1[0], data1[1] };
+            result = BitConverter.ToSingle(data);
+            return result;
+        }
     }
 }

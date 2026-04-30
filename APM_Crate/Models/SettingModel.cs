@@ -119,15 +119,26 @@ namespace APM_Crate.Models
                 }
                 else return true;
             }
+            public void GetValue(ValueType type,out float value)
+            {
+                value = (type) switch
+                {
+                    ValueType.ACC => Devices.Crate.ReadUInt16(ACC_RMS) * 0.01f,
+                    ValueType.ACC_PP => Devices.Crate.ReadUInt16(ACC_PP) * 0.01f,
+                    ValueType.Speed => Devices.Crate.ReadUInt16(Speed_RMS) * 0.01f,
+                    ValueType.Move => Devices.Crate.ReadUInt16(Move_RMS) * 0.1f
+                };
+            }
             public void CheckSetting(ushort reg,float V, ValueType type)
             {
-                float value = (type) switch
-                {
-                    ValueType.ACC => Devices.Crate.ReadUInt16(reg) / 100f,
-                    ValueType.ACC_PP => Devices.Crate.ReadUInt16(reg) / 100f,
-                    ValueType.Speed => Devices.Crate.ReadUInt16(reg) / 100f,
-                    ValueType.Move=> Devices.Crate.ReadUInt16(reg) / 10f
-                };
+                //float value = (type) switch
+                //{
+                //    ValueType.ACC => Devices.Crate.ReadUInt16(reg) * 0.01f,
+                //    ValueType.ACC_PP => Devices.Crate.ReadUInt16(reg) * 0.01f,
+                //    ValueType.Speed => Devices.Crate.ReadUInt16(reg) * 0.01f,
+                //    ValueType.Move=> Devices.Crate.ReadUInt16(reg) * 0.1f
+                //};
+                GetValue(type,out float value);
                 CountRelative(value, V,out float relative);
                 relative = Math.Abs(relative);
                 if (relative >= 1)
@@ -224,8 +235,11 @@ namespace APM_Crate.Models
                 Devices.Multimeter.VoltmeterMode("AC");
                 await SetVoltage(Point_1);
                 GetVoltageAC(out float V1);
-                float Signal_1 = Devices.Crate.ReadUInt16(ACC_RMS) / 100;
-                float Integral_1 = Devices.Crate.ReadUInt16(Speed_RMS) / 100;
+
+                GetValue(ValueType.ACC,out float Signal_1);
+                GetValue(ValueType.Speed,out float Integral_1);
+                //float Signal_1 = Devices.Crate.ReadUInt16(ACC_RMS) * 0.01f;
+                //float Integral_1 = Devices.Crate.ReadUInt16(Speed_RMS) * 0.01f;
 
                 //ModbusTCP cc = new ModbusTCP();
                 //cc.Connect("10.21.12.67");
@@ -236,8 +250,12 @@ namespace APM_Crate.Models
 
                 await SetVoltage(Point_2);
                 GetVoltageAC(out float V2);
-                float Signal_2 = Devices.Crate.ReadUInt16(ACC_RMS) / 100;
-                float Integral_2 = Devices.Crate.ReadUInt16(Speed_RMS) / 100;
+                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f);
+
+                GetValue(ValueType.ACC, out float Signal_2);
+                GetValue(ValueType.Speed, out float Integral_2);
+                //float Signal_2 = Devices.Crate.ReadUInt16(ACC_RMS) * 0.01f;
+                //float Integral_2 = Devices.Crate.ReadUInt16(Speed_RMS) * 0.01f;
                 //AverageValue(ACC_RMS, out float Signal_2);
                 //AverageValue(Speed_RMS, out float Integral_2);
 
@@ -249,12 +267,14 @@ namespace APM_Crate.Models
                 WriteCoefs_Speed(A2, B2);
 
 
-                float dc = Devices.Crate.ReadSwFloat(PhysicalB0);
+                float dc = Devices.Crate.ReadSwFloat(PhysicalB0) * 0.001f;
                 float real_dc = (float)(Devices.Multimeter.GetVoltage("DC", 1000));
-                WriteCoefs_IEPE2(dc / real_dc);
+                WriteCoefs_IEPE2(real_dc / dc);
                 await SetVoltage(Point_1);
-
                 GetVoltageAC(out V1);
+
+                GetValue(ValueType.ACC, out Signal_1);
+                GetValue(ValueType.Speed, out Integral_1);
 
                 CheckSetting(ACC_RMS, V1,ValueType.ACC);
                 //AverageValue(ACC_RMS, out float ACC);
@@ -265,7 +285,9 @@ namespace APM_Crate.Models
                 await SetVoltage(Point_2);
                 GetVoltageAC(out V2);
 
-                float Move = Devices.Crate.ReadUInt16(Move_RMS) / 10f;
+                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f);
+
+                float Move = Devices.Crate.ReadUInt16(Move_RMS) * 0.1f;
                 CountRelative(Move * Coef / 4, V2, out float relative);
                 // перенастройка перемещения.костыль
                 if (relative <= -1)
@@ -351,13 +373,13 @@ namespace APM_Crate.Models
 
                 await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R1} Ом", new Delay());
                 Thread.Sleep(15000);// стоит потому что долго обновляется значение в крейте
-                Readed_T = Devices.Crate.ReadUInt16(T) / 10f;
+                Readed_T = Devices.Crate.ReadUInt16(T) * 0.1f;
                 float relative = Math.Abs(Readed_T - Need_T1);
                 if (relative > 1) throw new Exception($"Точка 1 не прошла проверку, значение отклонено от нормы на {relative}");
 
                 await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R2} Ом", new Delay());
                 Thread.Sleep(15000);// стоит потому что долго обновляется значение в крейте
-                Readed_T = Devices.Crate.ReadUInt16(T) / 10f;
+                Readed_T = Devices.Crate.ReadUInt16(T) * 0.1f;
                 relative = Math.Abs(Readed_T - Need_T2);
                 if (relative > 1) throw new Exception($"Точка 2 не прошла проверку, значение отклонено от нормы на {relative}");
                 //stopwatch.Stop();
@@ -380,10 +402,14 @@ namespace APM_Crate.Models
                 Devices.Generator.SetOffset(0);
                 Devices.Multimeter.VoltmeterMode("AC");
                 await SetVoltage(0.5d);
-                float Signal_1 = Devices.Crate.ReadUInt16(ACC_PP) / 100f;
+
+                GetValue(ValueType.ACC_PP, out float Signal_1);
+                //float Signal_1 = Devices.Crate.ReadUInt16(ACC_PP) * 0.01f;
                 await SetVoltage(20);
                 GetVoltageAC(out float V1);
-                float Signal_2 = Devices.Crate.ReadUInt16(ACC_PP) / 100f;
+                await WaitForChangeRegisters(ACC_PP, Signal_1, 0.01f);
+                GetValue(ValueType.ACC_PP, out float Signal_2);
+                //float Signal_2 = Devices.Crate.ReadUInt16(ACC_PP) * 0.01f;
                 GetVoltageAC(out float V2);
 
                 float A1 = (V2 - V1) / Coef / (Signal_2 - Signal_1);
@@ -781,7 +807,7 @@ namespace APM_Crate.Models
             for (int i = 0; i < 10; i++)
             {
                 Thread.Sleep(400);
-                Value += Devices.Crate.ReadUInt16(Reg_adr) / 100f;
+                Value += Devices.Crate.ReadUInt16(Reg_adr) * 0.01f;
             }
             Value /= 10;
         }
@@ -790,6 +816,34 @@ namespace APM_Crate.Models
             //Devices.Generator.SetVoltage(ConvertValue.ToPP(V));
             Devices.Multimeter.SetVoltage(Devices.Generator, V, Frequency, 0.0005, 3);
             await Task.Delay(5000);
+        }
+        public static async Task WaitForChangeRegisters(ushort reg, float FirstsValue, float coefreg)
+        {
+            int sec = 0;
+            bool IsChange = false;
+            while (IsChange is false && sec < 60)
+            {
+                IsChange = Devices.Crate.ReadUInt16(reg) * coefreg == FirstsValue ? false : true;
+                await Task.Delay(1000);
+                sec++;
+            }
+            if (IsChange is false) { throw new Exception("Значения обновляются слишком долго."); }
+        }
+        public static async Task WaitForChangeRegisters(ushort reg1, ushort reg2, float FirstsValue1,float FirstsValue2,float coefreg)
+        {
+            int sec = 0;
+            bool IsChange1 = false;
+            bool IsChange2 = false;
+            while ((IsChange1 is false || IsChange2 is false) && sec <60)
+            {
+                IsChange1 = Devices.Crate.ReadUInt16(reg1) * coefreg == FirstsValue1 ? false :true;
+                IsChange2 = Devices.Crate.ReadUInt16(reg2) * coefreg == FirstsValue2 ? false :true;
+                await Task.Delay(1000);
+                sec++;
+            }
+            if(sec<60) await Task.Delay(4000);
+
+            if (IsChange1 is false || IsChange2 is false) { throw new Exception("Значения обновляются слишком долго."); }
         }
         public static void GetVoltageAC(out float V) => V = (float)Devices.Multimeter.GetVoltage("AC", 1000) * 1000;
         public static void CountRelative(float value, float V, out float relative) => relative = Point_2 >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность

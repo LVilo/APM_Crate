@@ -42,7 +42,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //Devices.Crate.IPAddress = IP;
             Devices.Crate.Port = 502;
             //Devices.Crate = new Crate();
-            await Devices.Crate.Connect(IP,502);
+            Devices.Crate.Connect(IP,502);
             //Devices.Crate.ReadUInt16(60026);
             Devices.Crate.SetPassword();
 
