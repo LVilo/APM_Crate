@@ -43,6 +43,14 @@ namespace APM_Crate.Service
             await Task.Delay(500);
         }
     }
+    public class A : IGetVoltege
+    {
+        public async Task GetVolt()
+        {
+            Devices.Multimeter.GetAmperage();
+            await Task.Delay(500);
+        }
+    }
     public class Delay : IGetVoltege
     {
         public async Task GetVolt() => await Task.Delay(2000);

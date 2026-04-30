@@ -1,4 +1,4 @@
-﻿using AutoSet_New.Models.DevicesModel;
+﻿using Microsoft.Win32;
 using PortsWork;
 using System;
 using System.Collections.Generic;
@@ -14,9 +14,9 @@ namespace AutoSet_New
 {
     public partial class Form1 : Form
     {
-        //List<VisaDeviceInformation> usbDevicesInfo;
-        //DevicesCommunication devices;
-        //Setting Calibration;
+        List<VisaDeviceInformation> usbDevicesInfo;
+        DevicesCommunication devices;
+        Setting Calibration;
 
         private System.Windows.Forms.Timer timer;
 
@@ -30,8 +30,8 @@ namespace AutoSet_New
             devices.InitializeCrateAddress(Properties.Settings.Default.IP, 502);
 
             Calibration = new Setting(devices);
-            Modules.Items.AddRange(new string[8] { "241", "242", "243", "511", "371", "374", "375", "Не подключен" });
-            Modules.SelectedIndex = 7;
+            PLC.Items.AddRange(new string[8] { "241", "242", "243", "511", "371", "374", "375", "Не подключен" });
+            PLC.SelectedIndex = 7;
 
             IPTextBox.Text = Properties.Settings.Default.IP;
 
@@ -111,9 +111,9 @@ namespace AutoSet_New
                         {
                             BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                             {
-                                if (Modules.SelectedIndex != devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1)
+                                if (PLC.SelectedIndex != devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1)
                                 {
-                                    Modules.SelectedIndex = devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1;
+                                    PLC.SelectedIndex = devices.Crate.ReadReg(Registers.REGISTER_CONTROLLER_TYPE) - 1;
                                     float version = devices.Crate.ReadVersion(Registers.REGISTER_VERSION_PLC);
                                     if ((int)version == 4)
                                     {
@@ -134,9 +134,9 @@ namespace AutoSet_New
                             PLC_AutoCheck.CheckedChanged -= PLC_AutoCheck_CheckedChanged;
                             BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                             {
-                                Modules.SelectedIndex = 1;
+                                PLC.SelectedIndex = 1;
                                 PLC_AutoCheck.Checked = false;
-                                Modules.Enabled = true;
+                                PLC.Enabled = true;
                             }));
                             backgroundWorker3.CancelAsync();
                             PLC_AutoCheck.CheckedChanged += PLC_AutoCheck_CheckedChanged;
@@ -146,7 +146,7 @@ namespace AutoSet_New
                     {
                         BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                         {
-                            Modules.SelectedIndex = 7;
+                            PLC.SelectedIndex = 7;
                         }));
                     }
 
@@ -157,7 +157,7 @@ namespace AutoSet_New
             {
                 BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                 {
-                    Modules.SelectedIndex = 7;
+                    PLC.SelectedIndex = 7;
                 }));
                 LogWrite(ex.Message);
             }
@@ -176,38 +176,38 @@ namespace AutoSet_New
             Properties.Settings.Default.Save();
         }
 
-        //private string[] GetAllPorts()
-        //{
-        //    devices.usbDevicesInfo = Port.FindVisaDevicesInfo();
-        //    List<string> usbInfo = new List<string>();
-        //    devices.usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
+        private string[] GetAllPorts()
+        {
+            devices.usbDevicesInfo = Port.FindVisaDevicesInfo();
+            List<string> usbInfo = new List<string>();
+            devices.usbDevicesInfo.ForEach(t => usbInfo.Add(t.GetInfo()));
 
-        //    return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
-        //}
+            return usbInfo.Concat(SerialPort.GetPortNames()).ToArray();
+        }
 
-        //private void PortsListReload()
-        //{
-        //    string[] ports = GetAllPorts();
+        private void PortsListReload()
+        {
+            string[] ports = GetAllPorts();
 
-        //    AgillentPortBox.Items.Clear();
-        //    AgillentPortBox.Items.AddRange(ports);
+            AgillentPortBox.Items.Clear();
+            AgillentPortBox.Items.AddRange(ports);
 
-        //    comboBoxGenerator.Items.Clear();
-        //    comboBoxGenerator.Items.AddRange(ports);
-        //}
+            comboBoxGenerator.Items.Clear();
+            comboBoxGenerator.Items.AddRange(ports);
+        }
 
-        //private string[] GetAdditionalPorts()
-        //{
-        //    usbDevicesInfo = Port.FindVisaDevicesInfo();
-        //    List<string> result = new List<string>();
+        private string[] GetAdditionalPorts()
+        {
+            usbDevicesInfo = Port.FindVisaDevicesInfo();
+            List<string> result = new List<string>();
 
-        //    for (int i = 0; i < usbDevicesInfo.Count; i++)
-        //    {
-        //        result.Add(usbDevicesInfo[i].description);
-        //    }
+            for (int i = 0; i < usbDevicesInfo.Count; i++)
+            {
+                result.Add(usbDevicesInfo[i].description);
+            }
 
-        //    return result.ToArray();
-        //}
+            return result.ToArray();
+        }
 
         private void FillSavedPorts()
         {
@@ -271,7 +271,7 @@ namespace AutoSet_New
 
                 BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                 {
-                    PLC = this.Modules.SelectedIndex;
+                    PLC = this.PLC.SelectedIndex;
                     Calibration.coef = Convert.ToSingle(CoefTextBox.Text);
                     Calibration.Point_1 = Convert.ToSingle(Point_1_textBox.Text);
                     Calibration.Point_2 = Convert.ToSingle(Point_2_textBox.Text);
@@ -340,7 +340,7 @@ namespace AutoSet_New
             PLC_AutoCheck.Enabled = false;
             if (PLC_AutoCheck.Checked)
             {
-                Modules.Enabled = false;
+                PLC.Enabled = false;
                 await Task.Run(() =>
                 {
                     //Thread.Sleep(2000);
@@ -355,7 +355,7 @@ namespace AutoSet_New
             else
             {
                 backgroundWorker3.CancelAsync();
-                Modules.Enabled = true;
+                PLC.Enabled = true;
             }
             await Task.Delay(2500);
             PLC_AutoCheck.Enabled = true;
@@ -365,7 +365,7 @@ namespace AutoSet_New
         {
             try
             {
-                switch (Modules.SelectedIndex)
+                switch (PLC.SelectedIndex)
                 {
                     case 0:
                         ReserCoef_1.Enabled = true;
@@ -501,7 +501,7 @@ namespace AutoSet_New
             {
                 await Task.Run(() =>
                 {
-                    if (string.IsNullOrEmpty(OrderNumber.Text)) throw new Exception("Номер заказа не указан");
+                    if (string.IsNullOrEmpty(textBoxOrderNum.Text)) throw new Exception("Номер заказа не указан");
                     if (string.IsNullOrEmpty(textBoxSerialNum.Text)) throw new Exception("Серийный номер не указан");
                     if (string.IsNullOrEmpty(CoefTextBox.Text)) throw new Exception("Коэффициент не заполнен");
 
@@ -511,7 +511,7 @@ namespace AutoSet_New
                             "Не допускаются символы \\ / ^ * ? \" < > |\r\n\t" +
                             "Введите корректный номер заказа и запустите запись файла повторно");
                     }
-                    Calibration.orderNum = OrderNumber.Text;
+                    Calibration.orderNum = textBoxOrderNum.Text;
                     if (!Worker.IsBusy) Worker.RunWorkerAsync();
 
                 });
@@ -525,15 +525,15 @@ namespace AutoSet_New
 
         private bool OrderNumberCheck()
         {
-            return !OrderNumber.Text.Contains("\\") &&
-                !OrderNumber.Text.Contains("/") &&
-                !OrderNumber.Text.Contains(":") &&
-                !OrderNumber.Text.Contains("*") &&
-                !OrderNumber.Text.Contains("?") &&
-                !OrderNumber.Text.Contains("\"") &&
-                !OrderNumber.Text.Contains("<") &&
-                !OrderNumber.Text.Contains(">") &&
-                !OrderNumber.Text.Contains("|");
+            return !textBoxOrderNum.Text.Contains("\\") &&
+                !textBoxOrderNum.Text.Contains("/") &&
+                !textBoxOrderNum.Text.Contains(":") &&
+                !textBoxOrderNum.Text.Contains("*") &&
+                !textBoxOrderNum.Text.Contains("?") &&
+                !textBoxOrderNum.Text.Contains("\"") &&
+                !textBoxOrderNum.Text.Contains("<") &&
+                !textBoxOrderNum.Text.Contains(">") &&
+                !textBoxOrderNum.Text.Contains("|");
         }
 
         private async void STOP_Click(object sender, EventArgs e)
@@ -623,13 +623,7 @@ namespace AutoSet_New
 
         private void UpdatePort_Click(object sender, EventArgs e)
         {
-            string[] ports = Devices.GetAllPorts();
-
-            AgillentPortBox.Items.Clear();
-            AgillentPortBox.Items.AddRange(ports);
-
-            comboBoxGenerator.Items.Clear();
-            comboBoxGenerator.Items.AddRange(ports);
+            PortsListReload();
         }
 
         private async void ResetCoef_Click(object sender, EventArgs e)
@@ -734,7 +728,7 @@ namespace AutoSet_New
                     {
                         BeginInvoke(new System.Windows.Forms.MethodInvoker(() =>
                         {
-                            Modules.SelectedIndex = 7;
+                            PLC.SelectedIndex = 7;
                         }));
                         LogWrite(ex.Message);
                     }
@@ -953,17 +947,17 @@ namespace AutoSet_New
 
         private void buttonReport_Click(object sender, EventArgs e)
         {
-            Calibration.MakeReport(Modules.SelectedIndex);
+            Calibration.MakeReport(PLC.SelectedIndex);
         }
 
         private void textBoxOrderNum_TextChanged(object sender, EventArgs e)
         {
 
             string text = "";
-            int cursorPos = OrderNumber.SelectionStart;
-            string original = OrderNumber.Text;
+            int cursorPos = textBoxOrderNum.SelectionStart;
+            string original = textBoxOrderNum.Text;
             uint length = 0;
-            foreach (char ch in OrderNumber.Text)
+            foreach (char ch in textBoxOrderNum.Text)
             {
                 if (char.IsLetterOrDigit(ch)) text += ch;
                 length++;
@@ -971,8 +965,8 @@ namespace AutoSet_New
             }
             if (original != text)
             {
-                OrderNumber.Text = text;
-                OrderNumber.SelectionStart = Math.Min(cursorPos, OrderNumber.Text.Length);
+                textBoxOrderNum.Text = text;
+                textBoxOrderNum.SelectionStart = Math.Min(cursorPos, textBoxOrderNum.Text.Length);
             }
         }
 

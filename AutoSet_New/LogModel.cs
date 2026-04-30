@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutoSet_New.Models
+namespace AutoSet_New
 {
     public class LogModel
     {

@@ -46,13 +46,14 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //Devices.Crate.ReadUInt16(60026);
             Devices.Crate.SetPassword();
 
+            //float dc = Devices.Crate.ReadSwFloat(8018);
 
            // ModbusTCP cc = new ModbusTCP();
            // cc.Connect("10.21.12.67");
            //ushort reg = cc.ReadUInt16(8022);
-            //LogerViewModel.Instance.Write(reg.ToString());
-            //WhileUpdateModules();
-            //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
+           //LogerViewModel.Instance.Write(reg.ToString());
+           //WhileUpdateModules();
+           //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
                 return Devices.Crate.Connected;
         }
 

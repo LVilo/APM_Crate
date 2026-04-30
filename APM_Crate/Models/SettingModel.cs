@@ -67,8 +67,8 @@ namespace APM_Crate.Models
                         Devices.Crate.WriteSwFloat(Coef_Speed_B, 0);
                         //Devices.Crate.WriteSwFloat(Coef_4_20_A, 1);
                         //Devices.Crate.WriteSwFloat(Coef_4_20_B, 0);
-                        //Devices.Crate.WriteSwFloat(Coef_T_A, 1);
-                        //Devices.Crate.WriteSwFloat(Coef_T_B, 0);
+                        Devices.Crate.WriteSwFloat(Coef_T_A, 1);
+                        Devices.Crate.WriteSwFloat(Coef_T_B, 0);
                         break;
                     case SettingType._4_20:
                         Devices.Crate.WriteSwFloat(Coef_4_20_A, 1);
@@ -138,8 +138,14 @@ namespace APM_Crate.Models
                 //    ValueType.Speed => Devices.Crate.ReadUInt16(reg) * 0.01f,
                 //    ValueType.Move=> Devices.Crate.ReadUInt16(reg) * 0.1f
                 //};
+                float mkm = (type) switch
+                {
+                    ValueType.ACC =>1,
+                    ValueType.Speed =>2,
+                    ValueType.Move  =>4
+                };
                 GetValue(type,out float value);
-                CountRelative(value, V,out float relative);
+                CountRelative(value * Coef / mkm, V,out float relative);
                 relative = Math.Abs(relative);
                 if (relative >= 1)
                 {
@@ -151,7 +157,7 @@ namespace APM_Crate.Models
                         case ValueType.Speed: s = "Скорость"; break;
                         case ValueType.Move: s = "Перемещение"; break;
                     }
-                    throw new Exception($"❗ {s} канала {Num} настроено не корректно. Значение отклонено на {Math.Round(relative, 2)}%");
+                    throw new Exception($"{s} канала {Num} настроено не корректно. Значение отклонено на {Math.Round(relative, 2)}%");
                 }
             }
             public void WriteCoefs_ACC(float A,float B)
@@ -267,8 +273,10 @@ namespace APM_Crate.Models
                 WriteCoefs_Speed(A2, B2);
 
 
-                float dc = Devices.Crate.ReadSwFloat(PhysicalB0) * 0.001f;
+                float dc = Devices.Crate.ReadSwFloat(PhysicalB0);
+                Devices.Generator.ChanelOff(Devices.Generator.channelNum);
                 float real_dc = (float)(Devices.Multimeter.GetVoltage("DC", 1000));
+                Devices.Generator.ChanelOn(Devices.Generator.channelNum);
                 WriteCoefs_IEPE2(real_dc / dc);
                 await SetVoltage(Point_1);
                 GetVoltageAC(out V1);
@@ -332,13 +340,18 @@ namespace APM_Crate.Models
                 LogerViewModel.Instance.Write($"Настройка 4-20, канала {Num}");
                 await Dialog.ShowBuild("4_20", $"Установите контакты для настройки 4-20 {Num}-го канала");
                 Reset(SettingType._4_20);
-                await ValidationVoltage(0.4,0.02);
-                float I1 = Devices.Crate.ReadUInt16(DC);
-                await ValidationVoltage(2, 0.02);
-                float I2 = Devices.Crate.ReadUInt16(DC);
+                await Validation_mA(4,0.02);
+                float I1 = Devices.Crate.ReadSwFloat(DC);
+                await Validation_mA(20, 0.02);
+                float I2 = Devices.Crate.ReadSwFloat(DC);
                 float A = 16 / (I2 - I1);
                 float B = 4 - A * I1;
                 WriteCoefs_4_20(A, B);
+
+
+                float I = Devices.Crate.ReadSwFloat(DC);
+                double mA = Devices.Multimeter.GetAmperage();
+                if ((I - mA) / mA * 100 > 1) throw new Exception("Канал 4-20 настроился не правильно");
                 //stopwatch.Stop();
                 //string endtime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
 
@@ -669,10 +682,26 @@ namespace APM_Crate.Models
 
             };
         }
+        public static async Task Validation_mA(double V, double relative)
+        {
+            bool Valid = false;
+            string mes = $"Установите щупы мультиметра в режим измерения постоянного тока и при помощи магазина сопротивлений задайте {V} мА";
+            do
+            {
+                IGetVoltege mult = new A();
+                Devices.Multimeter.AmmeterMode("DC");
+                await Dialog.ShowConfirm(mes, mult);
+                double value = Devices.Multimeter.GetAmperage();
+                Valid = Math.Abs(value - V) < relative ? true : false;
+                mes = $"Неправильное значение! Пожалуйста, установите напряжение в диапазоне от {V - relative} до {V + relative} мА.";
+            }
+            while (Valid is false);
+        }
         public static async Task ValidationVoltage(double V,double relative, string type = "DC")
         {
             bool Valid = false;
             string mes = $"При помощи магазина сопротивлений задайте {V} В";
+           if(Devices.Generator.IsOpened()) Devices.Generator.ChanelOff(Devices.Generator.channelNum);
             do
             {
                 IGetVoltege mult = type is "DC" ? new DC() : new AC();
@@ -682,6 +711,7 @@ namespace APM_Crate.Models
                 mes = $"Неправильное значение! Пожалуйста, установите напряжение в диапазоне от {V - relative} до {V + relative} В.";
             }
             while (Valid is false);
+            if (Devices.Generator.IsOpened()) Devices.Generator.ChanelOn(Devices.Generator.channelNum);
         }
         public static async Task ValidationVoltage(double V, double relative,ushort reg)
         {
@@ -846,6 +876,6 @@ namespace APM_Crate.Models
             if (IsChange1 is false || IsChange2 is false) { throw new Exception("Значения обновляются слишком долго."); }
         }
         public static void GetVoltageAC(out float V) => V = (float)Devices.Multimeter.GetVoltage("AC", 1000) * 1000;
-        public static void CountRelative(float value, float V, out float relative) => relative = Point_2 >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность
+        public static void CountRelative(float value, float V, out float relative) => relative = V >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность
     }
 }

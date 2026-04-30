@@ -43,7 +43,7 @@
         Text="{Binding Messege}"
         HorizontalAlignment="Left"
         Margin="10,10"
-        FontSize="20"/>
+        FontSize="14"/>
     </Border>
 
     <!-- Картинка -->

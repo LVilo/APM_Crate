@@ -31,45 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Models\DevicesModel\Printer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\GeneratorAKIP3407x.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\GeneratorAKIP3409x.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\GeneratorGSSxx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\GeneratorSDG1xxx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\GeneratorUSB.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\generators\PortGenerator.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\modbus\MudbusRTU.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\multimeters\MultimeterAgilent.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\multimeters\MultimeterPicotest.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\multimeters\PortMultimeter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\multimeters\UsbTmcDevice.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Models\PortsWork\Port.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

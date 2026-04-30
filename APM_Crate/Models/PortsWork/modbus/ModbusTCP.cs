@@ -311,7 +311,7 @@ namespace PortsWork
             //return ConvertModBus.ConvertByteMesToSWFloat(value);
 
             ushort[] i = ReadReg(reg, 2);
-            return ConvertModBus.ConvertRegistersToFloat(i);
+            return ConvertModBus.ConvertRegistersToSwFloat(i);
         }
         public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
