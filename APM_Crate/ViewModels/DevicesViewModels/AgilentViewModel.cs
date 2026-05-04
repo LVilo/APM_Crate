@@ -26,9 +26,9 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         protected override async Task<bool> OpenPort_abstract()
         {
             Devices.Multimeter = new PortMultimeter();
-            Devices.Multimeter = (PortMultimeter)Devices.SetMeasureDeviceName(Devices.Multimeter, PortItem);
+            Devices.Multimeter = (PortMultimeter)await Devices.SetMeasureDeviceName(Devices.Multimeter, PortItem);
 
-           if(Devices.Multimeter.OpenPort() is true)
+           if(await Devices.Multimeter.OpenPort() is true)
             {
                 Dialog.Mult = new Delay();
                 Dialog.WhileGetVoltAsync();
@@ -37,9 +37,9 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             return false;
         }
 
-        protected override void ClosePort_abstract()
+        protected override async Task ClosePort_abstract()
         {
-            Devices.Multimeter.ClosePort();
+            await Devices.Multimeter.ClosePort();
 
         }
         public override bool IsOpened() => Devices.Multimeter.IsOpened();

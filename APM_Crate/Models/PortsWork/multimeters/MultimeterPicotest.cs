@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -22,17 +23,17 @@ namespace PortsWork
 			return "USB";
 		}
 
-		public override bool SetName( string name )
+		public override async Task<bool> SetName( string name )
 		{
 			if ( string.IsNullOrEmpty( name ) || !multimeter.OpenVisaDevice( name ) )
 			{
 				return false;
 			}
-			ClosePort();
+			await ClosePort();
 			return true;
 		}
 
-		public override bool OpenPort()
+		public override async Task<bool> OpenPort()
 		{
             if ( multimeter.isOpened )
 			{
@@ -43,8 +44,8 @@ namespace PortsWork
             bool result = multimeter.OpenVisaDevice();
             //Debug.WriteLine($"result {result}");
             //writeremotemode
-            WriteBandFilter( BASE_FILTERS[ 1 ].ToString() );
-			SetWorkType( typeMultimeter, typeSignal, false );
+            await WriteBandFilter( BASE_FILTERS[ 1 ].ToString() );
+            await SetWorkType( typeMultimeter, typeSignal, false );
 			return result;
 		}
 
@@ -53,26 +54,26 @@ namespace PortsWork
 			return multimeter.isOpened;
 		}
 
-		protected override void WriteMessage(string message)
+		protected override async Task WriteMessage(string message)
 		{
 			multimeter.Write(message);
 		}
 
-		public override double GetVoltage( string type, int time )
+		public override async Task<double> GetVoltage( string type, int time )
 		{
-			SetWorkType( DEVICE_VOLTMETER, type, true );
-            Sleep(100);
+            await SetWorkType( DEVICE_VOLTMETER, type, true );
+            await Sleep(100);
             try
 			{
 				string result = "";
 				if ( ( filter != BASE_FILTERS[ 0 ] ) )
 				{
 					result = multimeter.Query( MESSAGE_READ );
-                    Sleep( 10 );			
+                    await Sleep( 10 );			
 				} else
 				{
 					multimeter.Write( MESSAGE_READ );
-					Sleep( SLEEP_READ );
+                    await Sleep( SLEEP_READ );
 					result = multimeter.Read();
 					//System.Windows.Forms.MessageBox.Show( "readed " + result );
 				}
@@ -83,20 +84,20 @@ namespace PortsWork
 			}
 		}
 
-		public override double GetAmperage()
+		public override async Task<double> GetAmperage()
 		{
-			SetWorkType( DEVICE_AMMETER, SIGNALTYPE_DC, true );
+            await SetWorkType( DEVICE_AMMETER, SIGNALTYPE_DC, true );
 			string result = multimeter.Query( MESSAGE_READ );
-            Sleep( 10 );
+            await Sleep( 10 );
 			return ConvertString( result.Replace( ".", "," ) ) * TO_MILLIVALUES;
 		}
 
-		public override void ClosePort()
+		public override async Task ClosePort()
 		{
 			//writelocalmode
 			if ( multimeter.isOpened )
 			{
-				WriteRemoteMode( false );
+                await WriteRemoteMode( false );
 			}
 			multimeter.Close();
 		}

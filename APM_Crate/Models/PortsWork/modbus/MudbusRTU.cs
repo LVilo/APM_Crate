@@ -18,13 +18,13 @@ namespace PortsWork
             StopBits = stop;
         }
 
-        public byte[] Exchange(byte[] frame, int expectedLength, uint attempt = 0)
+        public async Task<byte[]> Exchange(byte[] frame, int expectedLength, uint attempt = 0)
         {
             DiscardInBuffer();
             DiscardOutBuffer();
             Write(frame, 0, frame.Length);
 
-            Thread.Sleep(10);
+            await Task.Delay(10);
 
             byte[] resp = new byte[expectedLength];
             int read = 0;
@@ -39,7 +39,7 @@ namespace PortsWork
                 {
                     throw new TimeoutException();
                 }
-                return Exchange(frame, expectedLength, attempt + 1);
+                return await Exchange(frame, expectedLength, attempt + 1);
             }
             ValidateCRC(resp);
 
@@ -75,7 +75,7 @@ namespace PortsWork
             return frame.Concat(new byte[] { (byte)(crc & 0xFF), (byte)(crc >> 8) }).ToArray();
         }
 
-        public bool Write(ushort reg, byte[] value, byte func)
+        public async Task<bool> Write(ushort reg, byte[] value, byte func)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -94,13 +94,13 @@ namespace PortsWork
 
             frame = AddCRC(frame);
 
-            byte[] b = Exchange(frame, 8);
+            byte[] b = await Exchange(frame, 8);
             byte[] result = [b[5], b[4]];
             if (result.SequenceEqual(value)) return true;
             else return false;
         }
 
-        public byte[] Read(ushort reg, byte func, ushort len)
+        public async Task<byte[]> Read(ushort reg, byte func, ushort len)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -120,9 +120,9 @@ namespace PortsWork
 
             int expected = 5 + len * 2;
 
-            return Exchange(frame, expected);
+            return await Exchange(frame, expected);
         }
-        public void WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
+        public async Task WriteMultiple(ushort reg, byte[] values, byte func = 0x10)
         {
             if (IsOpened() is false) throw new Exception($"Порт {PortName} не подключен");
 
@@ -144,7 +144,7 @@ namespace PortsWork
 
             frame = AddCRC(frame);
 
-            Exchange(frame, 8);
+            await Exchange(frame, 8);
 
         }
         public enum WriteFunctions
@@ -160,46 +160,46 @@ namespace PortsWork
             Holding = 0x03,
             Input = 0x04
         }
-        public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
+        public async Task WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
         {
             byte[] b = ConvertModBus.ConvertUInt16ToByteMes(value);
-            Write(reg, b, (byte)func);
+            await Write(reg, b, (byte)func);
         }
-        public void WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
+        public async Task WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
         {
             byte[] b = ConvertModBus.ConvertInt16ToByteMes(value);
-            Write(reg, b, (byte)func);
+            await Write(reg, b, (byte)func);
         }
-        public void WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        public async Task WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
             byte[] b = ConvertModBus.ConvertSWFloatToByteMes(value);
-            WriteMultiple(reg, b, (byte)func);
+            await WriteMultiple(reg, b, (byte)func);
         }
-        public void WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        public async Task WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
             byte[] b = ConvertModBus.ConvertFloatToByteMes(value);
-            WriteMultiple(reg, b, (byte)func);
+            await WriteMultiple(reg, b, (byte)func);
         }
-        public float ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<float> ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
-            byte[]? b = Read(reg, (byte)func, 2);
+            byte[]? b = await Read(reg, (byte)func, 2);
             byte[] value = [b[3], b[4], b[5], b[6]];
             return ConvertModBus.ConvertByteMesToFloat(value);
         }
-        public float ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<float> ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
-            byte[]? b = Read(reg, (byte)func, 2);
+            byte[]? b = await Read(reg, (byte)func, 2);
             byte[] value = [b[3], b[4], b[5], b[6]];
             return ConvertModBus.ConvertByteMesToSWFloat(value);
         }
-        public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<ushort> ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
-            byte[]? b = Read(reg, (byte)func, 1);
+            byte[]? b = await Read(reg, (byte)func, 1);
             return ConvertModBus.ConvertByteMesToUInt16(b);
         }
-        public short ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<short> ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
-            byte[] b = Read(reg, (byte)func, 1);
+            byte[] b = await Read(reg, (byte)func, 1);
             return ConvertModBus.ConvertByteMesToInt16(b);
         }
     }

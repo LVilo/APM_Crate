@@ -28,6 +28,7 @@ namespace APM_Crate.Models.RestApiModel
 
         public static string IP = "https://172.22.64.138:5000/";
 
+
         //public static void SetUri()
         //{
         //    client.BaseAddress = new Uri(IP);
@@ -89,6 +90,21 @@ namespace APM_Crate.Models.RestApiModel
         {
             await client.DeleteAsync($"{IP}{mes}/{Id}");
         }
-        
+        public static async Task<bool> GetAPIStatus()
+        {
+            try
+            {
+                List<Config> configs = await GetListRecord();
+                if (configs.Count > 0)
+                {
+                    return true;
+                }
+                else return false;
+            }
+            catch(HttpRequestException)
+            {
+                return false;
+            }
+        }
     }
 }

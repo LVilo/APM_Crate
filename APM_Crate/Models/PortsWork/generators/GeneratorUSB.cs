@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -18,17 +19,17 @@ namespace PortsWork
             return "USB";
         }
 
-        public override bool SetName( string name )
+        public override async Task<bool> SetName( string name )
         {
             if ( string.IsNullOrEmpty( name ) || !generator.OpenVisaDevice( name ) )
             {
                 return false;
             }
-            ClosePort();
+            await ClosePort();
             return true;
         }
 
-        public override bool OpenPort()
+        public override async Task<bool> OpenPort()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Linux.Acsessusb(PortName);
             if ( generator.isOpened )
@@ -36,9 +37,9 @@ namespace PortsWork
                 return true;
             }
             bool result = generator.OpenVisaDevice();
-            ChangeSignalType( SignalType.Sine );
-            SetZeroSignal();
-            SetChannel( channelNum );
+            await ChangeSignalType( SignalType.Sine );
+            await SetZeroSignal();
+            await SetChannel( channelNum );
             return result;
         }
 
@@ -47,54 +48,54 @@ namespace PortsWork
             return generator.isOpened;
         }
 
-        protected override void WriteMessage( string message )
+        protected override async Task WriteMessage( string message )
         {
             generator.Write( message );
-            Sleep( 10 );
+            await Sleep( 10 );
         }
-        public override void SetLOAD(string ohm)
+        public override async Task SetLOAD(string ohm)
         {
-            WriteMessage("C" + channelNum + ":BSWV LOAD," + ohm + "\n");
+            await WriteMessage("C" + channelNum + ":BSWV LOAD," + ohm + "\n");
         }
-        public override void SetFrequency( string freq )
+        public override async Task SetFrequency( string freq )
         {
-            WriteMessage( "C" + channelNum + ":BSWV FRQ, " + freq.Replace( ",", "." ) + "\n" );
-        }
-
-        public override void SetVoltage( string volt )
-        {
-            WriteMessage( "C" + channelNum + ":BSWV AMP, " + volt.Replace( ",", "." ) + "\n" );
+            await WriteMessage( "C" + channelNum + ":BSWV FRQ, " + freq.Replace( ",", "." ) + "\n" );
         }
 
-        public override void SetOffset( double value )
+        public override async Task SetVoltage( string volt )
         {
-            WriteMessage( "C" + channelNum + ":BSWV OFST, " + value.ToString().Replace( ",", "." ) + "\n" );
+            await WriteMessage( "C" + channelNum + ":BSWV AMP, " + volt.Replace( ",", "." ) + "\n" );
         }
 
-        public override void SetZeroSignal()
+        public override async Task SetOffset( double value )
         {
-            SetVoltage( VOLTAGERANGE_MIN );
+            await WriteMessage( "C" + channelNum + ":BSWV OFST, " + value.ToString().Replace( ",", "." ) + "\n" );
         }
-        public override double GetVoltage()
+
+        public override async Task SetZeroSignal()
         {
-            string mes = ReadMessage($"C{channelNum}:BSWV AMP?");
+            await SetVoltage( VOLTAGERANGE_MIN );
+        }
+        public override async Task<double> GetVoltage()
+        {
+            string mes = await ReadMessage($"C{channelNum}:BSWV AMP?");
             return ConvertValue.StringE_ToDouble(mes);
         }
-        public override void ChanelOn(int num)
+        public override async Task ChanelOn(int num)
         {
-            WriteMessage($"C{num}:OUTP ON\n");
+            await WriteMessage($"C{num}:OUTP ON\n");
         }
-        public override void ChanelOff(int num)
+        public override async Task ChanelOff(int num)
         {
-            WriteMessage($"C{num}:OUTP OFF\n");
+            await WriteMessage($"C{num}:OUTP OFF\n");
         }
-        public override void SetChannel( int num )
+        public override async Task SetChannel( int num )
         {
             channelNum = num;
-            ChanelOn(channelNum);
+            await ChanelOn(channelNum);
         }
 
-        public override void ClosePort()
+        public override async Task ClosePort()
         {
             generator.Close();
         }

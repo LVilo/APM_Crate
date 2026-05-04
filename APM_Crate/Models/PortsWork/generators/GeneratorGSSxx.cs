@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -16,7 +17,7 @@ namespace PortsWork
 			VOLTAGERANGE_MIN = 0.002;
 		}
 
-		public override bool OpenPort()
+		public override async Task<bool> OpenPort()
 		{
 
 			try
@@ -25,11 +26,11 @@ namespace PortsWork
                 if ( !IsOpen )
 				{
 					Open();
-					Sleep( 100 );
-					ChangeSignalType( SignalType.Sine );				
-					Sleep( 1000 );
+					await Sleep(100);
+					await ChangeSignalType( SignalType.Sine );				
+					await Sleep(1000);
 				}
-				return CheckPort();
+				return await CheckPort();
 			} catch
 			{
 				new Exception("Ошибка открытия порта " + PortName);
@@ -38,37 +39,37 @@ namespace PortsWork
 			}
 		}
 
-		public override void SetFrequency( string freq )
+		public override async Task SetFrequency( string freq )
 		{
-			WriteMessage( "FREQ " + freq.Replace( ",", "." ) + " HZ" );
-			Sleep( 50 );
+            await WriteMessage( "FREQ " + freq.Replace( ",", "." ) + " HZ" );
+            await Sleep( 50 );
 		}
 
-		public override void SetVoltage( string volt )
+		public override async Task SetVoltage( string volt )
 		{
-			WriteMessage( @"VOLT " + volt.Replace( ",", "." ) );
-			Sleep( 50 );
+            await WriteMessage( @"VOLT " + volt.Replace( ",", "." ) );
+            await Sleep( 50 );
 		}
-        public override double GetVoltage()
+        public override async Task<double> GetVoltage()
         {
-            string mes = ReadMessage(@"VOLT?");
+            string mes = await ReadMessage(@"VOLT?");
             return ConvertValue.StringE_ToDouble(mes);
         }
-        public override void SetOffset( double value )
+        public override async Task SetOffset( double value )
 		{
-			SetVoltage( ( value / 2 ).ToString() );
+            await SetVoltage( ( value / 2 ).ToString() );
 		}
 
-		public override void ClosePort()
+		public override async Task ClosePort()
 		{
 			if ( IsOpen )
 			{
-				WriteRemoteMode( false );
+                await WriteRemoteMode( false );
 			}
-			base.ClosePort();
+			await base.ClosePort();
 		}
 
-		public override void ChangeSignalType( SignalType type )
+		public override async Task ChangeSignalType( SignalType type )
 		{
 			string typeText = "";
 			switch (type )
@@ -80,14 +81,14 @@ namespace PortsWork
 					typeText = SIGNALTYPE_DCVOLTAGE;
 					break;
 			}
-			WriteMessage( "FUNC:SHAPE " + typeText );
-			Sleep( 50 );
+            await WriteMessage( "FUNC:SHAPE " + typeText );
+            await Sleep( 50 );
 		}
 
-		public override void SetZeroSignal()
+		public override async Task SetZeroSignal()
 		{
-			SetVoltage( VOLTAGERANGE_MIN );
-			SetFrequency( "1 MHZ" );
+            await SetVoltage( VOLTAGERANGE_MIN );
+            await SetFrequency( "1 MHZ" );
 		}
 	}
 }

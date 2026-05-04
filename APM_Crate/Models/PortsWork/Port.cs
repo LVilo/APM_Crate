@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Tmds.DBus.Protocol;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -61,7 +62,7 @@ namespace PortsWork
 		/// </summary>
 		/// <param name="name">Имя(адрес), которое требуется задать</param>
 		/// <returns>Успешность операции </returns>
-		public virtual bool SetName( string name )
+		public virtual async Task<bool> SetName( string name )
 		{
 
 			if ( string.IsNullOrEmpty( name ) ) 
@@ -76,7 +77,7 @@ namespace PortsWork
 		/// Подключение порта внешнего устройства
 		/// </summary>
 		/// <returns>Успешность открытия порта для работы</returns>
-		public virtual bool OpenPort()
+		public virtual async Task<bool> OpenPort()
 		{
 			//if (PortName.Remove(PortName.Length -1, 1) == "/dev/usbtmc")
 			//{
@@ -120,7 +121,7 @@ namespace PortsWork
 		/// <summary>
 		/// Закрытие работы с портом внешнего устройства
 		/// </summary>
-		public virtual void ClosePort()
+		public virtual async Task ClosePort()
 		{
             //if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
             //{
@@ -138,7 +139,7 @@ namespace PortsWork
 		/// Отправка сообщения на внешнее устройство
 		/// </summary>
 		/// <param name="message">Команда для записи на устройство</param>
-		protected virtual void WriteMessage( string message )
+		protected virtual async Task WriteMessage( string message )
 		{
 			//         if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
 			//         {
@@ -147,7 +148,7 @@ namespace PortsWork
 			//else
 			
 				//if(!CheckPort())
-				CheckPort();
+				await CheckPort();
 			DiscardOutBuffer();
 			DiscardInBuffer();
 			//Thread.Sleep(50);
@@ -169,7 +170,7 @@ namespace PortsWork
         /// </summary>
         /// <param name="message">Команда для записи на устройство</param>
         /// <returns>Ответ внешнего устройства</returns>
-        public virtual string ReadMessage( string message )
+        public virtual async Task<string> ReadMessage( string message )
 		{
             Console.WriteLine("---------ReadMessage");
             //         if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
@@ -179,12 +180,11 @@ namespace PortsWork
             //else
             //{
             
-				CheckPort() ;
+				await CheckPort() ;
                 DiscardOutBuffer();
                 DiscardInBuffer();
                 WriteLine(message);
-            WaitPortAnswer(2000, out string result);
-            return result;
+            return await WaitPortAnswer(2000);
             
             //}
         }
@@ -193,9 +193,9 @@ namespace PortsWork
 		/// Ожидание ответа от внешнего устройства
 		/// </summary>
 		/// <returns>Наличие ответа</returns>
-		protected bool WaitPortAnswer(out string result)
+		protected async Task<string>  WaitPortAnswer()
 		{
-            return WaitPortAnswer( maxTimeoutForAnswer, out result );
+            return await WaitPortAnswer(maxTimeoutForAnswer);
 		}
 
         /// <summary>
@@ -203,9 +203,9 @@ namespace PortsWork
         /// </summary>
         /// <param name="time">Время ожидания ответа, мс</param>
         /// <returns>Наличие ответа</returns>
-        protected bool WaitPortAnswer(int timeout, out string result)
+        protected async Task<string> WaitPortAnswer(int timeout)
         {
-            result = null;
+           string result = null;
 
             StringBuilder buffer = new StringBuilder();
             int endTime = Environment.TickCount + timeout;
@@ -220,29 +220,29 @@ namespace PortsWork
                     if (buffer.Length > 0 && buffer[buffer.Length - 1] == '\n')
                     {
                         result = buffer.ToString().TrimEnd('\r', '\n');
-                        return true;
+                        return result;
                     }
                 }
 
                 Thread.Sleep(10);
             }
 
-            return false; // таймаут
+			throw new TimeoutException(); // таймаут
         }
 
         /// <summary>
         /// Подключение режима удалённой работы для внешних устройств
         /// </summary>
         /// <param name="needRemote">Режим удалённой/ручной работы</param>
-        protected virtual void WriteRemoteMode( bool needRemote )
+        protected virtual async Task WriteRemoteMode( bool needRemote )
 		{
 			if ( needRemote )
 			{
-				WriteMessage( MESSAGE_REMOTEMODE );
-				Sleep( 1000 );
+				await WriteMessage( MESSAGE_REMOTEMODE );
+				await Sleep( 1000 );
 			} else
 			{
-				WriteMessage( MESSAGE_LOCALMODE );
+				await WriteMessage( MESSAGE_LOCALMODE );
 			}
 		}
 
@@ -250,14 +250,14 @@ namespace PortsWork
 		/// Проверка ответа из порта
 		/// </summary>
 		/// <returns>Успешность проверки</returns>
-		public virtual bool CheckPort()
+		public virtual async Task<bool> CheckPort()
 		{
 			try
 			{
 				DiscardOutBuffer();
 				DiscardInBuffer();
                 WriteLine(MESSAGE_IDN);
-				WaitPortAnswer(2000,out string result);
+                string result = await WaitPortAnswer(2000);
 				Console.WriteLine("name: " + result);
 				return true;
 			}
@@ -276,7 +276,7 @@ namespace PortsWork
 		/// Инициализация внешнего устройства конкретного типа
 		/// </summary>
 		/// <returns>Объект для работы с подключенным внешним устройством</returns>
-		public virtual Port IdentifyDeviceType()
+		public virtual async Task<Port> IdentifyDeviceType()
 		{
 			return this;
 		}
@@ -312,11 +312,11 @@ namespace PortsWork
 		/// Ожидание системы
 		/// </summary>
 		/// <param name="time">Время ожидания, мс</param>
-		public static void Sleep( int time )
+		public static async Task Sleep( int time )
 		{
 			//for ( int i = 0; i < time; i += 10 )
 			//{
-				Thread.Sleep(time);
+				await Task.Delay(time);
                 if ( stopFlag )
                 {
                     stopFlag = false;

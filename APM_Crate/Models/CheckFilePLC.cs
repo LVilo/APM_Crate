@@ -19,31 +19,52 @@ namespace APM_Crate.Models
         public static int IndexMudule { get; set; } = 0;
         public static int LengthModul { get; set; } = (LengthChannel + 4) * 4;
 
-        public static async Task Start()
+        public static async Task Start(ushort type)
         {
-            Devices.Crate.WriteUInt16(Channel1.OnSaw,1);
-            Devices.Crate.WriteUInt16(Channel2.OnSaw,1);
-            Devices.Crate.WriteUInt16(3,5);
-            Thread.Sleep(3000);
-            Devices.Crate.WriteUInt16(4, 1);
-            do
+            byte[] data = await GetDataSaw(type);
+            uint errors1 = 0;
+            uint errors2 = 0;
+            if (type is 2 || type is 5 || type is 7)
             {
-                Thread.Sleep(500);
+                GetValuesChannel(ref data, out ushort[] channel1);
+                CheckSawChannel(channel1,out errors1);
             }
-            while (GetBigEndian());
-            byte[] data = await DownloadFile();
-            Devices.Crate.WriteUInt16(Channel1.OnSaw, 0);
-            Devices.Crate.WriteUInt16(Channel2.OnSaw, 0);
-            GetValuesChannel( data, out ushort[] channel1);
-            GetValuesChannel( data, out ushort[] channel2);
-            CheckSawChannel(channel1,out uint errors1);
-            CheckSawChannel(channel2, out uint errors2);
+            if (type is 1 || type is 2)
+            {
+                GetValuesChannel(ref data, out ushort[] channel2);
+                CheckSawChannel(channel2, out errors2);
+            }
+
+            
             uint result = errors1 + errors2;
             if (result > 0) throw new Exception($"Ошибка! Сигнал формы пилы неправильный. Зафиксировано ошибок: {result}");
         }
-        public static bool GetBigEndian()
+        public static async Task<byte[]> GetDataSaw(ushort type)
         {
-           ushort value =  Devices.Crate.ReadUInt16(6);
+            IndexMudule = Convert.ToInt32(ItemModule) - 1;
+
+            if (type is 2 || type is 5 || type is 7) await Channel1.SawOn();
+            if (type is 1 || type is 2) await Channel2.SawOn();
+
+            await Devices.Crate.WriteSingleRegister(3, 5);
+            await Task.Delay(3000);
+            await Devices.Crate.WriteSingleRegister(4, 1);
+            do
+            {
+                await Task.Delay(500);
+            }
+            while (await GetBigEndian() is false);
+            await Task.Delay(3000);
+            byte[] data = await DownloadFile();
+            if (type is 2 || type is 5 || type is 7) await Channel1.SawOff();
+            if (type is 1 || type is 2) await Channel2.SawOff();
+            return data;
+        }
+
+
+        public static async  Task<bool> GetBigEndian()
+        {
+           ushort value = await Devices.Crate.ReadUInt16(6);
            string str = Convert.ToString(value,2);
             str = new string(str.Reverse().ToArray());
             if (str.Length < 16)
@@ -54,10 +75,9 @@ namespace APM_Crate.Models
         }
         public static async Task<byte[]> DownloadFile()
         {
-            string url = $"http://{Devices.Crate.IpAddress}/fast.dat";
-            //string path = "Log";
             using HttpClient client = new HttpClient();
-            return await client.GetByteArrayAsync(url);
+            client.BaseAddress = new Uri($"http://{Devices.Crate.IpAddress}/");
+            return await client.GetByteArrayAsync("fast.dat");
             //await File.WriteAllBytesAsync(path, filebytes);
         }
         public static void CheckSawChannel(ushort[] channel, out uint errors)
@@ -92,7 +112,7 @@ namespace APM_Crate.Models
                 }
             }
         }
-        public static void GetValuesChannel(byte[] data, out ushort[] channel)
+        public static void GetValuesChannel(ref byte[] data, out ushort[] channel)
         {
             channel = new ushort[LengthChannel];
             for (int i = 2 *IndexMudule * LengthModul; i < LengthChannel; i++)
@@ -101,6 +121,7 @@ namespace APM_Crate.Models
                 byte b2 = data[i * 2 + 1];
                 channel[i] = (ushort)(b1 << 8 | +b2);
             }
+            data = data.Skip((LengthChannel + 4) * 2).ToArray();
             //data = data[((LengthChannel + 4) * 2)..];
         }
     }

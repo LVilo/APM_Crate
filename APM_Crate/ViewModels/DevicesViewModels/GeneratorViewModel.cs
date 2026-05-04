@@ -51,25 +51,25 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         {
             if (string.IsNullOrEmpty(PortItem))
             {
-                LogerViewModel.Instance.Write($"Выбранный порт пуст. Повторно выберите порт для подключения устройства");
+                await LogerViewModel.Instance.Write($"Выбранный порт пуст. Повторно выберите порт для подключения устройства");
                 return false;
             }
             Devices.Generator = new PortGenerator();
-            Devices.Generator = (PortGenerator)Devices.SetMeasureDeviceName(Devices.Generator,  PortItem);
-            if( Devices.Generator.OpenPort() is true)
+            Devices.Generator = (PortGenerator)await Devices.SetMeasureDeviceName(Devices.Generator,  PortItem);
+            if( await Devices.Generator.OpenPort() is true)
             {
                 
                 int chanel = Chanel_1 is true ? 1 : 2;
-                Devices.Generator.SetChannel(chanel);
+                await Devices.Generator.SetChannel(chanel);
                 return Devices.Generator.IsOpened();
             }
             return false;
         }
 
-        protected override void ClosePort_abstract()
+        protected override async Task ClosePort_abstract()
         {
-            Devices.Generator.ChanelOff(Devices.Generator.channelNum);
-            Devices.Generator.ClosePort();
+            await Devices.Generator.ChanelOff(Devices.Generator.channelNum);
+            await Devices.Generator.ClosePort();
         }
         public override bool IsOpened() => Devices.Generator.IsOpened();
     }

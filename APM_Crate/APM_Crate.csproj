@@ -68,6 +68,9 @@
     <Compile Update="Views\DevicesViews\CrateView.axaml.cs">
       <DependentUpon>CrateView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DialogViews\LiveCharts2.axaml.cs">
+      <DependentUpon>LiveCharts2.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\DialogViews\LiveCharts.axaml.cs">
       <DependentUpon>LiveCharts.axaml</DependentUpon>
     </Compile>

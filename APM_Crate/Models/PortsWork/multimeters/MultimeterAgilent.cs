@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -23,22 +24,22 @@ namespace PortsWork
 			typeSignal = SIGNALTYPE_AC;
 		}
 
-		public override bool OpenPort()
+		public override async Task<bool> OpenPort()
 		{
 			try
 			{
 				if ( !IsOpen )
 				{
 					Open();
-					Sleep( 100 );
-					WriteRemoteMode( true );
-					WriteBandFilter( BASE_FILTERS[ 1 ].ToString() );
-					Sleep( 1000 );
-					SetWorkType( typeMultimeter, typeSignal, false );
-					Sleep( 1000 );
+					await Sleep( 100 );
+                    await WriteRemoteMode( true );
+                    await WriteBandFilter( BASE_FILTERS[ 1 ].ToString() );
+                    await Sleep( 1000 );
+                    await SetWorkType( typeMultimeter, typeSignal, false );
+                    await Sleep( 1000 );
 					
 				}
-				return CheckPort();
+				return await CheckPort();
 			} catch
 			{
 				new Exception("Ошибка открытия порта " + PortName);
@@ -47,39 +48,45 @@ namespace PortsWork
 			}
 		}
 
-		public override double GetVoltage( string type, int time )
+		public override async Task<double> GetVoltage( string type, int time )
 		{
-			SetWorkType( DEVICE_VOLTMETER, type, true );
+            await SetWorkType( DEVICE_VOLTMETER, type, true );
 			try
 			{
-				WriteMessage( MESSAGE_READ );
-				return WaitPortAnswer(out string result) ? ConvertString(result.Replace(".", ",")) : DOUBLE_FALSEVALUE;
+                await WriteMessage( MESSAGE_READ );
+				string result = await WaitPortAnswer();
+				return ConvertString(result.Replace(".", ","));
 			} catch ( TimeoutException )
 			{
 				return DOUBLE_FALSEVALUE;
 			}
         }
 
-		public override double GetAmperage()
+		public override async Task<double> GetAmperage()
 		{
-			SetWorkType( DEVICE_AMMETER, SIGNALTYPE_DC, true );
-			WriteMessage( MESSAGE_READ );
-			if ( !WaitPortAnswer( out string result) )
-			{
-				return DOUBLE_FALSEVALUE;
-			}
-			double res = ConvertString(result.Replace( ".", "," ) ) * TO_MILLIVALUES;
-			Console.WriteLine( "Считанный ток " + res );
-			return res;
+			await SetWorkType( DEVICE_AMMETER, SIGNALTYPE_DC, true );
+            try
+            {
+				await WriteMessage( MESSAGE_READ );
+                string result = await WaitPortAnswer();
+                double res = ConvertString(result.Replace(".", ",")) * TO_MILLIVALUES;
+                Console.WriteLine("Считанный ток " + res);
+                return res;
+            }
+            catch (TimeoutException)
+            {
+                return DOUBLE_FALSEVALUE;
+            }
+			
 		}
 
-		public override void ClosePort()
+		public override async Task ClosePort()
 		{
 			if ( IsOpen )
 			{
-				WriteRemoteMode( false );
+				await WriteRemoteMode( false );
 			}
-			base.ClosePort();
+            await base.ClosePort();
 		}
 	}
 }

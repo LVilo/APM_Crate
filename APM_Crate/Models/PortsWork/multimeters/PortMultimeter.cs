@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -46,24 +47,24 @@ namespace PortsWork
 		/// Переключает мультиметр в режим вольтметра
 		/// </summary>
 		/// <param name="type">Задаёт тип считываемого сигнала (AC/DC)</param>
-		public void VoltmeterMode( string type )
+		public async Task VoltmeterMode( string type )
 		{
 			typeMultimeter = DEVICE_VOLTMETER;
 			typeSignal = type;
-			WriteMessage( "FUNC \"VOLT:" + type + "\"" );
-			Sleep( 500 );
+			await WriteMessage( "FUNC \"VOLT:" + type + "\"" );
+			await Sleep( 500 );
 		}
 
 		/// <summary>
 		/// Переключает мультиметр в режим амперметра
 		/// </summary>
 		/// <param name="type">Задаёт тип считываемого сигнала (AC/DC)</param>
-		public void AmmeterMode( string type )
+		public async Task AmmeterMode( string type )
 		{
 			typeMultimeter = DEVICE_AMMETER;
 			typeSignal = type;
-			WriteMessage( "FUNC \"CURR:" + type + "\"" );
-			Sleep( 500 );
+			await WriteMessage( "FUNC \"CURR:" + type + "\"" );
+			await Sleep( 500 );
 
         }
 
@@ -72,7 +73,7 @@ namespace PortsWork
 		/// </summary>
 		/// <param name="workType">Режим мультиметра</param>
 		/// <param name="signal">Тип считываемого сигнала (AC/DC)</param>
-		protected void SetWorkType( int workType, string signal, bool canCheck )
+		protected async Task SetWorkType( int workType, string signal, bool canCheck )
 		{
 			if ( canCheck && ( workType == typeMultimeter ) && ( signal == typeSignal ) )
 			{
@@ -80,10 +81,10 @@ namespace PortsWork
 			}
 			if ( workType == DEVICE_VOLTMETER )
 			{
-				VoltmeterMode( signal );
+				await VoltmeterMode( signal );
 			} else
 			{
-				AmmeterMode( signal );
+				await AmmeterMode( signal );
 			}
 		}
 
@@ -91,9 +92,9 @@ namespace PortsWork
 		/// Задаёт тип частотной фильтрации
 		/// </summary>
 		/// <param name="filterValue"></param>
-		protected void WriteBandFilter( string filterValue )
+		protected async Task WriteBandFilter( string filterValue )
 		{
-			WriteMessage( MESSAGE_BANDFILTER + " " + filterValue );
+			await WriteMessage( MESSAGE_BANDFILTER + " " + filterValue );
 		}
 
 		protected double CountStartVoltage( double resultVoltage, double freq )
@@ -106,7 +107,7 @@ namespace PortsWork
 		/// Считывает ток
 		/// </summary>
 		/// <returns>Значение постоянного тока, в мА</returns>
-		public virtual double GetAmperage()
+		public virtual async Task<double> GetAmperage()
 		{
 			return 0;
 		}
@@ -118,12 +119,12 @@ namespace PortsWork
 		/// <param name="time">Время ожидания ответа с мультиметра</param>
 		/// <param name="iterations">Число точек для усрежнения</param>
 		/// <returns>Значение напряжения, В</returns>
-		public double GetVoltage( string type, int time, int iterations )
+		public async Task<double> GetVoltage( string type, int time, int iterations )
 		{
 			double average = 0;
 			for ( int i = 0; i < iterations; i++ )
 			{
-				double result = GetVoltage( type, time );
+				double result = await GetVoltage( type, time );
 				average += result;
 			}
 			average /= iterations;
@@ -136,10 +137,10 @@ namespace PortsWork
 		/// <param name="type">Тип сигнала (AC/DC)</param>
 		/// <param name="time">Время ожидания ответа с мультиметра</param>
 		/// <returns>Значение напряжения, В</returns>
-		public virtual double GetVoltage( string type, int time )
+		public virtual async Task<double> GetVoltage( string type, int time )
 		{
-			VoltmeterMode(type);
-            string result = ReadMessage(MESSAGE_READ);
+			await VoltmeterMode(type);
+            string result = await ReadMessage(MESSAGE_READ);
             if (double.TryParse(result, NumberStyles.Any, CultureInfo.InvariantCulture, out double voltage))
             {
 				return voltage;
@@ -149,7 +150,7 @@ namespace PortsWork
 				
                 Console.WriteLine($"Невозможно преобразовать значение: {result}");
             }
-            Sleep(time);
+            await Sleep(time);
 			return 0;
 		}
 
@@ -159,20 +160,23 @@ namespace PortsWork
 		/// <param name="generator">Генератор, задающий сигнал</param>
 		/// <param name="volt">Переменное напряжение, которое требуется задать, В</param>
 		/// <returns>Действительное значение полученного переменного напряжения, В</returns>
-		private double RealVoltage( PortGenerator generator, double volt )
+		private async Task<double> RealVoltage( PortGenerator generator, double volt )
 		{
 			volt = Math.Round( volt, 6 );
             //MessageBox.Show( "Устанавливаю на генераторе: " + volt + " В" );
-			generator.SetVoltage( volt );
+			await generator.SetVoltage( volt );
 			double d = 0;
 			for ( int i = 0; i < 2; i++ )
 			{
-				d += GetVoltage( SIGNALTYPE_AC, 30 ) / 2.0;
+				d += await GetVoltage( SIGNALTYPE_AC, 30 ) / 2.0;
 			}
             //MessageBox.Show( "На вольтметре измерено: " + d.ToString() + " В" );
 			return d;
 		}
 
+		/*
+		 * 
+		 * удалено тк нет надобности
 		/// <summary>
 		/// Установка переменного напряжения с проверкой после ожидания выхода системы на режим
 		/// </summary>
@@ -184,20 +188,21 @@ namespace PortsWork
 		/// <param name="attempts">Максимальное число попыток выставить требуемое напряжение (для 1 проверки)</param>
 		/// <param name="realVoltage">Измеренное на мультиметре напряжение, мВ</param>
 		/// <returns>Успешность задания напряжения с требуемой точностью</returns>
-		public bool SetVoltage( PortGenerator generator, double idealVolt, double freq,
+		public async Task<bool> SetVoltage( PortGenerator generator, double idealVolt, double freq,
 		    double accuracyPercent, int sleep, int attempts, out double realVoltage )
 		{
 			realVoltage = 0;
 			double voltPercentage = accuracyPercent;
 			for ( int i = 0; ( i < ATTEMPTS_BASE ) && ( voltPercentage >= accuracyPercent ); i++ )
 			{
-				SetVoltage( generator, idealVolt, freq, accuracyPercent, attempts );
-				Sleep( sleep );
-				realVoltage = GetVoltage( SIGNALTYPE_AC, 30 ) * TO_MILLIVALUES;
+				await SetVoltage( generator, idealVolt, freq, accuracyPercent, attempts );
+				await Sleep( sleep );
+				realVoltage = await GetVoltage( SIGNALTYPE_AC, 30 ) * TO_MILLIVALUES;
 				voltPercentage = Math.Abs( realVoltage - idealVolt ) / idealVolt;
 			}
 			return (voltPercentage < accuracyPercent);
 		}
+		*/
 
 		/// <summary>
 		/// Установка переменного напряжения
@@ -208,21 +213,21 @@ namespace PortsWork
 		/// <param name="accuracyPercent">Требуемая точность задания напряжения</param>
 		/// <param name="attempts">Максимальное число попыток выставить требуемое напряжение</param>
 		/// <returns>Успешность задания напряжения с требуемой точностью</returns>
-		public bool SetVoltage( PortGenerator generator, double volt, double freq, double accuracyPercent, int attempts )
+		public async Task<bool> SetVoltage( PortGenerator generator, double volt, double freq, double accuracyPercent, int attempts )
 		{
 			double coeff = 2 * Math.Sqrt(2);
 			double voltPercentage = accuracyPercent;
 			double t = CountStartVoltage( volt, freq ) * coeff / TO_MILLIVALUES;
-			ChangeFilter( freq );
+			await ChangeFilter( freq );
 			if ( volt == 0 )
 			{
-				generator.SetZeroSignal();
+				await generator.SetZeroSignal();
 				return !stopFlag;
 			}
 			for ( int i = 0; ( i < attempts ) && ( voltPercentage >= accuracyPercent ) ; i++ )
 			{
 				Console.WriteLine( "Попытка выставить напряжение на генераторе: " + t );
-				double currVoltage = RealVoltage( generator, t ) * TO_MILLIVALUES;
+				double currVoltage = await RealVoltage( generator, t ) * TO_MILLIVALUES;
 				voltPercentage = Math.Abs( currVoltage - volt ) / volt;
 				Console.WriteLine( "Показания вольтметра: " + ( currVoltage ) + " мВ" );
 				t = ( t * volt ) / ( currVoltage );
@@ -239,14 +244,14 @@ namespace PortsWork
 		/// <param name="accuracyPercent">Требуемая точность задания напряжения</param>
 		/// <param name="attempts">Максимальное число попыток выставить требуемое напряжение</param>
 		/// <returns>Успешность задания напряжения с требуемой точностью</returns>
-		public bool SetOffset( PortGenerator generator, double volt, double accuracyPercent, int attempts )
+		public async Task<bool> SetOffset( PortGenerator generator, double volt, double accuracyPercent, int attempts )
 		{
 			double voltPercentage = accuracyPercent;
 			double t = volt;
 			for ( int i = 0; (i < attempts) && (voltPercentage >= accuracyPercent ) ; i++ )
 			{
-				generator.SetOffset( t );
-				double currVoltage = GetVoltage( SIGNALTYPE_DC, 30 );
+				await generator.SetOffset( t );
+				double currVoltage = await GetVoltage( SIGNALTYPE_DC, 30 );
 				voltPercentage = Math.Abs( currVoltage - volt ) / volt;
 				Console.WriteLine( "Показания вольтметра: " + ( currVoltage * TO_MILLIVALUES ) + " мВ" );
 				t = ( t * volt ) / ( currVoltage );
@@ -269,27 +274,27 @@ namespace PortsWork
 		/// Устанавливает частотный фильтр
 		/// </summary>
 		/// <param name="freq">Частота, на которой будет фильтроваться сигнал</param>
-		public void ChangeFilter( double freq )
+		public async Task ChangeFilter( double freq )
 		{
 			if ( ( freq < lowFilter ) && ( filter != BASE_FILTERS[ 0 ] ) )
 			{
 				filter = BASE_FILTERS[ 0 ];
-				WriteBandFilter( filter.ToString() );
-				Sleep( 750 );
+				await WriteBandFilter( filter.ToString() );
+                await Sleep( 750 );
 			} else if ( ( freq >= lowFilter ) && ( freq < highFilter ) && ( filter != BASE_FILTERS[ 1 ] ) )
 			{
 				filter = BASE_FILTERS[ 1 ];
-				WriteBandFilter( filter.ToString() );
-				Sleep( 750 );
+                await WriteBandFilter( filter.ToString() );
+                await Sleep( 750 );
 			} else if ( ( freq >= highFilter ) && ( filter != BASE_FILTERS[ 2 ] ) )
 			{
 				filter = BASE_FILTERS[ 2 ];
-				WriteBandFilter( filter.ToString() );
-				Sleep( 750 );
+                await WriteBandFilter( filter.ToString() );
+                await Sleep( 750 );
 			}
 		}
 
-		public override Port IdentifyDeviceType()
+		public override async Task<Port> IdentifyDeviceType()
 		{
 			try
 			{
@@ -302,7 +307,7 @@ namespace PortsWork
 				{
                     result = new MultimeterPicotest();
 				}
-				result.SetName(PortName);
+				await result.SetName(PortName);
                 return result;
 			} catch ( Exception e )
 			{

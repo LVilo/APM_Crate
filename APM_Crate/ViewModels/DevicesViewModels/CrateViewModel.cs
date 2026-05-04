@@ -34,7 +34,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         {
             if (string.IsNullOrEmpty(IP))
             {
-                LogerViewModel.Instance.Write($"Для подключения необходимо заполнить IP устройства");
+                await LogerViewModel.Instance.Write($"Для подключения необходимо заполнить IP устройства");
                 return false;
             }
             PortItem = IP;
@@ -43,21 +43,21 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             Devices.Crate.Port = 502;
             //Devices.Crate = new Crate();
             Devices.Crate.Connect(IP,502);
-            //Devices.Crate.ReadUInt16(60026);
-            Devices.Crate.SetPassword();
+            //await Devices.Crate.ReadUInt16(60026);
+            await Devices.Crate.SetPassword();
 
-            //float dc = Devices.Crate.ReadSwFloat(8018);
+            //float dc = await Devices.Crate.ReadSwFloat(8018);
 
            // ModbusTCP cc = new ModbusTCP();
            // cc.Connect("10.21.12.67");
            //ushort reg = cc.ReadUInt16(8022);
-           //LogerViewModel.Instance.Write(reg.ToString());
+           //await LogerViewModel.Instance.Write(reg.ToString());
            //WhileUpdateModules();
            //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
                 return Devices.Crate.Connected;
         }
 
-        protected override void ClosePort_abstract()
+        protected override async Task ClosePort_abstract()
         {
             Devices.Crate.Disconnect();
         }
@@ -65,7 +65,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
         //public void UpdateStatusModules()
         //{
-        //    ushort value = Devices.Crate.ReadUInt16(Registers.StatusModules);
+        //    ushort value = await Devices.Crate.ReadUInt16(Registers.StatusModules);
         //    string str = Convert.ToString(value, 2);
         //    str = new string(str.Reverse().ToArray());
         //    if (str.Length < 16)
@@ -88,7 +88,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         //        MainWindowViewModel.SettingViewModel.ItemModule = SettingModel.Moduls.First();
         //    }
         //    else { MainWindowViewModel.SettingViewModel.ItemModule = null; }
-        //    //ushort value = Devices.Crate.ReadUInt16(Registers.Type);
+        //    //ushort value = await Devices.Crate.ReadUInt16(Registers.Type);
             
         //    //MainWindowViewModel.SettingViewModel.ItemPLC = MainWindowViewModel.SettingViewModel.PLC[value - 1];
         //}
@@ -106,7 +106,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         //            catch (Exception ex)
         //            {
         //                Devices.Crate.Disconnect();
-        //                LogerViewModel.Instance.Write(ex.Message);
+        //                await LogerViewModel.Instance.Write(ex.Message);
         //            }
         //            await Task.Delay(2000);
         //        }

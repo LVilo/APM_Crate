@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -20,46 +21,46 @@ namespace PortsWork
         /// Задание сопротивления
         /// </summary>
         /// <param name="ohm">Сопротивление, Ом</param>
-        public virtual void SetLOAD(string ohm)
+        public virtual async Task SetLOAD(string ohm)
         {
-            WriteMessage("SOURCE" + channelNum + ":LOAD " + ohm);
-            Sleep(500);
+            await WriteMessage("SOURCE" + channelNum + ":LOAD " + ohm);
+             await Sleep(500);
         }
 
         /// <summary>
         /// Задание сопротивления
         /// </summary>
         /// <param name="ohm">Частота, Гц</param>
-        public void SetLOAD(uint ohm)
+        public async Task SetLOAD(uint ohm)
         {
-            SetLOAD(ohm.ToString());
+            await SetLOAD(ohm.ToString());
         }
 
         /// <summary>
         /// Задание частоты
         /// </summary>
         /// <param name="freq">Частота, Гц</param>
-        public virtual void SetFrequency( string freq )
+        public virtual async Task SetFrequency( string freq )
 		{
-            WriteMessage("SOURCE" + channelNum + ":FREQ " + freq.Replace(",", ".") + " HZ");
-            Sleep(500);
+            await WriteMessage("SOURCE" + channelNum + ":FREQ " + freq.Replace(",", ".") + " HZ");
+             await Sleep(500);
         }
 
 		/// <summary>
 		/// Задание частоты
 		/// </summary>
 		/// <param name="freq">Частота, Гц</param>
-		public void SetFrequency( double freq )
+		public async Task SetFrequency( double freq )
 		{
 			freq = Math.Round( freq, 6 );
-			SetFrequency( freq.ToString() );
+			await SetFrequency( freq.ToString() );
 		}
 
-        public virtual void ChanelOn(int num)
+        public virtual async Task ChanelOn(int num)
         {
 
         }
-        public virtual void ChanelOff(int num)
+        public virtual async Task ChanelOff(int num)
         {
 
         }
@@ -67,56 +68,56 @@ namespace PortsWork
         /// Задание амплитуды
         /// </summary>
         /// <param name="volt">Напряжение, В</param>
-        public virtual void SetVoltage( string volt )
+        public virtual async Task SetVoltage( string volt )
 		{
 		}
-        public virtual double GetVoltage()
+        public virtual async Task<double> GetVoltage()
         {
             return 0d;
         }
-        public virtual double GetMaxPP()
+        public virtual async Task<double> GetMaxPP()
         {
-            SetOffset( 0 );
-            Sleep( 500 );
-            SetVoltage("30");
-           return GetVoltage();
+            await SetOffset( 0 );
+            await Sleep( 500 );
+            await SetVoltage("30");
+           return await GetVoltage();
         }
-        public virtual double GetMaxRMS()
+        public virtual async Task<double> GetMaxRMS()
         {
-            SetOffset(0);
-            Sleep(500);
-            SetVoltage("30");
-            return ConvertValue.ToRMS(GetVoltage());
+            await SetOffset(0);
+             await Sleep(500);
+            await SetVoltage("30");
+            return ConvertValue.ToRMS(await GetVoltage());
         }
         /// <summary>
         /// Задание амплитуды
         /// </summary>
         /// <param name="volt">Напряжение, В</param>
-        public void SetVoltage( double volt )
+        public async Task SetVoltage( double volt )
 		{
 			volt = Math.Round( volt, 6 );
-			SetVoltage( volt.ToString() );
+			await SetVoltage( volt.ToString() );
 		}
 
-        public virtual void SetOffset(string value)
+        public virtual async Task SetOffset(string value)
         {
             //SetVoltage( ( value / 2 ).ToString() ); // ??????????? 
-            WriteMessage(@"SOURCE" + channelNum + ":OFST " + value.Replace(",", "."));
-            Sleep(500);
+            await WriteMessage(@"SOURCE" + channelNum + ":OFST " + value.Replace(",", "."));
+             await Sleep(500);
         }
         
         /// <summary>
         /// Выставление типа сигнала
         /// </summary>
         /// <param name="type">Вид сигнала</param>
-        public virtual void ChangeSignalType( SignalType type )
+        public virtual async Task ChangeSignalType( SignalType type )
 		{
 		}
 
 		/// <summary>
 		/// Выставление нулевой амплитуды
 		/// </summary>
-		public virtual void SetZeroSignal()
+		public virtual async Task SetZeroSignal()
 		{
 		}
 
@@ -124,17 +125,17 @@ namespace PortsWork
 		/// Задание постоянного напряжения
 		/// </summary>
 		/// <param name="value"></param>
-		public virtual void SetOffset( double value )
+		public virtual async Task SetOffset( double value )
 		{
 
 		}
 
-        public virtual void SetChannel( int num )
+        public virtual async Task SetChannel( int num )
         {
 
         }
 
-		public override Port IdentifyDeviceType()
+		public override async Task<Port> IdentifyDeviceType()
 		{
             try
 			{
@@ -142,13 +143,13 @@ namespace PortsWork
                 if ( !GetName().Contains( "USB" )  || GetName().Contains("ttyUSB"))
                 {
                     
-                    if (!OpenPort())
+                    if (!await OpenPort())
                     {
-                        result.SetName(GetName());
+                        await result.SetName(GetName());
                         return result;
                     }
-                    string idn = ReadMessage(MESSAGE_IDN);
-                    ClosePort();
+                    string idn = await ReadMessage(MESSAGE_IDN);
+                    await ClosePort();
                     if (idn.Contains("Suin"))
                     {
                         result = new GeneratorAKIP3407x();
@@ -157,7 +158,7 @@ namespace PortsWork
                     {
                         result = new GeneratorGSSxx();
                     }
-                    result.SetName(GetName());
+                    await result.SetName(GetName());
                     return result;
                 }
 				else
@@ -170,7 +171,7 @@ namespace PortsWork
                     {
                         result = new GeneratorSDG1xxx();
                     }
-                    result.SetName(GetName());
+                    await result.SetName(GetName());
                     return result;
                 }
 				
@@ -178,7 +179,7 @@ namespace PortsWork
 			{
                 new Exception(e.Message);
 				Port result = new PortGenerator();
-				result.SetName( GetName() );
+				await result.SetName( GetName() );
 				return result;
 			}
 		}

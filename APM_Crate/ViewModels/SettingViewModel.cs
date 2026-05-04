@@ -73,11 +73,11 @@ namespace APM_Crate.ViewModels
             get => SettingModel.ItemModule;
             set
             {
-                if(Devices.Crate.Connected)
-                {
-                   ushort type = Devices.Crate.ReadUInt16(Registers.Type);
-                    if(type>0 && type < 8) ItemPLC = PLC[type-1];
-                }
+                //if(Devices.Crate.Connected)
+                //{
+                //   ushort type = await Devices.Crate.ReadUInt16(Registers.Type);
+                //    if(type>0 && type < 8) ItemPLC = PLC[type-1];
+                //}
               if(IsEnabledButtons) this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value);
             }
         }
@@ -136,25 +136,24 @@ namespace APM_Crate.ViewModels
             {
                 IsEnabledButtons = false;
                 if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
-                CheckFilePLC.IndexMudule = Convert.ToInt32(ItemModule) - 1;
-                Devices.Crate.WriteUInt16(Channel1.OnSaw, 1);
-                Devices.Crate.WriteUInt16(Channel2.OnSaw, 1);
-                Devices.Crate.WriteUInt16(3, 5);
-                Thread.Sleep(3000);
-                Devices.Crate.WriteUInt16(4, 1);
-                do
-                {
-                    Thread.Sleep(500);
-                }
-                while (CheckFilePLC.GetBigEndian());
-                byte[] data = await CheckFilePLC.DownloadFile();
-                Devices.Crate.WriteUInt16(Channel1.OnSaw, 0);
-                Devices.Crate.WriteUInt16(Channel2.OnSaw, 0);
-                await Dialog.ShowLiveCharts(data);
+
+                // меняю состав корзины под выбранный модуль
+                await ChangeBasketForSelectModule();
+
+
+                await Task.Delay(2000);
+
+                //смотрю состояние модулей после изменения состава
+                await ValidStatusModule();
+
+                ushort type = await ValidIEPE_By_PLC();
+
+
+                await SettingModel.Samples(type);
             }
             catch (Exception ex)
             {
-                LogerViewModel.Instance.Write("❗ " +ex.Message);
+                await LogerViewModel.Instance.Write("❗ " +ex.Message);
             }
             finally
             {
@@ -165,89 +164,27 @@ namespace APM_Crate.ViewModels
         private async Task Setting()
         {
             try
-            { 
-
+            {
                 IsEnabledButtons = false;
-                if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
-                switch (ItemModule)
-                {
-                    case "243" or "374":
-                    {
-                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
-                        break;
-                    }
-                    default:
-                    {
-                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
-                        if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
-                        break;
-                    }
-                }
 
-                if (string.IsNullOrEmpty(OrderNumber))
-                {
-                    throw new Exception($"Введите номер заказа.");
-                }
-                if(string.IsNullOrEmpty(ItemModule))
-                {
-                    throw new Exception($"Выберите модуль для настройки.");
-                }
-               
+                ValidSelected();
+                await ValidDevices();
+
 
                 // меняю состав корзины под выбранный модуль
+                await ChangeBasketForSelectModule();
 
-                string str = "0000000000000000";
-                StringBuilder sb = new StringBuilder(new string(str.Reverse().ToArray()));
-                sb[Convert.ToInt32(ItemModule) - 1] = '1';
-                str = sb.ToString();
-                str = new string(str.Reverse().ToArray());
-                ushort value = Convert.ToUInt16(str, 2);
-
-                Devices.Crate.SetPassword();
-                Devices.Crate.WriteUInt16(Registers.Basket, value);
 
                 await Task.Delay(2000);
 
                 //смотрю состояние модулей после изменения состава
-                ushort status = Devices.Crate.ReadUInt16(Registers.StatusModules);
-                string s = new string(Convert.ToString(status,2).Reverse().ToArray());
-                if (s[Convert.ToInt32(ItemModule) - 1] is not '0')
-                {
-                    throw new Exception($"Выбранный модуль для настройки не подключен в корзину или не включен. Убедитесь в подключении модуля в слоте {Convert.ToInt32(ItemModule) + 6}");
-                }
+                await ValidStatusModule();
 
-                ushort type = Devices.Crate.ReadUInt16(Crate.Registers.Type);
-                if (type ==0 || type > 7)
-                {
+                await ValidTypePLC();
 
-                    await Dialog.ShowConfirm($"В выбранном контроллере записан тип контроллера {type}. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
-                }
-                if (ItemPLC != PLC[type - 1])
-                {
-                    await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
-                }
-                //await SQLModel.TableExistsCratePLCAsync();
-
-                SerialNumber = Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
-                if (SerialNumber != 65535)
-                {
-                    await Dialog.ShowResetting();
-                    IsResetting = true;//в устройстве записан серийный номер
-                }
-                else
-                {
-                    //SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
-                    IsResetting = false;
-                }
+                await SetSerialNumber();
 
 
-
-                //if (IsResetting is false) 
-
-                //if (SerialNumber is 0)
-                //{
-                //    throw new Exception($"Введите серийный номер.");
-                //}
                 if ((SerialNumber >= 0 && SerialNumber <= 65535) is false)
                 {
                     throw new Exception($"Серийный номер должен быть в диапазоне 0-65535.");
@@ -271,34 +208,130 @@ namespace APM_Crate.ViewModels
                 await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
 
 
-                //if (IsResetting is false)
-                //{
-                //    await RestModel.Post(config);
-                //    //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
-                //    await Devices.Printer.PrintText(SettingModel.SerialNumber.ToString());
-                //    Devices.Crate.WriteUInt16(Crate.Registers.SerialNum, SettingModel.SerialNumber);
-                //}
-                //else
-                //{
-                //    List<Config>list =  await RestModel.GetListRecord(50, SerialNumber, OrderNumber, ItemPLC);
-                //    string id = list[0].Id;
-                //    await RestModel.Delete(id);
-                //    await RestModel.Post(config);
-                //}
+                await PostNewDevice(config);
 
 
 
-                //LogerViewModel.Instance.Write($"Настройка заняла {stopwatch.Elapsed:mm\\ss}");
+                await LogerViewModel.Instance.Write($"Настройка заняла {stopwatch.Elapsed:mm\\ss}");
             }
             catch (Exception e)
             {
-                LogerViewModel.Instance.Write("❗ " +e.Message);
+                await LogerViewModel.Instance.Write("❗ " +e.Message);
             }
             finally
             {
                 IsEnabledButtons = true;
-                SaveRegistersModel.Parameters = new();
             }
+        }
+        private async Task ChangeBasketForSelectModule()
+        {
+            string str = "0000000000000000";
+            StringBuilder sb = new StringBuilder(new string(str.Reverse().ToArray()));
+            sb[Convert.ToInt32(ItemModule) - 1] = '1';
+            str = sb.ToString();
+            str = new string(str.Reverse().ToArray());
+            ushort value = Convert.ToUInt16(str, 2);
+
+            await Devices.Crate.SetPassword();
+            await Devices.Crate.WriteUInt16(Registers.Basket, value);
+        }
+
+        private async Task ValidStatusModule()
+        {
+            ushort status = await Devices.Crate.ReadUInt16(Registers.StatusModules);
+            string s = new string(Convert.ToString(status, 2).Reverse().ToArray());
+            if (s[Convert.ToInt32(ItemModule) - 1] is not '0')
+            {
+                throw new Exception($"Выбранный модуль для настройки не подключен в корзину или не включен. Убедитесь в подключении модуля в слоте {Convert.ToInt32(ItemModule) + 6}");
+            }
+        }
+        private async Task ValidDevices()
+        {
+            if(await RestModel.GetAPIStatus() is false) throw new Exception("RestAPI не отвечает на сообщения, проверьте подключение с сервером.");
+            if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
+            switch (ItemModule)
+            {
+                case "243" or "374":
+                    {
+                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
+                        break;
+                    }
+                default:
+                    {
+                        if (Devices.Multimeter.IsOpened() is false) throw new Exception("Необходимо подключить мультиметр");
+                        if (Devices.Generator.IsOpened() is false) throw new Exception("Необходимо подключить генератор");
+                        break;
+                    }
+            }
+        }
+        private void ValidSelected()
+        {
+            if (string.IsNullOrEmpty(OrderNumber))
+            {
+                throw new Exception($"Введите номер заказа.");
+            }
+            if (string.IsNullOrEmpty(ItemModule))
+            {
+                throw new Exception($"Выберите модуль для настройки.");
+            }
+            if (string.IsNullOrEmpty(ItemPLC))
+            {
+                throw new Exception($"Выберите PLC для настройки.");
+            }
+        }
+        private async Task ValidTypePLC()
+        {
+            ushort type = await Devices.Crate.ReadUInt16(Crate.Registers.Type);
+            if (type == 0 || type > 7)
+            {
+
+                await Dialog.ShowConfirm($"В выбранном контроллере записан тип контроллера {type}. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
+            }
+            if (ItemPLC != PLC[type - 1])
+            {
+                await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
+            }
+        }
+        private async Task SetSerialNumber()
+        {
+            SerialNumber = await Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
+            if (SerialNumber is not 0xFFFF)
+            {
+                await Dialog.ShowResetting();
+                IsResetting = true;//в устройстве записан серийный номер
+            }
+            else
+            {
+                SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
+                IsResetting = false;
+            }
+        }
+        private async Task PostNewDevice(Config config)
+        {
+            if (IsResetting is false)
+            {
+                await RestModel.Post(config);
+                //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
+                await Devices.Printer.PrintText(SettingModel.SerialNumber.ToString());
+                await Devices.Crate.WriteUInt16(Crate.Registers.SerialNum, SettingModel.SerialNumber);
+            }
+            else
+            {
+                List<Config> list = await RestModel.GetListRecord(50, SerialNumber, OrderNumber, ItemPLC);
+                string id = list[0].Id;
+                await RestModel.Delete(id);
+                await RestModel.Post(config);
+            }
+        }
+        private async Task<ushort> ValidIEPE_By_PLC()
+        {
+            ushort type = await Devices.Crate.ReadUInt16(Crate.Registers.Type);
+            bool valid = type is 3 || type is 4 || type is 6 ? false : true;
+            if(valid is false)
+            {
+                throw new Exception("В данном типе PLC отсутствует канал IEPE");
+            }
+            return type;
         }
     }
 }

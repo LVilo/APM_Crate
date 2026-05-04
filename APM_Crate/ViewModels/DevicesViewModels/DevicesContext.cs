@@ -79,7 +79,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         }
 
         protected abstract Task<bool> OpenPort_abstract();
-        protected abstract void ClosePort_abstract();
+        protected abstract Task ClosePort_abstract();
         public abstract bool IsOpened();
 
 
@@ -165,8 +165,6 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 //await SQLModel.WriteNewParameters(setting);
                 //await Dialog.ShowLiveCharts();
                 //await SQLModel.CreateTableCratePLC();
-                await Task.Run(async () =>
-                {
                     if (string.IsNullOrEmpty(PortItem))
                     {
                         throw new Exception($"Выбранный порт пуст. Повторно выберите порт для подключения устройства");
@@ -174,42 +172,38 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
                     if (IsOpened())
                     {
-                        LogerViewModel.Instance.Write($"{PortItem} уже подключен.");
+                        await LogerViewModel.Instance.Write($"{PortItem} уже подключен.");
                         return;
                     }
                     if (await OpenPort_abstract() is true)
                     {
                         DeviceStateColor = "#1DEC1D";
-                        LogerViewModel.Instance.Write($"{PortItem} подключен.");
+                        await LogerViewModel.Instance.Write($"{PortItem} подключен.");
                     }
                     else
                     {
-                        ClosePort_abstract();
+                        await ClosePort_abstract();
                         DeviceStateColor = "#F0F0F0";
-                        LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
+                        await LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
                     }
-                });
             }
             catch (Exception ex)
             {
-                ClosePort_abstract();
-                LogerViewModel.Instance.Write("❗" + ex.Message);
+                await ClosePort_abstract();
+                await LogerViewModel.Instance.Write("❗" + ex.Message);
             }
         }
         private async Task ClosePort()
         {
             try
             {
-                await Task.Run(async () =>
-                {
-                    ClosePort_abstract();
-                    LogerViewModel.Instance.Write($"{PortItem} отключен.");
+                    await ClosePort_abstract();
+                    await LogerViewModel.Instance.Write($"{PortItem} отключен.");
                     DeviceStateColor = "#F0F0F0";
-                });
             }
             catch (Exception ex)
             {
-                LogerViewModel.Instance.Write(ex.Message);
+                await LogerViewModel.Instance.Write(ex.Message);
             }
         }
         //private async Task UpdatesPorts()
@@ -223,7 +217,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         //    }
         //    catch (Exception ex)
         //    {
-        //        LogerViewModel.Instance.Write(ex.Message);
+        //        await LogerViewModel.Instance.Write(ex.Message);
         //    }
         //}
     }

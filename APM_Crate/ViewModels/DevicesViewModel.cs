@@ -85,7 +85,7 @@ namespace APM_Crate.ViewModels
             }
             catch (Exception ex)
             {
-                LogerViewModel.Instance.Write(ex.Message);
+                await LogerViewModel.Instance.Write(ex.Message);
             }
         }
 

@@ -10,7 +10,7 @@
         xmlns:media="clr-namespace:Avalonia.Media;assembly=Avalonia.Visuals"
         xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
         x:DataType="vm:LiveChartsViewModel"
-        x:Class="APM_Crate.Views.DialogViews.LiveCharts"
+        x:Class="APM_Crate.Views.DialogViews.LiveCharts2"
         Title="LiveCharts"
         SizeToContent="WidthAndHeight"
         MinHeight="400"
@@ -18,15 +18,14 @@
         MaxWidth="1920"
         Background="{DynamicResource ColorBackgroundBorder}">
 
+
     <Window.Resources>
         <local:ValuesToPointsConverter x:Key="ValuesToPointsConverter"/>
         <local:PointXConverter x:Key="PointXConverter"/>
         <local:PointYConverter x:Key="PointYConverter"/>
     </Window.Resources>
 
-
     <Grid RowDefinitions="*,Auto" Margin="10">
-		<DockPanel Grid.Row="0" >
                 <Grid Grid.Column="0" RowDefinitions="Auto,*">
                     <TextBlock Text="{Binding TextGrid_1}" Grid.Row="0" HorizontalAlignment="Center"/>
                     <Border Grid.Row="1" MinHeight="300" MinWidth="500" >
@@ -40,23 +39,6 @@
                     </Border>
 					
                 </Grid>
-
-                <Grid RowDefinitions="Auto,*" Grid.Column="1">
-                    <TextBlock Text="{Binding TextGrid_2}" Grid.Row="0" HorizontalAlignment="Center"/>
-                    <Border Grid.Row="1" MinHeight="300" MinWidth="500">
-						
-                        
-							<!--<Polyline Stroke="Blue"
-                                  StrokeThickness="2"
-                                  Points="{Binding Points_Chanel2}" />-->
-                                  <!--<lvc:CartesianChart  Series="{Binding Series2}"/>-->
-                        <ctrl2:LineChartControl Points="{Binding Points_Chanel2}"/>
-                        
-          
-                    </Border>
-					
-                </Grid>
-        </DockPanel>
   
     <Border Grid.Row="1">
                 <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">

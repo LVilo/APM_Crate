@@ -8,7 +8,7 @@
              x:Class="APM_Crate.Views.DialogViews.BuildSchemeView"
              x:DataType="viewmodels:BuildSchemeViewModel"
              Foreground="Black"
-             MinWidth="370"
+             MinWidth="440"
              MinHeight="570"
              Width="660"
              Height="930"

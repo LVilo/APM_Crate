@@ -42,26 +42,26 @@ namespace APM_Crate.Models.DevicesModel
             public const ushort MI_Version_New = 0x512;
         }
 
-        public void SetPassword()
+        public async Task SetPassword()
         {
-            int version = ReadUInt16(Registers.MI_Version);
+            int version = await ReadUInt16(Registers.MI_Version);
             if (version < Values.MI_Version_New)
             {
-                WritePassword(Values.Password_Old);
+               await WritePassword(Values.Password_Old);
             }
             else
             {
-                WritePassword(Values.Password_New);
+               await WritePassword(Values.Password_New);
             }
         }
-        private void WritePassword(ushort value)
+        private async Task WritePassword(ushort value)
         {
             for (byte j = 0; j < 20; j++)
             {
                 //пароль
-                WriteUInt16(Registers.Password, value);
-                Thread.Sleep(300);
-                if (ReadUInt16(Registers.Password) == value)
+                await WriteUInt16(Registers.Password, value);
+                await Task.Delay(300);
+                if (await ReadUInt16(Registers.Password) == value)
                     break;
                 if (j == 19)
                     throw new Exception("Не получается записать пароль");
@@ -230,7 +230,7 @@ namespace APM_Crate.Models.DevicesModel
         //            Thread.Sleep(200);
         //        WriteSingleRegister(reg, value);
         //        Thread.Sleep(200);
-        //        //LogerViewModel.Instance.Write(IPAddress);
+        //        //await LogerViewModel.Instance.Write(IPAddress);
         //    }
         //    finally
         //    {
@@ -265,7 +265,7 @@ namespace APM_Crate.Models.DevicesModel
         //            Thread.Sleep(200);
         //        WriteMultipleRegisters(reg, value);
         //        Thread.Sleep(200);
-        //        //LogerViewModel.Instance.Write(IPAddress);
+        //        //await LogerViewModel.Instance.Write(IPAddress);
         //    }
         //    finally
         //    {

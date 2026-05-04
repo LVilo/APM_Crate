@@ -77,6 +77,11 @@ namespace APM_Crate.Service
             var dialog = new LiveCharts();
             await Show(dialog, vm);
         }
+        public async Task ShowLiveCharts2Async(DialogViewModel vm)
+        {
+            var dialog = new LiveCharts2();
+            await Show(dialog, vm);
+        }
         public async Task ShowResettingAsync(DialogViewModel vm)
         {
             var dialog = new ResettingView();

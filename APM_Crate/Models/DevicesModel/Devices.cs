@@ -23,20 +23,20 @@ namespace APM_Crate.Models.DevicesModel
         public static Printer Printer {  get; set; } = new Printer();
         //public static RestModel Rest { get; set; } = new RestModel("");
 
-        public static Port SetMeasureDeviceName(Port device, string name)
+        public static async Task<Port> SetMeasureDeviceName(Port device, string name)
          {
 
             if (name.Contains("COM") || name.Contains("/dev/ttyUSB") || name.Contains("/dev/usbtmc"))
             {
-                device.SetName(name);
+                await device.SetName(name);
             }
             else
             {
                 VisaDeviceInformation info = usbDevicesInfo.Find(t => name.Contains(t.devType));
                 device.usbInfo = info;
-                device.SetName(info.description);
+                await device.SetName(info.description);
             }
-            return device.IdentifyDeviceType();
+            return await device.IdentifyDeviceType();
         }
         public static string[] GetAllPorts()
         {

@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using APM_Crate.Models.DevicesModel;
 using Avalonia.Fonts.Inter;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace APM_Crate.Views
 {
@@ -32,6 +33,7 @@ namespace APM_Crate.Views
             //Devices.Sg004.ClosePort();
             //Devices.TIK_BIS.ClosePort();
             //Devices.MY210_402.ClosePort();
+            Thread.Sleep(1000);
         }
         private void TitleBar_PointerPressed(object? sender, PointerPressedEventArgs e)
         {

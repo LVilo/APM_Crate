@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 //using RsVisaLoader;
 
 namespace PortsWork
@@ -15,7 +16,7 @@ namespace PortsWork
 			generator = new VisaDevice();
 		}	
 
-		public override void ChangeSignalType( SignalType type )
+		public override async Task ChangeSignalType( SignalType type )
 		{
 			string typeText = "";
 			switch ( type )
@@ -27,7 +28,7 @@ namespace PortsWork
 					typeText = SIGNALTYPE_DCVOLTAGE;
 					break;
 			}
-			WriteMessage( "C" + channelNum + ": BSWV WVTP, " + typeText + "\n" );
+			await WriteMessage( "C" + channelNum + ": BSWV WVTP, " + typeText + "\n" );
 		}
 	}
 }

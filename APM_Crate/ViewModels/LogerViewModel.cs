@@ -32,7 +32,7 @@ namespace APM_Crate.ViewModels
         /// запись в лог
         /// </summary>
         /// <param name="msg">Строка сообщения</param>
-        public void Write(string msg)
+        public async Task Write(string msg)
         {
             LogText += $"{DateTime.Now:HH:mm:ss} {msg}\r\n";
             WriteDebug(msg);

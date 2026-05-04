@@ -85,15 +85,30 @@ namespace APM_Crate.Service
             var vm = new ParamDialogViewModel();
             await DialogService.ShowParamAsync(vm);
         }
-        public static async Task ShowLiveCharts(byte[] data)
+        public static async Task ShowLiveCharts(byte[] data,ushort type)
         {
             var vm = new LiveChartsViewModel();
-            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel1);
-            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel2);
+            //for (int i = 0; i < CheckFilePLC.LengthChannel; i++)
+            //{
+            //    data[i] = (byte)i;
+            //}
+            CheckFilePLC.GetValuesChannel(ref data, out ushort[] Channel1);
+            CheckFilePLC.GetValuesChannel(ref data, out ushort[] Channel2);
 
             vm.Points_Chanel1 = new ObservableCollection<ChartPoint> { Channel1.Select((value, index) => new ChartPoint { X = index, Y = value }) };
             vm.Points_Chanel2 = new ObservableCollection<ChartPoint> { Channel2.Select((value, index) => new ChartPoint { X = index, Y = value }) };
-            await DialogService.ShowLiveChartsAsync(vm);
+            
+            if(type is 2) await DialogService.ShowLiveChartsAsync(vm);
+            else if(type is 5 || type is 7)
+            {
+                vm.TextGrid_1 = "Канал 1";
+                await DialogService.ShowLiveCharts2Async(vm);
+            }
+            else if (type is 1)
+            {
+                vm.TextGrid_1 = "Канал 2";
+                await DialogService.ShowLiveCharts2Async(vm);
+            }
         }
         public static async Task ShowResetting()
         {

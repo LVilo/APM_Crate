@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PortsWork
 {
@@ -17,7 +19,7 @@ namespace PortsWork
 			VOLTAGERANGE_MIN = 0.002;
 		}
 
-		public override bool OpenPort()
+		public override async Task<bool> OpenPort()
 		{
 			Console.WriteLine("------------OpenPort");
 
@@ -29,15 +31,15 @@ namespace PortsWork
                     Console.WriteLine("------------if");
                     Console.WriteLine(GetName());
                     Open();
-					Sleep( 100 );
-					ChangeSignalType( SignalType.Sine );				
-					Sleep( 100 );
+					 await Sleep( 100 );
+					await ChangeSignalType( SignalType.Sine );				
+					 await Sleep( 100 );
 
-                    SetChannel( channelNum );
-					Sleep( 100 );
+                    await SetChannel( channelNum );
+					 await Sleep( 100 );
 
 				}
-				return CheckPort();
+				return await CheckPort();
 			} catch
 			{
 				new Exception("Ошибка открытия порта " + PortName);
@@ -45,52 +47,52 @@ namespace PortsWork
 				return false;
 			}
 		}
-		public override void SetLOAD(string load)
+		public override async Task SetLOAD(string load)
 		{
-			Sleep(500);
-			WriteMessage("OUTP" + channelNum + ":LOAD " + load.Replace(",", "."));
-			Sleep(500);
+			await Sleep(500);
+			await WriteMessage("OUTP" + channelNum + ":LOAD " + load.Replace(",", "."));
+            await Sleep(500);
 		}
-        public override void SetFrequency( string freq )
+        public override async Task SetFrequency( string freq )
 		{
-            Sleep(500);
-			WriteMessage( "SOURCE" + channelNum + ":FREQ " + freq.Replace( ",", "." ) + " HZ" );
-            Sleep( 500 );
+             await Sleep(500);
+			await WriteMessage( "SOURCE" + channelNum + ":FREQ " + freq.Replace( ",", "." ) + " HZ" );
+             await Sleep( 500 );
 		}
 
-		public override void SetVoltage( string volt )
+		public override async Task SetVoltage( string volt )
 		{
-            Sleep(500);
-			WriteMessage( @"SOURCE" + channelNum + ":VOLT " + volt.Replace( ",", "." ) );
-            Sleep( 500 );
+             await Sleep(500);
+			await WriteMessage( @"SOURCE" + channelNum + ":VOLT " + volt.Replace( ",", "." ) );
+             await Sleep( 500 );
 		}
         
-        public override void SetOffset( string value ) 
+        public override async Task SetOffset( string value ) 
 		{
-            Sleep(500);
+             await Sleep(500);
             //SetVoltage( ( value / 2 ).ToString() ); // ??????????? 
-            WriteMessage(@"SOURCE" + channelNum + ":VOLT:OFFSET " + value.Replace(",", "."));
-            Sleep(500);
+            await WriteMessage(@"SOURCE" + channelNum + ":VOLT:OFFSET " + value.Replace(",", "."));
+             await Sleep(500);
         }
-        public override void SetOffset(double value)
+        public override async Task SetOffset(double value)
         {
-            Sleep(500);
+             await Sleep(500);
             //SetVoltage( ( value / 2 ).ToString() ); // ??????????? 
             value = Math.Round(value, 6);
-            SetOffset(value.ToString());
+            await SetOffset(value.ToString());
         }
-        public override void ClosePort()
+        public override async Task ClosePort()
 		{
 			if ( IsOpen )
 			{
-				WriteRemoteMode( false );
+				await WriteRemoteMode( false );
 			}
-			base.ClosePort();
+			await base.ClosePort();
 		}
 
-		public override void ChangeSignalType( SignalType type )
+		public override async Task ChangeSignalType( SignalType type )
 		{
-            Sleep(500);
+             await Sleep(500);
 			string typeText = "";
             switch (type )
 			{
@@ -101,39 +103,39 @@ namespace PortsWork
 					typeText = SIGNALTYPE_DCVOLTAGE;
 					break;
 			}
-			WriteMessage( "SOURCE" + channelNum + ":FUNC " + typeText );
-			Sleep( 500 );
+			await WriteMessage( "SOURCE" + channelNum + ":FUNC " + typeText );
+			 await Sleep( 500 );
 		}
-        public override double GetVoltage()
+        public override async Task<double> GetVoltage()
         {
-            string mes = ReadMessage(@"SOURCE" + channelNum + ":VOLT?");
+            string mes = await ReadMessage(@"SOURCE" + channelNum + ":VOLT?");
             return ConvertValue.StringE_ToDouble(mes);
         }
-        public override void ChanelOn(int num)
+        public override async Task ChanelOn(int num)
         {
-            Sleep(500);
-            WriteMessage($"OUTP{num}:STATE ON");
-            Sleep(500);
+             await Sleep(500);
+            await WriteMessage($"OUTP{num}:STATE ON");
+             await Sleep(500);
         }
-        public override void ChanelOff(int num)
+        public override async Task ChanelOff(int num)
         {
-            Sleep(500);
-            WriteMessage($"OUTP{num}:STATE OFF");
-            Sleep(500);
+             await Sleep(500);
+            await WriteMessage($"OUTP{num}:STATE OFF");
+             await Sleep(500);
         }
-        public override void SetChannel( int num )
+        public override async Task SetChannel( int num )
         {
-			Sleep(500);
+			 await Sleep(500);
             channelNum = num;
-			ChanelOn(channelNum);
-            Sleep( 500 );
+			await ChanelOn(channelNum);
+             await Sleep( 500 );
         }
 
-        public override void SetZeroSignal()
+        public override async Task SetZeroSignal()
 		{
-            Sleep(500);
-            SetVoltage( VOLTAGERANGE_MIN );
-			SetFrequency( "10000" );
+             await Sleep(500);
+            await SetVoltage( VOLTAGERANGE_MIN );
+			await SetFrequency( "10000" );
 		}
 	}
 }

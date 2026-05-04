@@ -54,7 +54,7 @@ namespace PortsWork
             return _client?.Connected ?? false;
         }
 
-        public byte[] Exchange(byte[] pdu, int expectedLength, uint attempt = 0)
+        public async  Task<byte[]> Exchange(byte[] pdu, int expectedLength, uint attempt = 0)
         {
             string mes = "";
             
@@ -82,7 +82,7 @@ namespace PortsWork
             {
                 while (read < response.Length)
                 {
-                    Thread.Sleep(200);
+                    await Task.Delay(200);
                     read += _stream.Read(response, read, response.Length - read);
                 }
             }
@@ -92,8 +92,8 @@ namespace PortsWork
                     throw;
 
                 Connect(IpAddress, Port);
-                Thread.Sleep(1000);
-                return Exchange(pdu, expectedLength, attempt + 1);
+                await Task.Delay(1000);
+                return await Exchange(pdu, expectedLength, attempt + 1);
             }
             mes = "";
             for (int i = 0; i < response.Length; i++)
@@ -125,7 +125,7 @@ namespace PortsWork
             return header.Concat(pdu).ToArray();
         }
 
-        public void WriteSingleRegister(ushort reg, ushort value)
+        public async Task WriteSingleRegister(ushort reg, ushort value)
         {
             ushort addr = (ushort)(reg - 1);
             //ushort val = (ushort)(value[1] << 8 | value[0]);
@@ -139,13 +139,13 @@ namespace PortsWork
                 (byte)(value & 0xFF)
             };
 
-             Exchange(pdu, 5);
+             await Exchange(pdu, 5);
 
             //byte[] result = [resp[4], resp[3]];
             //return result.SequenceEqual(value);
         }
 
-        public ushort[] ReadHoldingRegisters(ushort reg, ushort len)
+        public async Task<ushort[]> ReadHoldingRegisters(ushort reg, ushort len)
         {
             ushort addr = (ushort)(reg - 1);
 
@@ -159,7 +159,8 @@ namespace PortsWork
             };
 
             int expected = 2 + len * 2; // func + byte count + data
-            byte[] data = Exchange(pdu, expected).Skip(2).ToArray();
+            byte[] data = await Exchange(pdu, expected);
+            data = data.Skip(2).ToArray();
             ushort[] result = new ushort[len];
             for(int i = 0; i<len; i++)
             {
@@ -256,13 +257,13 @@ namespace PortsWork
         ///
 
 
-        public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
+        public async Task WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
         {
             //byte[] b = ConvertModBus.ConvertUInt16ToByteMes(value);
             //Write(reg, b, (byte)func);
 
 
-            WriteReg(reg, value);
+            await WriteReg(reg, value);
         }
         //public void WriteInt16(ushort reg, short value, WriteFunctions func = WriteFunctions.One_Holding)
         //{
@@ -271,7 +272,7 @@ namespace PortsWork
 
         //    WriteReg(reg, value);
         //}
-        public void WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        public async Task WriteSwFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
             byte[] b = ConvertModBus.ConvertSWFloatToByteMes(value);
             //WriteMultiple(reg, b, (byte)func);
@@ -279,23 +280,23 @@ namespace PortsWork
             v[0] = BitConverter.ToUInt16(b, 0);
             v[1] = BitConverter.ToUInt16(b, 2);
 
-            WriteReg(reg, v[0]);
-            WriteReg((ushort)(reg + 1), v[1]);
+            await WriteReg(reg, v[0]);
+            await WriteReg((ushort)(reg + 1), v[1]);
         }
-        public void WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
+        public async Task WriteFloat(ushort reg, float value, WriteFunctions func = WriteFunctions.Many_Holding)
         {
             byte[] b = ConvertModBus.ConvertFloatToByteMes(value);
             //WriteMultiple(reg, b, (byte)func);
             ushort[] v = new ushort[2];
             v[0] = BitConverter.ToUInt16(b, 0);
             v[1] = BitConverter.ToUInt16(b, 2);
-            WriteReg(reg, v[0]);
-            WriteReg((ushort)(reg + 1), v[1]);
+            await WriteReg(reg, v[0]);
+            await WriteReg((ushort)(reg + 1), v[1]);
         }
-        public float ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<float> ReadFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
 
-            ushort[] i = ReadReg(reg, 2);
+            ushort[] i = await ReadReg(reg, 2);
             return ConvertModBus.ConvertRegistersToFloat(i);
 
             //return (short)i[0];
@@ -304,41 +305,41 @@ namespace PortsWork
             //byte[] value = [b[3], b[4], b[5], b[6]];
             //return ConvertModBus.ConvertByteMesToFloat(value);
         }
-        public float ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<float> ReadSwFloat(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
             //byte[]? b = Read(reg, (byte)func, 2);
             //byte[] value = [b[3], b[4], b[5], b[6]];
             //return ConvertModBus.ConvertByteMesToSWFloat(value);
 
-            ushort[] i = ReadReg(reg, 2);
+            ushort[] i = await ReadReg(reg, 2);
             return ConvertModBus.ConvertRegistersToSwFloat(i);
         }
-        public ushort ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<ushort> ReadUInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
             //byte[]? b = Read(reg, (byte)func, 1);
             //return ConvertModBus.ConvertByteMesToUInt16(b);
             //
-            ushort[] i = ReadReg(reg, 1);
+            ushort[] i = await ReadReg(reg, 1);
             return (ushort)i[0];
 
         }
-        public short ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
+        public async Task<short> ReadInt16(ushort reg, ReadFunctions func = ReadFunctions.Holding)
         {
             //byte[] b = Read(reg, (byte)func, 1);
             //return ConvertModBus.ConvertByteMesToInt16(b);
 
-            ushort[] i = ReadReg(reg, 1);
+            ushort[] i = await ReadReg(reg, 1);
             return (short)i[0];
 
         }
         
-        public ushort[] TryReadReg(ushort reg, ushort quantity)
+        public async Task<ushort[]> TryReadReg(ushort reg, ushort quantity)
         {
             List<ushort[]> list = new List<ushort[]>();
             for (int i = 0; i < 10; i++)
             {
-                list.Add(ReadHoldingRegisters(reg, quantity));
-                Thread.Sleep(50);
+                list.Add(await ReadHoldingRegisters(reg, quantity));
+                await Task.Delay(50);
             }
             int count = 0;
             List<ushort[]> values = new List<ushort[]>();
@@ -360,38 +361,47 @@ namespace PortsWork
             throw new Exception("Не удалось прочитать значение с регистра.");
         }
 
-        public ushort[] ReadReg(ushort reg, ushort quantity)
+        public async  Task<ushort[]> ReadReg(ushort reg, ushort quantity)
         {
             try
             {
-                return ReadHoldingRegisters(reg, quantity);
+                return await ReadHoldingRegisters(reg, quantity);
             }
             catch (Exception ex)
             {
                 Connect(IpAddress, 502);
-                Thread.Sleep(1000);
-                return ReadHoldingRegisters(reg, quantity);
+                await Task.Delay(1000);
+                return await ReadHoldingRegisters(reg, quantity);
             }
         }
-        public void WriteReg(ushort reg, ushort value, int attempt = 0)
+        public async Task WriteReg(ushort reg, ushort value, int attempt = 0)
         {
             try
             {
                 
                 int attamts = 0;
-                while ((ushort)ReadHoldingRegisters(reg, 1)[0] != value)
+                ushort[] result = new ushort[2];
+                do
                 {
-                    WriteSingleRegister(reg, value);
-                    Thread.Sleep(200);
                     if (attamts == 10) break;
+                    await WriteSingleRegister(reg, value);
+                    await Task.Delay(200);
+                    result = await ReadHoldingRegisters(reg, 1);
                 }
+                while (result[0] != value);
+                //while ((ushort)(ReadHoldingRegisters(reg, 1)) != value)
+                //{
+                //    WriteSingleRegister(reg, value);
+                //    await Task.Delay(200);
+                //    if (attamts == 10) break;
+                //}
             }
             catch (Exception ex)
             {
                 Connect(IpAddress, 502);
-                Thread.Sleep(1000);
-                WriteSingleRegister(reg, value);
-                //LogerViewModel.Instance.Write(IPAddress);
+                await Task.Delay(1000);
+                await WriteSingleRegister(reg, value);
+                //await LogerViewModel.Instance.Write(IPAddress);
             }
         }
         //public void WriteReg(ushort reg, int[] value)
@@ -400,16 +410,16 @@ namespace PortsWork
         //    {
         //        
         //        WriteMultipleRegisters(reg, value);
-        //        Thread.Sleep(200);
+        //        await Task.Delay(200);
         //    }
         //    catch (Exception ex)
         //    {
         //        Connect(IpAddress, 502);
 
-        //        Thread.Sleep(200);
+        //        await Task.Delay(200);
         //        WriteMultipleRegisters(reg, value);
-        //        Thread.Sleep(200);
-        //        //LogerViewModel.Instance.Write(IPAddress);
+        //        await Task.Delay(200);
+        //        //await LogerViewModel.Instance.Write(IPAddress);
         //    }
         //}
     }
