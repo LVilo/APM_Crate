@@ -46,7 +46,11 @@
               Command="{Binding ClearLogCommand}" VerticalAlignment="Bottom" HorizontalAlignment="Right"
               MinHeight="20" Height="25" Padding="0" Width="25" MinWidth="20"/>
         
+
+
 			<TextBox
+            Name="LogTextBox"
+            TextChanged="WriteTextCommand"
             Width="263"
             Height="182"
             Focusable="False"

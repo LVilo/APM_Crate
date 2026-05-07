@@ -29,5 +29,16 @@
       "COM3"
     ]
   },
+  "PrinterViewModel": {
+    "Printers": [
+      "TSC TDP-225",
+      "Microsoft XPS Document Writer",
+      "Microsoft Print to PDF",
+      "Kyocera ECOSYS M2535dn KX",
+      "Fax",
+      "Adobe PDF"
+    ],
+    "PrinterName": "TSC TDP-225"
+  },
   "RestAPI_IP": null
 }

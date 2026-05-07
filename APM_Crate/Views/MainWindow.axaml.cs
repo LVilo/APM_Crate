@@ -21,15 +21,24 @@ namespace APM_Crate.Views
             
 
         }
+        private void WriteTextCommand(object? sender, TextChangedEventArgs e)
+        {
+            var len = LogTextBox.Text?.Length ?? 0;
+            LogTextBox.CaretIndex = len;
+            //LogTextBox.Focus();
+        }
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             LogerViewModel.Instance.Write("Приложение закрывается");
             //ControllerStorage.Save();
             PortsStorage.Save();
             //Devices.cnv.ClosePort();
-            Devices.Multimeter.ClosePort();
-            Devices.Generator.ClosePort();
-            Devices.Crate.Disconnect();
+            DevicesViewModel.Crate.ClosePort();
+            DevicesViewModel.Generator.ClosePort();
+            DevicesViewModel.Agilent.ClosePort();
+            //Devices.Multimeter.ClosePort();
+            //Devices.Generator.ClosePort();
+            //Devices.Crate.Disconnect();
             //Devices.Sg004.ClosePort();
             //Devices.TIK_BIS.ClosePort();
             //Devices.MY210_402.ClosePort();

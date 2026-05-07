@@ -18,6 +18,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 {
     public partial class CrateViewModel : DevicesContext
     {
+        private Crate passwordClient = new Crate();
         public CrateViewModel()
         {
             HeaderText = "Крейт";
@@ -29,7 +30,14 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             set { this.RaiseAndSetIfChanged(ref _IP, value); }
         }
 
-        
+        public async Task Timer()
+        {
+            while (passwordClient.IsConnected())
+            {
+                await passwordClient.SetPassword();
+                await Task.Delay(1000);
+            }
+        }
         protected override async Task<bool> OpenPort_abstract()
         {
             if (string.IsNullOrEmpty(IP))
@@ -43,8 +51,12 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             Devices.Crate.Port = 502;
             //Devices.Crate = new Crate();
             Devices.Crate.Connect(IP,502);
+
+            passwordClient.IpAddress = IP;
+            passwordClient.Port = 502;
+            passwordClient.Connect(IP, 502);
             //await Devices.Crate.ReadUInt16(60026);
-            await Devices.Crate.SetPassword();
+            Timer();
 
             //float dc = await Devices.Crate.ReadSwFloat(8018);
 
@@ -60,6 +72,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         protected override async Task ClosePort_abstract()
         {
             Devices.Crate.Disconnect();
+            passwordClient.Disconnect();
         }
         public override bool IsOpened() => Devices.Crate.Connected;
 

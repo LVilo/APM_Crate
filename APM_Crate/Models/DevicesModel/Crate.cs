@@ -33,6 +33,7 @@ namespace APM_Crate.Models.DevicesModel
 
             public static ushort Coefficient => 60056;
             public static ushort SerialNum => (ushort)(8008 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
+            public static ushort SetSerialNum => (ushort)(60027 + 90 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
             public static ushort VerPLC => (ushort)(8009 + 100 * (Convert.ToInt16(SettingModel.ItemModule) - 1));
         }
         public static class Values
@@ -42,6 +43,7 @@ namespace APM_Crate.Models.DevicesModel
             public const ushort MI_Version_New = 0x512;
         }
 
+        
         public async Task SetPassword()
         {
             int version = await ReadUInt16(Registers.MI_Version);
@@ -56,16 +58,11 @@ namespace APM_Crate.Models.DevicesModel
         }
         private async Task WritePassword(ushort value)
         {
-            for (byte j = 0; j < 20; j++)
-            {
-                //пароль
-                await WriteUInt16(Registers.Password, value);
-                await Task.Delay(300);
-                if (await ReadUInt16(Registers.Password) == value)
-                    break;
-                if (j == 19)
-                    throw new Exception("Не получается записать пароль");
-            }
+            //пароль
+            await WriteUInt16(Registers.Password, 0);
+            await Task.Delay(300);
+            await WriteUInt16(Registers.Password, value);
+            await Task.Delay(300);
         }
         //public void WriteUInt16(ushort reg, ushort value, WriteFunctions func = WriteFunctions.One_Holding)
         //{

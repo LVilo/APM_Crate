@@ -37,10 +37,12 @@
 			  <CheckBox Width="{Binding WidthControl}" CornerRadius="0" Content="Канал 2" IsChecked="{Binding Chanel_2}" HorizontalAlignment="Right"/>-->
 		 
 			  <Button Grid.Row="2" Grid.Column="0"
+					        IsEnabled="{Binding IsEnabled}"
 							Command="{Binding ClosePortCommand}"
 							Content="{Binding CloseText}"
 							Width="{Binding WidthControl}"/>
 			  <Button Grid.Row="2" Grid.Column="1"
+					        IsEnabled="{Binding IsEnabled}"
 							Command="{Binding OpenPortCommand}"
 							Content="{Binding OpenText}"
 							Width="{Binding WidthControl}"/>

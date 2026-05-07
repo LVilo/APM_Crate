@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,9 +21,11 @@ using System.Reactive;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using static APM_Crate.Models.DevicesModel.Crate;
 using static APM_Crate.Models.SettingModel;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace APM_Crate.ViewModels
 {
@@ -134,6 +138,7 @@ namespace APM_Crate.ViewModels
         {
             try
             {
+
                 IsEnabledButtons = false;
                 if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
 
@@ -150,10 +155,14 @@ namespace APM_Crate.ViewModels
 
 
                 await SettingModel.Samples(type);
+
+                //await Task.Delay(5000);
+                //await Devices.Printer.PrintText(12.ToString());
+
             }
             catch (Exception ex)
             {
-                await LogerViewModel.Instance.Write("❗ " +ex.Message);
+                await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
             }
             finally
             {
@@ -165,6 +174,12 @@ namespace APM_Crate.ViewModels
         {
             try
             {
+                //List<Config> list = await RestModel.GetListRecord(50, 23, null, null, RestModel.DeviceFamily);
+                //foreach (var d in list)
+                //{
+                //    await RestModel.Delete(d.Id);
+                //}
+                //List<Config> list = await RestModel.GetListRecord(50, 12, null, null, RestModel.DeviceFamily);
                 IsEnabledButtons = false;
 
                 ValidSelected();
@@ -182,16 +197,16 @@ namespace APM_Crate.ViewModels
 
                 await ValidTypePLC();
 
-                await SetSerialNumber();
+                await GetSerialNumber();
 
 
                 if ((SerialNumber >= 0 && SerialNumber <= 65535) is false)
                 {
                     throw new Exception($"Серийный номер должен быть в диапазоне 0-65535.");
                 }
-                
+
                 string starttime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
-                
+
                 stopwatch.Restart();
                 settings = new List<Settings>();
                 await Start(ItemPLC);
@@ -205,18 +220,18 @@ namespace APM_Crate.ViewModels
                     Settings = settings,
                 };
 
-                await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
-
-
                 await PostNewDevice(config);
+                //await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
 
 
 
-                await LogerViewModel.Instance.Write($"Настройка заняла {stopwatch.Elapsed:mm\\ss}");
+
+
+                await LogerViewModel.Instance.Write($"✔ Настройка заняла {stopwatch.Elapsed:mm\\ss}");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                await LogerViewModel.Instance.Write("❗ " +e.Message);
+                await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
             }
             finally
             {
@@ -225,6 +240,7 @@ namespace APM_Crate.ViewModels
         }
         private async Task ChangeBasketForSelectModule()
         {
+            await LogerViewModel.Instance.Write($"Изменение состава корзины под {ItemModule} слот");
             string str = "0000000000000000";
             StringBuilder sb = new StringBuilder(new string(str.Reverse().ToArray()));
             sb[Convert.ToInt32(ItemModule) - 1] = '1';
@@ -284,21 +300,26 @@ namespace APM_Crate.ViewModels
             ushort type = await Devices.Crate.ReadUInt16(Crate.Registers.Type);
             if (type == 0 || type > 7)
             {
-
-                await Dialog.ShowConfirm($"В выбранном контроллере записан тип контроллера {type}. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
+                await Dialog.ShowConfirm($"В выбранном контроллере записан неизвестный тип контроллера '{type}'. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
             }
             if (ItemPLC != PLC[type - 1])
             {
                 await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
             }
         }
-        private async Task SetSerialNumber()
+        private async Task GetSerialNumber()
         {
             SerialNumber = await Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
             if (SerialNumber is not 0xFFFF)
             {
+                await LogerViewModel.Instance.Write("В устройстве записан серийный номер. Выберите каналы для перенастройки устройства");
+                //в устройстве записан серийный номер
                 await Dialog.ShowResetting();
-                IsResetting = true;//в устройстве записан серийный номер
+                //List<Config> list = await RestModel.GetListRecord(50, SerialNumber, null,null, RestModel.DeviceFamily);
+                IsResetting = true;
+
+                //if (list.Count > 0) IsResetting = true; 
+                //else IsResetting = false;// влияет на мягкое удаление записи из базы данных,т.к записи не нашлось удалять ничего не нужно
             }
             else
             {
@@ -310,16 +331,22 @@ namespace APM_Crate.ViewModels
         {
             if (IsResetting is false)
             {
+                await LogerViewModel.Instance.Write("Запись нового устройства в базу данных");
                 await RestModel.Post(config);
                 //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
-                await Devices.Printer.PrintText(SettingModel.SerialNumber.ToString());
-                await Devices.Crate.WriteUInt16(Crate.Registers.SerialNum, SettingModel.SerialNumber);
+                await Devices.Printer.PrintText($"C.№:{SerialNumber}.");
+                await Devices.Crate.WriteSingleRegister(Crate.Registers.SetSerialNum, SettingModel.SerialNumber);
             }
             else
             {
-                List<Config> list = await RestModel.GetListRecord(50, SerialNumber, OrderNumber, ItemPLC);
-                string id = list[0].Id;
-                await RestModel.Delete(id);
+                await LogerViewModel.Instance.Write("Добавление новой записи настройки устройства. Старая запись станет не актуальной");
+                List<Config> list = await RestModel.GetListRecord(50, SerialNumber, null,null,RestModel.DeviceFamily);
+                foreach(var d in list)
+                {
+                    await RestModel.Delete(d.Id);
+                }
+                //string id = list.First().Id;
+                //await RestModel.Delete(id);
                 await RestModel.Post(config);
             }
         }

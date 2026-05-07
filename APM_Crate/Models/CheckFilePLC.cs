@@ -24,14 +24,16 @@ namespace APM_Crate.Models
             byte[] data = await GetDataSaw(type);
             uint errors1 = 0;
             uint errors2 = 0;
+            data = data.Skip(2 * IndexMudule * LengthModul).ToArray();
             if (type is 2 || type is 5 || type is 7)
             {
-                GetValuesChannel(ref data, out ushort[] channel1);
+                GetValuesChannel(data, out ushort[] channel1);
                 CheckSawChannel(channel1,out errors1);
             }
             if (type is 1 || type is 2)
             {
-                GetValuesChannel(ref data, out ushort[] channel2);
+                data = data.Skip(2 * LengthChannel).ToArray();
+                GetValuesChannel(data, out ushort[] channel2);
                 CheckSawChannel(channel2, out errors2);
             }
 
@@ -107,21 +109,22 @@ namespace APM_Crate.Models
                     else
                     {
                         errors++;
-                        LogerViewModel.Instance.WriteDebug( $"Ошибка! Неправильная форма пилы индекс={i}, предыдущее значение={prev},текущее значение={current}");
                     }
                 }
+                else errors++;
             }
         }
-        public static void GetValuesChannel(ref byte[] data, out ushort[] channel)
+        public static void GetValuesChannel(byte[] data, out ushort[] channel)
         {
             channel = new ushort[LengthChannel];
-            for (int i = 2 *IndexMudule * LengthModul; i < LengthChannel; i++)
+            
+            for (int i = 0; i < LengthChannel; i++)
             {
                 byte b1 = data[i * 2];
                 byte b2 = data[i * 2 + 1];
                 channel[i] = (ushort)(b1 << 8 | +b2);
             }
-            data = data.Skip((LengthChannel + 4) * 2).ToArray();
+            //data = data.Skip((LengthChannel + 4) * 2).ToArray();
             //data = data[((LengthChannel + 4) * 2)..];
         }
     }

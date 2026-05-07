@@ -383,10 +383,11 @@ namespace PortsWork
                 ushort[] result = new ushort[2];
                 do
                 {
-                    if (attamts == 10) break;
+                    if (attamts == 10) throw new Exception("Не получилось записать значечние");
                     await WriteSingleRegister(reg, value);
                     await Task.Delay(200);
                     result = await ReadHoldingRegisters(reg, 1);
+                    attamts++;
                 }
                 while (result[0] != value);
                 //while ((ushort)(ReadHoldingRegisters(reg, 1)) != value)

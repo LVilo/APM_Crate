@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static APM_Crate.Models.DevicesModel.Crate;
 
 namespace APM_Crate.Models.RestApiModel
 {
@@ -13,6 +14,9 @@ namespace APM_Crate.Models.RestApiModel
     {
         public string? Id { get; set; } = null;
         public string Arm { get; set; } = RestModel.APM;
+
+        public string UserName { get; set; } = Environment.UserName;
+        public string Date { get; set; } = String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
         public string DeviceFamily { get; set; } = RestModel.DeviceFamily;
         public string DeviceType { get; set; }
         public ulong SerialNumber { get; set; }

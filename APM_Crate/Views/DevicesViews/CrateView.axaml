@@ -18,10 +18,12 @@
 
 						<DockPanel Grid.Row="1" >
 							<Button Command="{Binding ClosePortCommand}"
+									IsEnabled="{Binding IsEnabled}"
 									Content="{Binding CloseText}"
 									Width="{Binding WidthControl}"/>
 							<Button 
 									Command="{Binding OpenPortCommand}"
+									IsEnabled="{Binding IsEnabled}"
 									Content="{Binding OpenText}"
 									Width="{Binding WidthControl}"/>
 						</DockPanel>

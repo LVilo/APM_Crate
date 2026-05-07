@@ -14,7 +14,7 @@
 
 	<controls:GroupBox Header="Принтер" >
 		<controls:GroupBox.ContentControl>
-	<Grid >
+					<Grid >
 						<ComboBox SelectedItem="{Binding PrinterName}"
 								  ItemsSource="{Binding Printers}"
 								  Width="210"/>

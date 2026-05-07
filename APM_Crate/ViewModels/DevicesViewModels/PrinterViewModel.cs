@@ -37,7 +37,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         public async Task UpdatePrinters()
         {
             Printers = await  Devices.Printer.GetPrinters();
-            if (PrinterName is null && Printers is not null) PrinterName = Printers[0];
+            if (Printers.Contains(PrinterName) is false) PrinterName = Printers.First();
         }
 
         //public PrinterViewModel()

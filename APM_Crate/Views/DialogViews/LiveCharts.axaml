@@ -61,12 +61,7 @@
     <Border Grid.Row="1">
                 <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
 				<Button Content="ОК"
-                            Command="{Binding ConfirmCommand}"
-                            Background="{DynamicResource Confirm}"/>
-
-                    <Button Content="Отмена"
-                            Command="{Binding CancelCommand}"
-                            Background="{DynamicResource Cancel}"/>
+                            Command="{Binding ConfirmCommand}"/>
                     </DockPanel>
             </Border>
    </Grid>

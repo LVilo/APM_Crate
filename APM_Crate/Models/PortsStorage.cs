@@ -18,6 +18,7 @@ namespace APM_Crate.Models
                 GeneratorViewModel = DevicesViewModel.Generator,
                 //CNVViewModel = DevicesViewModel.CNV,
                 CrateViewModel = DevicesViewModel.Crate,
+                PrinterViewModel = DevicesViewModel.Printer,
                 //SG004ViewModel = DevicesViewModel.SG004,
                 //TIK_BISViewModel = DevicesViewModel.TIK_BIS,
                 //MY210_402ViewModel = DevicesViewModel.MY210_402,
@@ -45,6 +46,7 @@ namespace APM_Crate.Models
             DevicesViewModel.Generator = data.GeneratorViewModel ?? new();
             DevicesViewModel.Agilent = data.AgilentViewModel ?? new();
             DevicesViewModel.Crate = data.CrateViewModel ?? new();
+            DevicesViewModel.Printer = data.PrinterViewModel ?? new();
             RestModel.IP = data.RestAPI_IP;
             //DevicesViewModel.SG004 = data.SG004ViewModel ?? new();
             //DevicesViewModel.TIK_BIS = data.TIK_BISViewModel ?? new();

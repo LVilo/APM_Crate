@@ -62,7 +62,7 @@ namespace APM_Crate.Service
         {
             try
             {
-                while (true)
+                while (Devices.Multimeter.IsOpened())
                 {
                     await Mult.GetVolt();
                 }
@@ -92,8 +92,11 @@ namespace APM_Crate.Service
             //{
             //    data[i] = (byte)i;
             //}
-            CheckFilePLC.GetValuesChannel(ref data, out ushort[] Channel1);
-            CheckFilePLC.GetValuesChannel(ref data, out ushort[] Channel2);
+            int INDEX = 2 * CheckFilePLC.IndexMudule * CheckFilePLC.LengthModul;
+            data = data.Skip(2 * CheckFilePLC.IndexMudule * CheckFilePLC.LengthModul).ToArray();
+            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel1);
+            data = data.Skip(2 * (CheckFilePLC.LengthChannel + 4)).ToArray();
+            CheckFilePLC.GetValuesChannel(data, out ushort[] Channel2);
 
             vm.Points_Chanel1 = new ObservableCollection<ChartPoint> { Channel1.Select((value, index) => new ChartPoint { X = index, Y = value }) };
             vm.Points_Chanel2 = new ObservableCollection<ChartPoint> { Channel2.Select((value, index) => new ChartPoint { X = index, Y = value }) };

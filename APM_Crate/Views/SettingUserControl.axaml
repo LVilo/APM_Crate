@@ -19,7 +19,7 @@
 							<Grid Grid.Row="0"
 								ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto">
 
-								<TextBlock Grid.Row="0" Grid.Column="0" Text="Модуль:" />
+								<TextBlock Grid.Row="0" Grid.Column="0" Text="Слот:" />
 								<ComboBox Grid.Row="0" Grid.Column="1" 
 								Width="{Binding WidthComboBox}" 
 										  ItemsSource="{Binding Modules}"

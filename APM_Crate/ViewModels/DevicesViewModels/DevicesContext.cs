@@ -59,6 +59,13 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             set { this.RaiseAndSetIfChanged(ref _DeviceStateColor, value); }
         }
 
+        public bool _IsEnabled = true;
+        [JsonIgnore]
+        public bool IsEnabled
+        {
+            get => _IsEnabled;
+            set { this.RaiseAndSetIfChanged(ref _IsEnabled, value); }
+        }
         protected string? _PortItem;
         public string? PortItem
         {
@@ -101,109 +108,59 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         //    public string Name { get; set; }
         //    public string Value { get; set; }
         //}
-        private async Task OpenPort()
+        public async Task OpenPort()
         {
             try
             {
-                ////RestModel.IP = "http://127.0.0.1:5000/";
-                //RestModel.SetUri();
-                //Config conf = new Config
-                //{
-                //    DeviceType = "241",
-                //    SerialNumber = 2320,
-                //    OrderNumber = "2314",
-                //    Settings = [new Settings { Name = "param1", Value = "321235" }]
-                //};
+                IsEnabled = false;
+                if (string.IsNullOrEmpty(PortItem))
+                {
+                    throw new Exception($"Выбранный порт пуст. Повторно выберите порт для подключения устройства");
+                }
 
-                ////string json = JsonSerializer.Serialize(conf);
-                ////HttpClient http = new HttpClient();
-                ////http.BaseAddress = new Uri("http://localhost:5000/");
-                ////var content = new StringContent(json, Encoding.UTF8, "application/json");
-                ////HttpResponseMessage response = await http.PostAsJsonAsync("Configurations", content);
-                ////string errorBody = await response.Content.ReadAsStringAsync();
-
-
-                //await RestModel.Post(conf);
-                //await RestModel.GetLastSerialNumber();
-
-
-                //await http.PostAsJsonAsync("http://localhost:5186/swagger/", content);
-
-
-                //var response1 = await http.GetFromJsonAsync<object>("Configurations/last-serial/PLC");
-
-                //await SQLModel.TableExistsCratePLCAsync();
-                //await SQLModel.TableExistsSettingsAsync();
-                //int serial = await SQLModel.GetSerialNumber()+1;
-                //string order = "123";
-                //string PLC = "PLC241";
-                //await SQLModel.WriteNewDevice(serial, order, PLC);
-
-                //var setting = new ParametersSettingPLC
-                //(
-                //    Environment.UserName,
-                //    System.String.Format("{0}.{1}.{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
-                //    "1",
-                //    "IEPE перенастройка",
-                //    "23498",
-                //    "20:23",
-                //    PLC,
-                //    "20:43",
-                //    serial,
-                //    order,
-
-                //   "2",
-                //    "1",
-                //    "1",
-                //   "1",
-                //    "1",
-                //   "1",
-                //    "1",
-                //    "1",
-                //    "1"
-                //);
-                //await SQLModel.WriteNewParameters(setting);
-                //await Dialog.ShowLiveCharts();
-                //await SQLModel.CreateTableCratePLC();
-                    if (string.IsNullOrEmpty(PortItem))
-                    {
-                        throw new Exception($"Выбранный порт пуст. Повторно выберите порт для подключения устройства");
-                    }
-
-                    if (IsOpened())
-                    {
-                        await LogerViewModel.Instance.Write($"{PortItem} уже подключен.");
-                        return;
-                    }
-                    if (await OpenPort_abstract() is true)
-                    {
-                        DeviceStateColor = "#1DEC1D";
-                        await LogerViewModel.Instance.Write($"{PortItem} подключен.");
-                    }
-                    else
-                    {
-                        await ClosePort_abstract();
-                        DeviceStateColor = "#F0F0F0";
-                        await LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
-                    }
+                if (IsOpened())
+                {
+                    await LogerViewModel.Instance.Write($"{PortItem} уже подключен.");
+                    return;
+                }
+                if (await OpenPort_abstract() is true)
+                {
+                    DeviceStateColor = "#1DEC1D";
+                    await LogerViewModel.Instance.Write($"{PortItem} подключен.");
+                }
+                else
+                {
+                    await ClosePort_abstract();
+                    DeviceStateColor = "#F0F0F0";
+                    await LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
+                }
             }
             catch (Exception ex)
             {
                 await ClosePort_abstract();
                 await LogerViewModel.Instance.Write("❗" + ex.Message);
             }
+            finally
+            {
+                IsEnabled = true;
+            }
         }
-        private async Task ClosePort()
+        public async Task ClosePort()
         {
             try
             {
-                    await ClosePort_abstract();
-                    await LogerViewModel.Instance.Write($"{PortItem} отключен.");
-                    DeviceStateColor = "#F0F0F0";
+                IsEnabled = false;
+                await ClosePort_abstract();
+                await LogerViewModel.Instance.Write($"{PortItem} отключен.");
+                DeviceStateColor = "#F0F0F0";
             }
             catch (Exception ex)
             {
                 await LogerViewModel.Instance.Write(ex.Message);
+            }
+            finally
+            {
+                IsEnabled = true;
             }
         }
         //private async Task UpdatesPorts()
