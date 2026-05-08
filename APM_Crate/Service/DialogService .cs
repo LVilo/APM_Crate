@@ -161,7 +161,7 @@ namespace APM_Crate.Service
             if (await dialog.ShowDialog<bool>(_mainWindow) is false)
             {
                 vm.Confirmed = false;
-                throw new Exception("Отмена");
+                throw new TaskCanceledException();
             }
         }
     }

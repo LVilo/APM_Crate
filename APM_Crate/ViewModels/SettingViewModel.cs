@@ -225,10 +225,15 @@ namespace APM_Crate.ViewModels
 
                 await LogerViewModel.Instance.Write($"✔ Настройка заняла {stopwatch.Elapsed:mm\\ss}");
             }
+            catch (TaskCanceledException ex)
+            {
+
+            }
             catch (Exception ex)
             {
                 await Dialog.ShowMessage("❗ " +ex.Message);
             }
+            
             finally
             {
                 IsEnabledButtons = true;
