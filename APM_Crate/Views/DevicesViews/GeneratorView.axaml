@@ -12,7 +12,7 @@
        <vm:GeneratorViewModel/>
     </Design.DataContext>
 
-	<controls:GroupBox  Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+	<controls:GroupBox  Header="{Binding HeaderText}">
 		<controls:GroupBox.ContentControl>
 		<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*">
 		 

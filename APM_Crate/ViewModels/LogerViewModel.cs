@@ -35,13 +35,13 @@ namespace APM_Crate.ViewModels
         public async Task Write(string msg)
         {
             LogText += $"{DateTime.Now:HH:mm:ss} {msg}\r\n";
-            WriteDebug(msg);
+            await WriteDebug(msg);
         }
         /// <summary>
         /// Запись в текстовый файл и в консоль
         /// </summary>
         /// <param name="msg">Строка сообщения</param>
-        public void WriteDebug(string msg)
+        public async Task WriteDebug(string msg)
         {
             Debug.WriteLine(msg);
             Console.WriteLine(msg);
@@ -50,7 +50,7 @@ namespace APM_Crate.ViewModels
         /// <summary>
         /// Очистка лога
         /// </summary>
-        public void ClearLog()
+        public async Task ClearLog()
         {
             LogText = null;
         }

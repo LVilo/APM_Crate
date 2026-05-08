@@ -21,7 +21,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         public AgilentViewModel()
         {
             //PortText = "мультиметра";
-            HeaderText = "Мультиметр";
+            HeaderText = "Мультиметр - Отключено";
         }
         protected override async Task<bool> OpenPort_abstract()
         {
@@ -32,15 +32,21 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             {
                 Dialog.Mult = new Delay();
                 Dialog.WhileGetVoltAsync();
-                return Devices.Multimeter.IsOpened();
+                HeaderText = "Мультиметр - Подключено";
+                return true;
             }
-            return false;
+            else
+            {
+                HeaderText = "Мультиметр - Отключено";
+                return false;
+            }
+            
         }
 
         protected override async Task ClosePort_abstract()
         {
             await Devices.Multimeter.ClosePort();
-
+            HeaderText = "Мультиметр - Отключено";
         }
         public override bool IsOpened() => Devices.Multimeter.IsOpened();
     }

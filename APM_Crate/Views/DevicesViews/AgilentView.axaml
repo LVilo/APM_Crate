@@ -11,7 +11,7 @@
 	<Design.DataContext>
        <vm:AgilentViewModel/>
     </Design.DataContext>
-	<controls:GroupBox Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+	<controls:GroupBox Header="{Binding HeaderText}">
 		<controls:GroupBox.ContentControl>
 	<Grid ColumnDefinitions="*,*" RowDefinitions="*,*">
 						

@@ -23,7 +23,7 @@
 
         </DockPanel>
         <DockPanel HorizontalSpacing="10">
-			  <Button Content="ОК" Background="{DynamicResource Confirm}"/>
+			  <Button Content="ОК" Background="{DynamicResource Confirm}" />
               <Button Content="Отмена" Background="{DynamicResource Cancel}"/>
           </DockPanel>
           </StackPanel>
@@ -43,7 +43,11 @@
           <Setter Property="CornerRadius" Value="0"/>
 
       </Style>
+     <Style Selector="Button.DialogButtons">
+      
+          <Setter Property="Width" Value="75"/>
 
+      </Style>
     <!--<Style Selector="StackPanel.Setting Button">
         <Setter Property="Width" Value="310"/>
     </Style>

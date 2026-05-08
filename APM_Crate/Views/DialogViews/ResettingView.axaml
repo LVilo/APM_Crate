@@ -28,8 +28,7 @@
 			<Border Grid.Row="0" Padding="10" Width="300">
 				<TextBlock Text="Устройство уже было настроено. Выберите каналы для перенастройки."  TextWrapping="Wrap" />
             </Border>
-            <controls:GroupBox Header="Каналы" Grid.Row="1"
-						  ToolTip.Tip="Выбранные каналы будут настроены после нажатия на кнопку.Настройки каналов будут выбраны в соответсвтии с выбраным типом PLC">
+            <controls:GroupBox Header="Каналы" Grid.Row="1">
 							<controls:GroupBox.ContentControl>
 								<Grid  ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
 >
@@ -50,13 +49,11 @@
 						</controls:GroupBox>
             <Border Grid.Row="2">
                 <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
-				<Button Content="ОК"
-                            Command="{Binding ConfirmCommand}"
-                            Background="{DynamicResource Confirm}"/>
+				<Button Content="ОК" Classes="DialogButtons"
+                            Command="{Binding ConfirmCommand}"/>
 
-                    <Button Content="Отмена"
-                            Command="{Binding CancelCommand}"
-                            Background="{DynamicResource Cancel}"/>
+                    <Button Content="Отмена" Classes="DialogButtons"
+                            Command="{Binding CancelCommand}"/>
                     </DockPanel>
             </Border>
         </Grid>

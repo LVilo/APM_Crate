@@ -19,6 +19,11 @@
       <vm:RestAPIViewModel/>
     </Design.DataContext>
 
+    <Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>
+
   <Border>
 	  <Grid RowDefinitions="Auto,Auto">
 		  <ctrl:GroupBox Header="Rest API" Grid.Row="0">
@@ -26,7 +31,7 @@
 				  <ctrl:UserTextBox Header="Aдрес:" Text="{Binding IP}"/>
               </ctrl:GroupBox.ContentControl>
           </ctrl:GroupBox>
-          <Button Grid.Row="1" 
+          <Button Grid.Row="1" Classes="DialogButtons"
                   Content="ОК"
                   HorizontalAlignment="Center"
                   Command="{Binding ConfirmCommand}"/>

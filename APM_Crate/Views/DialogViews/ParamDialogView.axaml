@@ -54,15 +54,13 @@
                                     </StackPanel>
                                  </ToolTip.Tip>
                             </CheckBox>-->
-						<Button Name="OK"
+						<Button Name="OK" Classes="DialogButtons"
                         Content="{Binding ConfirmText}"
-                            Command="{Binding ConfirmCommand}"
-                            Background="{DynamicResource Confirm}"/>
+                            Command="{Binding ConfirmCommand}"/>
 
-                    <Button Name="Cancel"
+                    <Button Name="Cancel" Classes="DialogButtons"
                     Content="{Binding CancelText}"
-                            Command="{Binding CancelCommand}"
-                            Background="{DynamicResource Cancel}"/>
+                            Command="{Binding CancelCommand}"/>
                     </DockPanel>
            </Border >
        </Grid>

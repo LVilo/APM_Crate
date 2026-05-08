@@ -1,0 +1,27 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="APM_Crate.Views.DialogViews.ProgresBarView"
+        xmlns:vm="using:APM_Crate.ViewModels.DialogViewModels"
+        xmlns:ctrl="using:Controls"
+        x:DataType="vm:ProgresBarViewModel"
+        Background="{DynamicResource ColorBackgroundBorder}"
+        Title="Параметры"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        CanMaximize="False"
+        CanMinimize="False"
+        Padding="5">
+  <Design.DataContext>
+      <vm:ParametersViewModel/>
+    </Design.DataContext>
+
+
+    <Panel Height="40">
+		<ProgressBar Value="60"
+        Minimum="0" Maximum="100"
+                     Height="20"/>
+    </Panel>
+</Window>

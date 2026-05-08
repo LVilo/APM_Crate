@@ -92,6 +92,21 @@ namespace APM_Crate.Service
             var dialog = new RestAPIView();
             await Show(dialog, vm);
         }
+        public async Task ShowParametersAsync(DialogViewModel vm)
+        {
+            var dialog = new ParametersView();
+            await Show(dialog, vm);
+        }
+        public async Task ShowProgressBarAsync(DialogViewModel vm)
+        {
+            var dialog = new ProgresBarView();
+            await Show(dialog, vm);
+        }
+        public async Task ShowMessageAsync(DialogViewModel vm)
+        {
+            var dialog = new MessageView();
+            await Show(dialog, vm);
+        }
         //public async Task ShowParamCNV127Async(DialogViewModel vm)
         //{
         //    var dialog = new ParamCNV127DialogView();

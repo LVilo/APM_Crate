@@ -21,7 +21,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         private Crate passwordClient = new Crate();
         public CrateViewModel()
         {
-            HeaderText = "Крейт";
+            HeaderText = "Крейт - Отключено";
         }
         private string? _IP = "10.21.12.70";
         public string? IP
@@ -50,7 +50,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //Devices.Crate.IPAddress = IP;
             Devices.Crate.Port = 502;
             //Devices.Crate = new Crate();
-            Devices.Crate.Connect(IP,502);
+            Devices.Crate.Connect(IP, 502);
 
             passwordClient.IpAddress = IP;
             passwordClient.Port = 502;
@@ -60,19 +60,23 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
             //float dc = await Devices.Crate.ReadSwFloat(8018);
 
-           // ModbusTCP cc = new ModbusTCP();
-           // cc.Connect("10.21.12.67");
-           //ushort reg = cc.ReadUInt16(8022);
-           //await LogerViewModel.Instance.Write(reg.ToString());
-           //WhileUpdateModules();
-           //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
-                return Devices.Crate.Connected;
+            // ModbusTCP cc = new ModbusTCP();
+            // cc.Connect("10.21.12.67");
+            //ushort reg = cc.ReadUInt16(8022);
+            //await LogerViewModel.Instance.Write(reg.ToString());
+            //WhileUpdateModules();
+            //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
+            bool result = Devices.Crate.Connected;
+            if (result is true) HeaderText = "Крейт - Подключено";
+            else HeaderText = "Крейт - Отключено";
+            return result;
         }
 
         protected override async Task ClosePort_abstract()
         {
             Devices.Crate.Disconnect();
             passwordClient.Disconnect();
+            HeaderText = "Крейт - Отключено";
         }
         public override bool IsOpened() => Devices.Crate.Connected;
 

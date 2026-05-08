@@ -42,7 +42,7 @@
   
     <Border Grid.Row="1">
                 <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
-				<Button Content="ОК"
+				<Button Content="ОК" Classes="DialogButtons"
                             Command="{Binding ConfirmCommand}"/>
                     </DockPanel>
             </Border>

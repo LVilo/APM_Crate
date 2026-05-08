@@ -24,8 +24,13 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         public ReactiveCommand<Unit, Unit> ClosePortCommand { get; }
         //public ReactiveCommand<Unit, Unit> UpdatesPortsCommand { get; set; }
 
+        public string _HeaderText;
         [JsonIgnore]
-        public string HeaderText { get; set; } = string.Empty;
+        public string HeaderText
+        {
+            get=> _HeaderText;
+            set { this.RaiseAndSetIfChanged(ref _HeaderText,value); }
+        }
 
         //protected string _PortText;
         //[JsonIgnore]
@@ -50,14 +55,14 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //UpdatesPortsCommand = ReactiveCommand.CreateFromTask(UpdatesPorts);
         }
 
-        protected string _DeviceStateColor = "#F0F0F0"; // СЕРЫЙ
+        //protected string _DeviceStateColor = "#F0F0F0"; // СЕРЫЙ
 
-        [JsonIgnore]
-        public string DeviceStateColor
-        {
-            get { return _DeviceStateColor; }
-            set { this.RaiseAndSetIfChanged(ref _DeviceStateColor, value); }
-        }
+        //[JsonIgnore]
+        //public string DeviceStateColor
+        //{
+        //    get { return _DeviceStateColor; }
+        //    set { this.RaiseAndSetIfChanged(ref _DeviceStateColor, value); }
+        //}
 
         public bool _IsEnabled = true;
         [JsonIgnore]
@@ -125,13 +130,13 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 }
                 if (await OpenPort_abstract() is true)
                 {
-                    DeviceStateColor = "#1DEC1D";
+                    //DeviceStateColor = "#1DEC1D";
                     await LogerViewModel.Instance.Write($"{PortItem} подключен.");
                 }
                 else
                 {
                     await ClosePort_abstract();
-                    DeviceStateColor = "#F0F0F0";
+                    //DeviceStateColor = "#F0F0F0";
                     await LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
                 }
             }
@@ -152,7 +157,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 IsEnabled = false;
                 await ClosePort_abstract();
                 await LogerViewModel.Instance.Write($"{PortItem} отключен.");
-                DeviceStateColor = "#F0F0F0";
+                //DeviceStateColor = "#F0F0F0";
             }
             catch (Exception ex)
             {

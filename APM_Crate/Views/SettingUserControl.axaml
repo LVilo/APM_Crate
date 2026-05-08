@@ -13,7 +13,7 @@
 	
 				<controls:GroupBox Header="Настройка" Color="#F0F0F0" ClipToBounds="True" IsEnabled="{Binding IsEnabledButtons}">
 							<controls:GroupBox.ContentControl >
-						<Grid  RowDefinitions="Auto,Auto,Auto,Auto,Auto" >
+						<Grid  RowDefinitions="Auto,Auto,Auto,Auto" >
 							<!--<controls:UserComboBox Header="Настраиваемый модуль:" UserItems="{Binding Modules}" UserSelectedItem="{Binding ItemModule}" />
 							<controls:UserComboBox Header="Настраиваемый тип PLC:" UserItems="{Binding PLC}" UserSelectedItem="{Binding ItemPLC}" />-->
 							<Grid Grid.Row="0"
@@ -22,8 +22,8 @@
 								<TextBlock Grid.Row="0" Grid.Column="0" Text="Слот:" />
 								<ComboBox Grid.Row="0" Grid.Column="1" 
 								Width="{Binding WidthComboBox}" 
-										  ItemsSource="{Binding Modules}"
-										  SelectedItem="{Binding ItemModule}"/>
+										  ItemsSource="{Binding Slots}"
+										  SelectedItem="{Binding Slot}"/>
 
 
 								<TextBlock Grid.Row="1" Grid.Column="0" Text="Тип PLC:"/>
@@ -32,16 +32,6 @@
 										  ItemsSource="{Binding PLC}"
 										  SelectedItem="{Binding ItemPLC}"/>
 							</Grid>
-
-
-							<Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto" 
-							IsEnabled="{Binding Coef_Enaibled}" ToolTip.Tip="Коэффициент преобразования ">
-								<TextBlock Text="Коэффициент:" Grid.Column="0"/>
-								<RadioButton Grid.Column="1" Content="10" IsChecked="{Binding Coef}" />
-								<RadioButton Grid.Column="2" Content="6,67"/>
-							</Grid>
-								
-							
 
 							<!--<controls:GroupBox Header="Каналы" Grid.Row="3" IsVisible="{Binding IsResetting}"
 						  ToolTip.Tip="Выбранные каналы будут настроены после нажатия на кнопку настройки.Настройки каналов будут выбраны в соответсвтии с выбраным типом PLC">
@@ -68,7 +58,7 @@
 							
 
 
-							<controls:UserTextBox Header="Номер заказа:" Text="{Binding OrderNumber}" TextFilterType="OnlyLetterOrDigit" Grid.Row="2"/>
+							<controls:UserTextBox Header="Номер заказа:" Text="{Binding OrderNumber}" TextFilterType="OnlyLetterOrDigit" Grid.Row="1"/>
 									<!--<controls:UserTextBox Header="Серийный номер:" Text="{Binding SerialNumber}" TextFilterType="OnlyDigits" IsVisible="{Binding IsResetting}"/>-->
 						<!--<DockPanel>
 							<TextBlock Width="{Binding WidthTextBlockTextBox}" Text="Номер заказа" />
@@ -79,10 +69,10 @@
 							<TextBox   Width="{Binding WidthTextBox}"/>
 						</DockPanel>-->
 						
-							<Button Grid.Row="3" Content="Выборки" Width="250"
+							<Button Grid.Row="2" Content="Выборки" Width="250"
 										Command="{Binding Samples_Command}"/>
 							
-							<Button Width="250" Grid.Row="4" 
+							<Button Width="250" Grid.Row="3" 
 						Content="Начать настройку"
 							Command="{Binding SettingALL_Command}"
 							IsEnabled="{Binding IsEnabledButtons}"/>

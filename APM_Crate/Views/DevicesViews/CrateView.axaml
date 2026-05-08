@@ -11,7 +11,7 @@
 	<Design.DataContext>
        <vm:CrateViewModel/>
     </Design.DataContext>
-	<controls:GroupBox Header="{Binding HeaderText}" Color="{Binding DeviceStateColor}">
+	<controls:GroupBox Header="{Binding HeaderText}">
 		<controls:GroupBox.ContentControl>
 	<Grid RowDefinitions="*,*">
 							<controls:UserTextBox Text="{Binding IP}" Header="IP:" Grid.Row="0"/>

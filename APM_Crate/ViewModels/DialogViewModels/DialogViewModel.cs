@@ -14,13 +14,7 @@ namespace APM_Crate.ViewModels.DialogViewModels
 
         public Action<bool>? CloseAction { get; set; }
 
-        private bool? _confirmed;
-        public bool? Confirmed
-        {
-            get => _confirmed;
-            set => this.RaiseAndSetIfChanged(ref _confirmed, value);
-        }
-
+        public bool? Confirmed { get; set; }
         // Команды
 
         public ReactiveCommand<Unit, Unit> ConfirmCommand { get; }
@@ -28,28 +22,28 @@ namespace APM_Crate.ViewModels.DialogViewModels
 
         public DialogViewModel()
         {
-            ConfirmCommand = ReactiveCommand.Create(Confirm);
-            CancelCommand = ReactiveCommand.Create(Cancel);
+            ConfirmCommand = ReactiveCommand.CreateFromTask(Confirm);
+            CancelCommand = ReactiveCommand.CreateFromTask(Cancel);
         }
         protected virtual bool MethodAfterClickConfirm()
         {
             return true;
         }
-        public void Close(bool result)
+        public async Task Close(bool result)
         {
             Confirmed = result;
             _closeTask.TrySetResult(result);
 
             CloseAction?.Invoke(result);
         }
-        public void Confirm()
+        public async Task Confirm()
         {
             //было создано для валидации значений в ParamCNVDialogViewModel
-            if (MethodAfterClickConfirm() is true) Close(true);
+            if (MethodAfterClickConfirm() is true) await Close(true);
         }
-        public void Cancel()
+        public async Task Cancel()
         {
-             Close(false);
+            await Close(false);
         }
     }
 }

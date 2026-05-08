@@ -517,128 +517,128 @@ namespace APM_Crate.Models
         public class Channel_1 : Channel
         {
             public override string Num => "1";
-            public override ushort Coef_ACC_A => (ushort)(60000 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B => (ushort)(60002 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A => (ushort)(60004 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B => (ushort)(60006 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A => (ushort)(60008 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B => (ushort)(60010 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A => (ushort)(60012 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_B => (ushort)(60014 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo => (ushort)(60016 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_A => (ushort)(60000 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_ACC_B => (ushort)(60002 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_A => (ushort)(60004 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_B => (ushort)(60006 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_A => (ushort)(60008 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_B => (ushort)(60010 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_A => (ushort)(60012 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_B => (ushort)(60014 + 90 * Crate.IndexSlotByBasket);
+            public override ushort TypeTermo => (ushort)(60016 + 90 * Crate.IndexSlotByBasket);
 
-            public override ushort PhysicalB0 => (ushort) (8018 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical => (ushort) (8020 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A => (ushort)(8021 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS => (ushort)(8022 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP => (ushort)(8023 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A => (ushort)(8024 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS => (ushort)(8025 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP => (ushort)(8026 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A => (ushort)(8027 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS => (ushort)(8028 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP => (ushort)(8029 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC => (ushort)(8030 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T => (ushort)(8032 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo => (ushort)(8036 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort)(8018 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Physical => (ushort)(8020 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_A => (ushort)(8021 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_RMS => (ushort)(8022 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_PP => (ushort)(8023 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_A => (ushort)(8024 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_RMS => (ushort)(8025 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_PP => (ushort)(8026 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_A => (ushort)(8027 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_RMS => (ushort)(8028 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_PP => (ushort)(8029 + 100 * Crate.IndexSlotByBasket);
+            public override ushort DC => (ushort)(8030 + 100 * Crate.IndexSlotByBasket);
+            public override ushort T => (ushort)(8032 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ResistTermo => (ushort)(8036 + 100 * Crate.IndexSlotByBasket);
 
-            public override ushort OnChannel => (ushort)(11056 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw => (ushort)(11110 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11056 + 600 * Crate.IndexSlotByBasket);
+            public override ushort OnSaw => (ushort)(11110 + 600 * Crate.IndexSlotByBasket);
         }
         public class Channel_2 : Channel
         {
             public override string Num => "2";
-            public override ushort Coef_ACC_A => (ushort)(60030 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B => (ushort)(60032 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A => (ushort)(60034 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B => (ushort)(60036 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A => (ushort)(60038 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B => (ushort)(60040 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A => (ushort)(60042 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B => (ushort)(60044 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo => (ushort)(60046 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_A => (ushort)(60030 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_ACC_B => (ushort)(60032 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_A => (ushort)(60034 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_B => (ushort)(60036 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_A => (ushort)(60038 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_B => (ushort)(60040 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_A => (ushort)(60042 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_B => (ushort)(60044 + 90 * Crate.IndexSlotByBasket);
+            public override ushort TypeTermo => (ushort)(60046 + 90 * Crate.IndexSlotByBasket);
 
-            public override ushort PhysicalB0 => (ushort) (8043 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical => (ushort) (8045 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A => (ushort)(8046 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS => (ushort)(8047 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP => (ushort)(8048 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A => (ushort)(8049 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS => (ushort)(8050 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP => (ushort)(8051 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A => (ushort)(8052 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS => (ushort)(8053 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP => (ushort)(8054 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC => (ushort)(8055 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T => (ushort)(8057 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo => (ushort)(8061 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort)(8043 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Physical => (ushort)(8045 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_A => (ushort)(8046 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_RMS => (ushort)(8047 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_PP => (ushort)(8048 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_A => (ushort)(8049 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_RMS => (ushort)(8050 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_PP => (ushort)(8051 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_A => (ushort)(8052 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_RMS => (ushort)(8053 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_PP => (ushort)(8054 + 100 * Crate.IndexSlotByBasket);
+            public override ushort DC => (ushort)(8055 + 100 * Crate.IndexSlotByBasket);
+            public override ushort T => (ushort)(8057 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ResistTermo => (ushort)(8061 + 100 * Crate.IndexSlotByBasket);
 
-            public override ushort OnChannel => (ushort)(11256 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw => (ushort)(11310 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11256 + 600 * Crate.IndexSlotByBasket);
+            public override ushort OnSaw => (ushort)(11310 + 600 * Crate.IndexSlotByBasket);
         }
         public class Channel_3 : Channel
         {
             public override string Num => "3";
-            public override ushort Coef_ACC_A => (ushort)(60060 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B => (ushort)(60062 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A => (ushort)(60064 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B => (ushort)(60066 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A => (ushort)(60068 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B => (ushort)(60070 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A => (ushort)(60072 + 90 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B => (ushort)(60074 + 90 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo => (ushort)(60076 + 90 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_A => (ushort)(60060 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_ACC_B => (ushort)(60062 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_A => (ushort)(60064 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_B => (ushort)(60066 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_A => (ushort)(60068 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_B => (ushort)(60070 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_A => (ushort)(60072 + 90 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_B => (ushort)(60074 + 90 * Crate.IndexSlotByBasket);
+            public override ushort TypeTermo => (ushort)(60076 + 90 * Crate.IndexSlotByBasket);
 
-            public override ushort PhysicalB0 => (ushort) (8068 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical => (ushort) (8070 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A => (ushort)(8071 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS => (ushort)(8072 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP => (ushort)(8073 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_A => (ushort)(8074 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS => (ushort)(8075 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP => (ushort)(8076 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A => (ushort)(8077 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS => (ushort)(8078 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP => (ushort)(8079 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort DC => (ushort)(8080 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T => (ushort)(8082 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort)(8068 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Physical => (ushort)(8070 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_A => (ushort)(8071 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_RMS => (ushort)(8072 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_PP => (ushort)(8073 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_A => (ushort)(8074 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_RMS => (ushort)(8075 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_PP => (ushort)(8076 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_A => (ushort)(8077 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_RMS => (ushort)(8078 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_PP => (ushort)(8079 + 100 * Crate.IndexSlotByBasket);
+            public override ushort DC => (ushort)(8080 + 100 * Crate.IndexSlotByBasket);
+            public override ushort T => (ushort)(8082 + 100 * Crate.IndexSlotByBasket);
 
-            public override ushort ResistTermo => (ushort)(8086 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort ResistTermo => (ushort)(8086 + 100 * Crate.IndexSlotByBasket);
 
-            public override ushort OnChannel => (ushort)(11456 + 600 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort OnSaw => (ushort)(11510 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnChannel => (ushort)(11456 + 600 * Crate.IndexSlotByBasket);
+            public override ushort OnSaw => (ushort)(11510 + 600 * Crate.IndexSlotByBasket);
         }
         public class Channel_4 : Channel
         {
             public override string Num => "4";
-            public override ushort Coef_ACC_A => (ushort)(61260 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_ACC_B => (ushort)(61262 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_A => (ushort)(61264 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_Speed_B => (ushort)(61266 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_A => (ushort)(61268 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_4_20_B => (ushort)(61270 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Coef_T_A => (ushort)(61272 + 30 * (Convert.ToInt16(ItemModule) - 1)); 
-            public override ushort Coef_T_B => (ushort)(61274 + 30 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort TypeTermo => (ushort)(61276 + 30 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Coef_ACC_A => (ushort)(61260 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_ACC_B => (ushort)(61262 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_A => (ushort)(61264 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_Speed_B => (ushort)(61266 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_A => (ushort)(61268 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_4_20_B => (ushort)(61270 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_A => (ushort)(61272 + 30 * Crate.IndexSlotByBasket);
+            public override ushort Coef_T_B => (ushort)(61274 + 30 * Crate.IndexSlotByBasket);
+            public override ushort TypeTermo => (ushort)(61276 + 30 * Crate.IndexSlotByBasket);
 
-            public override ushort PhysicalB0 => (ushort) (9406 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Physical => (ushort) (9408 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_A => (ushort)(9409 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_RMS => (ushort)(9410 + 25 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ACC_PP => (ushort)(9411 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort PhysicalB0 => (ushort)(9406 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Physical => (ushort)(9408 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_A => (ushort)(9409 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ACC_RMS => (ushort)(9410 + 25 * Crate.IndexSlotByBasket);
+            public override ushort ACC_PP => (ushort)(9411 + 100 * Crate.IndexSlotByBasket);
             #region Резерв
-            public override ushort Speed_A => (ushort)(9412 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_RMS => (ushort)(9413 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Speed_PP => (ushort)(9414 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_A => (ushort)(9415 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_RMS => (ushort)(9416 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort Move_PP => (ushort)(9417 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort Speed_A => (ushort)(9412 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_RMS => (ushort)(9413 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Speed_PP => (ushort)(9414 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_A => (ushort)(9415 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_RMS => (ushort)(9416 + 100 * Crate.IndexSlotByBasket);
+            public override ushort Move_PP => (ushort)(9417 + 100 * Crate.IndexSlotByBasket);
             #endregion
-            public override ushort DC => (ushort)(9418 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort T => (ushort)(9420 + 100 * (Convert.ToInt16(ItemModule) - 1));
-            public override ushort ResistTermo => (ushort)(9424 + 100 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort DC => (ushort)(9418 + 100 * Crate.IndexSlotByBasket);
+            public override ushort T => (ushort)(9420 + 100 * Crate.IndexSlotByBasket);
+            public override ushort ResistTermo => (ushort)(9424 + 100 * Crate.IndexSlotByBasket);
             public override ushort OnChannel => 0;
-            public override ushort OnSaw => (ushort)(19510 + 600 * (Convert.ToInt16(ItemModule) - 1));
+            public override ushort OnSaw => (ushort)(19510 + 600 * Crate.IndexSlotByBasket);
         }
 
         public static Channel Channel1 { get; } = new Channel_1();
@@ -646,10 +646,10 @@ namespace APM_Crate.Models
         public static Channel Channel3 { get; } = new Channel_3();
         public static Channel Channel4 { get; } = new Channel_4();
 
-        public static ObservableCollection<string> Moduls => ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
-        public static string ItemModule = "1";
-        public static ObservableCollection<string> PLC => ["241", "242", "243","511", "371", "374", "375"];
-        public static string ItemPLC = "241";
+        //public static ObservableCollection<string> Moduls => ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"];
+        //public static string Crate.Slot = "1";
+        //public static ObservableCollection<string> PLC => ["241", "242", "243", "511", "371", "374", "375"];
+        //public static string ItemPLC = "241";
 
         public static ObservableCollection<string> TermoTypes { get; } =
             [
@@ -666,13 +666,15 @@ namespace APM_Crate.Models
 
         public static bool IsResetting = false;
         public static bool Coef_Is_10 = true;
+        public static bool Freq_Is_79_6 = true;
         public static bool CoefEnaibled = true;
+        public static int ProgressValue = 0;
 
         public static double DC_Value {get{return Coef_Is_10 ? 10d : 12d;}}
         public static double Point_1 {get{return Coef_Is_10 ? 10d : 6.67;}}
         public static double Point_2 {get{return Coef_Is_10 ? 3000d : 100d;} }
         public static float Coef {get{return Coef_Is_10 ? 10f : 6.67f;} }
-        public static double Frequency { get; } = 79.6d;
+        public static double Frequency { get{return Freq_Is_79_6 ? 79.6d : 80d; } }
         public static ushort SerialNumber { get; set; }
         public static List<Settings> settings { get; set; }
 
@@ -689,7 +691,6 @@ namespace APM_Crate.Models
         }
         public static async Task Start(string item)
         {
-            await Devices.Crate.SetPassword();
             ushort type = 0;
             switch (item)
             {

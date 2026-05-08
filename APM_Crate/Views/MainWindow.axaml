@@ -22,7 +22,8 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     <Window.KeyBindings>
-	  <KeyBinding Command="{Binding OpenIpRestCommand}" Gesture="Ctrl+D" />
+	  <KeyBinding Command="{Binding OpenIpRestCommand}" Gesture="Ctrl+R" />
+	  <KeyBinding Command="{Binding OpenParametersCommand}" Gesture="Ctrl+P" />
 	</Window.KeyBindings>
 
       <Grid   ColumnDefinitions="Auto,*" ColumnSpacing="10"  >
@@ -39,7 +40,7 @@
               DataContext="{Binding SettingViewModel}"
               Grid.Row="0"/>
           
-			   <Panel Grid.Row="1" >
+			   <Panel Grid.Row="1" Width="263" Height="218" >
               <Button 
               ZIndex="1"
               Content="X"
@@ -51,8 +52,7 @@
 			<TextBox
             Name="LogTextBox"
             TextChanged="WriteTextCommand"
-            Width="263"
-            Height="182"
+            
             Focusable="False"
             DataContext="{Binding LogerViewModel}"
             Text="{Binding LogText}"

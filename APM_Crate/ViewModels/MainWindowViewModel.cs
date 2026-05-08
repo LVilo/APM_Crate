@@ -14,14 +14,16 @@ namespace APM_Crate.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         public ReactiveCommand<Unit, Unit> ClearLogCommand { get; set; }
-        public ReactiveCommand<Unit, Unit> OpenIpRestCommand { get; set; }
+        public static ReactiveCommand<Unit, Unit> OpenIpRestCommand { get; set; }
+        public static ReactiveCommand<Unit, Unit> OpenParametersCommand { get; set; }
 
         public static DevicesViewModel DevicesViewModel { get; } = new DevicesViewModel();
         public static SettingViewModel SettingViewModel { get; } = new SettingViewModel();
         public MainWindowViewModel()
         {
-            ClearLogCommand = ReactiveCommand.Create(LogerViewModel.ClearLog);
+            ClearLogCommand = ReactiveCommand.CreateFromTask(LogerViewModel.ClearLog);
             OpenIpRestCommand = ReactiveCommand.CreateFromTask(OpenIpRest);
+            OpenParametersCommand = ReactiveCommand.CreateFromTask(OpenParameters);
             //ushort i = 0b0011_1111_1111_1110;
             //string s = Convert.ToString(i, 2);
             //s = new string(s.Reverse().ToArray());
@@ -32,6 +34,17 @@ namespace APM_Crate.ViewModels
             //    inter++;
             //}
             //LogerViewModel.Write($"{i}");
+        }
+        public async Task OpenParameters()
+        {
+            try
+            {
+                await Dialog.ShowParameters();
+            }
+            catch (Exception ex)
+            {
+                await LogerViewModel.Write($"❗ {ex.Message}");
+            }
         }
         public async Task OpenIpRest()
         {

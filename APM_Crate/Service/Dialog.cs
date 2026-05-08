@@ -141,6 +141,22 @@ namespace APM_Crate.Service
             var vm = new RestAPIViewModel();
             await DialogService.ShowRestAPIAsync(vm);
         }
+        public static async Task ShowParameters()
+        {
+            var vm = new ParametersViewModel();
+            await DialogService.ShowParametersAsync(vm);
+        }
+        public static async Task ShowProgressBar()
+        {
+            var vm = new ProgresBarViewModel();
+            await DialogService.ShowProgressBarAsync(vm);
+        }
+        public static async Task ShowMessage(string mes)
+        {
+            var vm = new ConfirmDialogViewModel();
+            vm.Messege = mes;
+            await DialogService.ShowMessageAsync(vm);
+        }
     }
 }
 

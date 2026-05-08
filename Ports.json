@@ -4,8 +4,8 @@
     "Ports": [
       "V7-78/1: TW00055833",
       "COM1",
-      "COM4",
-      "COM3"
+      "COM3",
+      "COM4"
     ]
   },
   "GeneratorViewModel": {
@@ -15,8 +15,8 @@
     "Ports": [
       "V7-78/1: TW00055833",
       "COM1",
-      "COM4",
-      "COM3"
+      "COM3",
+      "COM4"
     ]
   },
   "CrateViewModel": {
@@ -25,8 +25,8 @@
     "Ports": [
       "V7-78/1: TW00055833",
       "COM1",
-      "COM4",
-      "COM3"
+      "COM3",
+      "COM4"
     ]
   },
   "PrinterViewModel": {

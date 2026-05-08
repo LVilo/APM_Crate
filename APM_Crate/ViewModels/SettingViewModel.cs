@@ -70,11 +70,12 @@ namespace APM_Crate.ViewModels
         //    }
         //}
         [JsonIgnore]
-        public ObservableCollection<string> Modules => SettingModel.Moduls; 
+        public ObservableCollection<string> Slots => Crate.Slots; 
+
         [JsonIgnore]
-        public string ItemModule
+        public string Slot
         {
-            get => SettingModel.ItemModule;
+            get => Crate.Slot;
             set
             {
                 //if(Devices.Crate.Connected)
@@ -82,22 +83,20 @@ namespace APM_Crate.ViewModels
                 //   ushort type = await Devices.Crate.ReadUInt16(Registers.Type);
                 //    if(type>0 && type < 8) ItemPLC = PLC[type-1];
                 //}
-              if(IsEnabledButtons) this.RaiseAndSetIfChanged(ref SettingModel.ItemModule, value);
+              if(IsEnabledButtons) this.RaiseAndSetIfChanged(ref Crate.Slot, value);
             }
         }
         [JsonIgnore]
-        public ObservableCollection<string> PLC  => SettingModel.PLC;
+        public ObservableCollection<string> PLC => Crate.PLC;
+
         [JsonIgnore]
         public string ItemPLC
         {
-            get => SettingModel.ItemPLC;
+            get => Crate.ItemPLC;
             set
             {
                 if (IsEnabledButtons)
                 {
-
-
-                    Coef_Enaibled = value is "241" or "242" or "371" or "375";
                     Channel1.CanSetting = true;
                     Channel2.CanSetting = true;
                     Channel3.CanSetting = value is "371" or "374" or "375" or "511";
@@ -105,21 +104,11 @@ namespace APM_Crate.ViewModels
 
                     Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
                     Channel4.SettingChannel = value is "511";
-                    this.RaiseAndSetIfChanged(ref SettingModel.ItemPLC, value);
+                    this.RaiseAndSetIfChanged(ref Crate.ItemPLC, value);
                 }
             }
         }
-        [JsonIgnore]
-        public bool Coef
-        {
-            get => SettingModel.Coef_Is_10;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Coef_Is_10, value); }
-        }
-        public bool Coef_Enaibled
-        {
-            get => SettingModel.CoefEnaibled;
-            set {this.RaiseAndSetIfChanged(ref SettingModel.CoefEnaibled, value);  }
-        }
+        
         public SettingViewModel()
         {
             ItemPLC = "241";
@@ -133,6 +122,11 @@ namespace APM_Crate.ViewModels
         {
             get { return _IsEnabledButtons; }
             set { this.RaiseAndSetIfChanged(ref _IsEnabledButtons, value); }
+        }
+        public int ProgressValue
+        {
+            get => SettingModel.ProgressValue;
+                set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValue,value); }
         }
         private async Task Samples()
         {
@@ -209,7 +203,9 @@ namespace APM_Crate.ViewModels
 
                 stopwatch.Restart();
                 settings = new List<Settings>();
-                await Start(ItemPLC);
+                var progress = new Progress<int>(p => ProgressValue = p);
+                Start(ItemPLC);
+                await Dialog.ShowProgressBar();
                 stopwatch.Stop();
                 string endtime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
                 Config config = new Config
@@ -231,7 +227,7 @@ namespace APM_Crate.ViewModels
             }
             catch (Exception ex)
             {
-                await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
+                await Dialog.ShowMessage("❗ " +ex.Message);
             }
             finally
             {
@@ -240,10 +236,10 @@ namespace APM_Crate.ViewModels
         }
         private async Task ChangeBasketForSelectModule()
         {
-            await LogerViewModel.Instance.Write($"Изменение состава корзины под {ItemModule} слот");
+            await LogerViewModel.Instance.Write($"Изменение состава корзины под {Slot} слот");
             string str = "0000000000000000";
             StringBuilder sb = new StringBuilder(new string(str.Reverse().ToArray()));
-            sb[Convert.ToInt32(ItemModule) - 1] = '1';
+            sb[Crate.IndexSlotByBasket] = '1';
             str = sb.ToString();
             str = new string(str.Reverse().ToArray());
             ushort value = Convert.ToUInt16(str, 2);
@@ -256,16 +252,16 @@ namespace APM_Crate.ViewModels
         {
             ushort status = await Devices.Crate.ReadUInt16(Registers.StatusModules);
             string s = new string(Convert.ToString(status, 2).Reverse().ToArray());
-            if (s[Convert.ToInt32(ItemModule) - 1] is not '0')
+            if (s[Crate.IndexSlotByBasket] is not '0')
             {
-                throw new Exception($"Выбранный модуль для настройки не подключен в корзину или не включен. Убедитесь в подключении модуля в слоте {Convert.ToInt32(ItemModule) + 6}");
+                throw new Exception($"Выбранный модуль для настройки не подключен в корзину или не включен. Убедитесь в подключении модуля в слоте {Slot}");
             }
         }
         private async Task ValidDevices()
         {
             if(await RestModel.GetAPIStatus() is false) throw new Exception("RestAPI не отвечает на сообщения, проверьте подключение с сервером.");
             if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
-            switch (ItemModule)
+            switch (ItemPLC)
             {
                 case "243" or "374":
                     {
@@ -286,7 +282,7 @@ namespace APM_Crate.ViewModels
             {
                 throw new Exception($"Введите номер заказа.");
             }
-            if (string.IsNullOrEmpty(ItemModule))
+            if (string.IsNullOrEmpty(Slot))
             {
                 throw new Exception($"Выберите модуль для настройки.");
             }

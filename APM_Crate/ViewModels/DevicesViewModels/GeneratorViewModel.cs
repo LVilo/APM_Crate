@@ -21,7 +21,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         public GeneratorViewModel()
         {
             //PortText = "генератора";
-            HeaderText = "Генератор";
+            HeaderText = "Генератор - Отключено";
         }
 
         private bool _chanel_1 = true;
@@ -56,20 +56,27 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             }
             Devices.Generator = new PortGenerator();
             Devices.Generator = (PortGenerator)await Devices.SetMeasureDeviceName(Devices.Generator,  PortItem);
-            if( await Devices.Generator.OpenPort() is true)
+            if (await Devices.Generator.OpenPort() is true)
             {
-                
+
                 int chanel = Chanel_1 is true ? 1 : 2;
                 await Devices.Generator.SetChannel(chanel);
+                HeaderText = "Генератор - Подключено";
                 return Devices.Generator.IsOpened();
+
             }
-            return false;
+            else
+            {
+                HeaderText = "Генератор - Отключено";
+                return false;
+            }
         }
 
         protected override async Task ClosePort_abstract()
         {
             await Devices.Generator.ChanelOff(Devices.Generator.channelNum);
             await Devices.Generator.ClosePort();
+            HeaderText = "Генератор - Отключено";
         }
         public override bool IsOpened() => Devices.Generator.IsOpened();
     }

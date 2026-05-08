@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewmodels="using:APM_Crate.ViewModels.DialogViewModels"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="540"
-             x:Class="APM_Crate.Views.DialogViews.ConfirmDialogView"
+             x:Class="APM_Crate.Views.DialogViews.MessageView"
              x:DataType="viewmodels:ConfirmDialogViewModel"
              Foreground="Black"
              Title="{Binding Title}"
@@ -32,9 +32,6 @@
                 <DockPanel HorizontalSpacing="10" HorizontalAlignment="Center">
 				<Button Content="{Binding ConfirmText}" Classes="DialogButtons"
                             Command="{Binding ConfirmCommand}"/>
-
-                    <Button Content="{Binding CancelText}" Classes="DialogButtons"
-                            Command="{Binding CancelCommand}"/>
                     </DockPanel>
             </Border>
         </Grid>

@@ -78,8 +78,14 @@
     <Compile Update="Views\DialogViews\ParamDialogView.axaml.cs">
       <DependentUpon>ParamDialogView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DialogViews\ParametersView.axaml.cs">
+      <DependentUpon>ParametersView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\DialogViews\RestAPIView.axaml.cs">
       <DependentUpon>RestAPIView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogViews\MessageView.axaml.cs">
+      <DependentUpon>MessageView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

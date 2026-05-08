@@ -1,0 +1,51 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="APM_Crate.Views.DialogViews.ParametersView"
+        xmlns:vm="using:APM_Crate.ViewModels.DialogViewModels"
+        xmlns:ctrl="using:Controls"
+        x:DataType="vm:ParametersViewModel"
+        Background="{DynamicResource ColorBackgroundBorder}"
+        Title="Параметры"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        CanMaximize="False"
+        CanMinimize="False"
+        Padding="5">
+
+    <Design.DataContext>
+      <vm:ParametersViewModel/>
+    </Design.DataContext>
+
+    <Window.KeyBindings>
+	  <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}"/>
+	  <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand }"/>
+	</Window.KeyBindings>
+
+  <Border>
+	  <Grid RowDefinitions="Auto,Auto">
+		  <ctrl:GroupBox Header="Параметры настройки" Grid.Row="0">
+			  <ctrl:GroupBox.ContentControl>
+                  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" RowSpacing="0">
+					  
+								<TextBlock Grid.Row="0" Grid.Column="0" Text="Коэффициент:" />
+								<RadioButton Grid.Row="0" Grid.Column="1" Content="10" GroupName="coef" IsChecked="{Binding Coef}" Padding="0"/>
+								<RadioButton Grid.Row="0" Grid.Column="2" Content="6,67" GroupName="coef" Padding="0"/>
+							
+								<TextBlock Grid.Row="1" Grid.Column="0" Text="Частота:" />
+								<RadioButton Grid.Row="1" Grid.Column="1" Content="79,6" GroupName="freq" IsChecked="{Binding Freq_Is_79_6}" Padding="0"/>
+								<RadioButton Grid.Row="1" Grid.Column="2" Content="80" GroupName="freq" Padding="0"/>
+							
+                  </Grid>
+				 
+              </ctrl:GroupBox.ContentControl>
+          </ctrl:GroupBox>
+          <Button Grid.Row="1" Classes="DialogButtons"
+                  Content="ОК"
+                  HorizontalAlignment="Center"
+                  Command="{Binding ConfirmCommand}"/>
+      </Grid>
+  </Border>
+</Window>

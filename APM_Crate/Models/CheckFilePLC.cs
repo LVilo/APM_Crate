@@ -43,7 +43,7 @@ namespace APM_Crate.Models
         }
         public static async Task<byte[]> GetDataSaw(ushort type)
         {
-            IndexMudule = Convert.ToInt32(ItemModule) - 1;
+            IndexMudule = Crate.IndexSlotByBasket;
 
             if (type is 2 || type is 5 || type is 7) await Channel1.SawOn();
             if (type is 1 || type is 2) await Channel2.SawOn();
