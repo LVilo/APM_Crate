@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace APM_Crate.Models.SettingsModel
+{
+    public class Current_4_20 : Setting
+    {
+    }
+}

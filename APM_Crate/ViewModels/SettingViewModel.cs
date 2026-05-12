@@ -1,6 +1,8 @@
 ﻿using APM_Crate.Models;
 using APM_Crate.Models.DevicesModel;
 using APM_Crate.Models.RestApiModel;
+using APM_Crate.Models.SettingsModel.PLCs;
+
 
 //using APM_Crate.Models.MainFunctions;
 using APM_Crate.Service;
@@ -183,8 +185,8 @@ namespace APM_Crate.ViewModels
             }
         }
         Stopwatch stopwatch = new Stopwatch();
-        
 
+        public static PLC PLC = new PLC_241();
         private async Task Setting()
         {
             try
