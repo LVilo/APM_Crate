@@ -126,7 +126,22 @@ namespace APM_Crate.ViewModels
         public int ProgressValue
         {
             get => SettingModel.ProgressValue;
-                set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValue,value); }
+            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValue, value); }
+        }
+        public string ProgressText
+        {
+            get => SettingModel.ProgressText;
+            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressText, value); }
+        }
+        public int ProgressValueChannel
+        {
+            get => SettingModel.ProgressValueChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValueChannel, value); }
+        }
+        public string ProgressTextChannel
+        {
+            get => SettingModel.ProgressTextChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressTextChannel, value); }
         }
         private async Task Samples()
         {
@@ -154,6 +169,10 @@ namespace APM_Crate.ViewModels
                 //await Devices.Printer.PrintText(12.ToString());
 
             }
+            catch (TaskCanceledException ex)
+            {
+
+            }
             catch (Exception ex)
             {
                 await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
@@ -164,10 +183,25 @@ namespace APM_Crate.ViewModels
             }
         }
         Stopwatch stopwatch = new Stopwatch();
+        
+
         private async Task Setting()
         {
             try
             {
+                var progress = new Progress<ProgressReport>(p =>
+                {
+                    ProgressValue = p.Percent;
+                    ProgressText = p.Message;
+                });
+                var wp = new WeightedProgress(progress, 100);
+
+                var progressChannel = new Progress<ProgressReport>(p =>
+                {
+                    ProgressValueChannel = p.Percent;
+                    ProgressTextChannel = p.Message;
+                });
+                var wp2 = new WeightedProgress(progressChannel, 100);
                 //List<Config> list = await RestModel.GetListRecord(50, 23, null, null, RestModel.DeviceFamily);
                 //foreach (var d in list)
                 //{
@@ -175,23 +209,12 @@ namespace APM_Crate.ViewModels
                 //}
                 //List<Config> list = await RestModel.GetListRecord(50, 12, null, null, RestModel.DeviceFamily);
                 IsEnabledButtons = false;
-
-                ValidSelected();
-                await ValidDevices();
-
-
-                // меняю состав корзины под выбранный модуль
-                await ChangeBasketForSelectModule();
-
-
-                await Task.Delay(2000);
-
-                //смотрю состояние модулей после изменения состава
-                await ValidStatusModule();
-
-                await ValidTypePLC();
-
-                await GetSerialNumber();
+                await wp.Step(5, "Валидация Вводимых данных", ValidSelected);
+                await wp.Step(5, "Валидация подключённых устройств", ValidDevices);
+                await wp.Step(5, $"Изменение состава корзины под слот {Slot}", ChangeBasketForSelectModule);
+                await wp.Step(5, $"Валидация состояния модуля в слоте {Slot}", ValidStatusModule);
+                await wp.Step(5, $"Валидация типа контроллера", ValidTypePLC);
+                await wp.Step(5, $"Чтение серийного номера", GetSerialNumber);
 
 
                 if ((SerialNumber >= 0 && SerialNumber <= 65535) is false)
@@ -203,9 +226,7 @@ namespace APM_Crate.ViewModels
 
                 stopwatch.Restart();
                 settings = new List<Settings>();
-                var progress = new Progress<int>(p => ProgressValue = p);
-                Start(ItemPLC);
-                await Dialog.ShowProgressBar();
+                await Start(ItemPLC,wp,wp2);
                 stopwatch.Stop();
                 string endtime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
                 Config config = new Config
@@ -215,15 +236,27 @@ namespace APM_Crate.ViewModels
                     OrderNumber = OrderNumber,
                     Settings = settings,
                 };
-
-                await PostNewDevice(config);
+                ushort type = (ItemPLC) switch
+                {
+                    "241" => 1,
+                    "242" => 2,
+                    "243" => 3,
+                    "511" => 4,
+                    "371" => 5,
+                    "374" => 6,
+                    "375" => 7,
+                };
+                if (!(type is 3 || type is 4 || type is 6))
+                {
+                    await LogerViewModel.Instance.Write("Проверка выборок устройства");
+                    await wp.Step(5, $"Проверка выборок устройства",()=> CheckFilePLC.Start(type));
+                    await CheckFilePLC.Start(type);
+                    await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
+                }
+                await wp.Step(5, $"Запись в базу данных",() => PostNewDevice(config));
                 //await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
-
-
-
-
-
                 await LogerViewModel.Instance.Write($"✔ Настройка заняла {stopwatch.Elapsed:mm\\ss}");
+
             }
             catch (TaskCanceledException ex)
             {
@@ -237,6 +270,7 @@ namespace APM_Crate.ViewModels
             finally
             {
                 IsEnabledButtons = true;
+                ProgressValue = 0;
             }
         }
         private async Task ChangeBasketForSelectModule()
@@ -251,6 +285,7 @@ namespace APM_Crate.ViewModels
 
             await Devices.Crate.SetPassword();
             await Devices.Crate.WriteUInt16(Registers.Basket, value);
+            await Task.Delay(2000);
         }
 
         private async Task ValidStatusModule()
@@ -281,7 +316,7 @@ namespace APM_Crate.ViewModels
                     }
             }
         }
-        private void ValidSelected()
+        private async Task ValidSelected()
         {
             if (string.IsNullOrEmpty(OrderNumber))
             {

@@ -31,12 +31,12 @@ namespace APM_Crate.Models.DevicesModel
             public static ushort StatusModules => 109;
             public static ushort Basket => 10;
             //public static ushort Type_PLC => PLC.;
-            public static ushort Type => Convert.ToUInt16(60026 + 90 * (Convert.ToInt16(Slot) - 6));
+            public static ushort Type => Convert.ToUInt16(60026 + 90 * IndexSlotByBasket);
 
-            public static ushort Coefficient => (ushort)(60056 + 90 * (Convert.ToInt16(Slot) - 6));
-            public static ushort SerialNum => (ushort)(8008 + 100 * (Convert.ToInt16(Slot) - 6));
-            public static ushort SetSerialNum => (ushort)(60027 + 90 * (Convert.ToInt16(Slot) - 6));
-            public static ushort VerPLC => (ushort)(8009 + 100 * (Convert.ToInt16(Slot) - 6));
+            public static ushort Coefficient => (ushort)(60056 + 90 * IndexSlotByBasket);
+            public static ushort SerialNum => (ushort)(8008 + 100 * IndexSlotByBasket);
+            public static ushort SetSerialNum => (ushort)(60027 + 90 * IndexSlotByBasket);
+            public static ushort VerPLC => (ushort)(8009 + 100 * IndexSlotByBasket);
 
         }
         public static class Values

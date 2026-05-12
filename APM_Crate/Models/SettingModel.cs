@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using APM_Crate.Models.SettingsModel;
 
 namespace APM_Crate.Models
 {
@@ -55,8 +56,9 @@ namespace APM_Crate.Models
             public bool SettingChannel = true;
             public bool CanSetting = true;
 
-            private async Task Reset(SettingType setting)
+            private async Task Reset(SettingType setting,WeightedProgress wp)
             {
+                wp.Report(0, "Сброс коэффициентов");
                 switch (setting)
                 {
                     case SettingType.IEPE:
@@ -86,7 +88,7 @@ namespace APM_Crate.Models
                         await Devices.Crate.WriteSwFloat(Coef_ACC_B, 0);
                         break;
                 }
-
+                wp.Report(2, "Сброс коэффициентов ✔");
             }
             public enum SettingType
             {
@@ -126,9 +128,9 @@ namespace APM_Crate.Models
             {
                 await Devices.Crate.WriteUInt16(OnSaw, 0);
             }
-            public async Task SourceOn()
+            public async Task SourceOn(WeightedProgress wp)
             {
-                await Devices.Crate.WriteUInt16(OnChannel, 1);
+                await wp.Step(1,"Включение источника",()=> Devices.Crate.WriteUInt16(OnChannel, 1));
             }
             public async Task SourceOff()
             {
@@ -147,13 +149,6 @@ namespace APM_Crate.Models
             public async Task CheckSetting(float V, ValueType type)
             {
 
-                //float value = (type) switch
-                //{
-                //    ValueType.ACC => await Devices.Crate.ReadUInt16(reg) * 0.01f,
-                //    ValueType.ACC_PP => await Devices.Crate.ReadUInt16(reg) * 0.01f,
-                //    ValueType.Speed => await Devices.Crate.ReadUInt16(reg) * 0.01f,
-                //    ValueType.Move=> await Devices.Crate.ReadUInt16(reg) * 0.1f
-                //};
                 float mkm = (type) switch
                 {
                     ValueType.ACC =>1,
@@ -178,57 +173,49 @@ namespace APM_Crate.Models
                     throw new Exception($"{s} канала {Num} настроено не корректно. Значение отклонено на {Math.Round(relative, 2)}%");
                 }
             }
-            public async Task WriteCoefs_ACC(float A,float B)
+            public async Task WriteCoefs_ACC(float A,float B,WeightedProgress wp)
             {
+                wp.Report(0, "Запись коэффициентов ускорения");
                 await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов ускорения:");
                 await LogerViewModel.Instance.Write($"Коэффициент A: {A}");
                 await Devices.Crate.WriteSwFloat(Coef_ACC_A, A);
                 await LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 await Devices.Crate.WriteSwFloat(Coef_ACC_B, B);
                 WriteList("Ускорение", A,B);
-                //settings.Add(new Settings { Name = $"Канал {Num}.Ускорение Коэффициент А", Value = A.ToString() });
-                //settings.Add(new Settings { Name = $"Канал {Num}.Ускорение Коэффициент B", Value = B.ToString() });
+                wp.Report(2, "Запись коэффициентов ускорения ✔");
             }
-            public async Task WriteCoefs_Speed(float A, float B)
+            public async Task WriteCoefs_Speed(float A, float B, WeightedProgress wp)
             {
+                wp.Report(0, "Запись коэффициентов скорости");
                 await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов скорости:");
                 await LogerViewModel.Instance.Write($"Коэффициент A: {A}");
                 await Devices.Crate.WriteSwFloat(Coef_Speed_A, A);
                 await LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 await Devices.Crate.WriteSwFloat(Coef_Speed_B, B);
                 WriteList("Скорость", A,B);
-                //settings.Add(new Settings { Name = $"Канал {Num}.Скорость Коэффициент А", Value = A.ToString() });
-                //settings.Add(new Settings { Name = $"Канал {Num}.Скорость Коэффициент B", Value = B.ToString() });
+                wp.Report(2, "Запись коэффициентов скорости ✔");
             }
-            public async Task WriteCoefs_4_20(float A, float B)
+            public async Task WriteCoefs_4_20(float A, float B, WeightedProgress wp)
             {
+                wp.Report(0, "Запись коэффициентов 4-20");
                 await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов 4-20:");
                 await LogerViewModel.Instance.Write($"Коэффициент A: {A}");
                 await Devices.Crate.WriteSwFloat(Coef_4_20_A, A);
                 await LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 await Devices.Crate.WriteSwFloat(Coef_4_20_B, B);
                 WriteList("Ток 4-20", A,B);
-                //settings.Add(new Settings { Name = $"Канал {Num}.Ток 4-20 Коэффициент А", Value = A.ToString() });
-                //settings.Add(new Settings { Name = $"Канал {Num}.Ток 4-20 Коэффициент B", Value = B.ToString() });
+                wp.Report(2, "Запись коэффициентов 4-20 ✔");
             }
-            public async Task WriteCoefs_IEPE2(float A)
+            public async Task WriteCoefs_T(float A, float B, WeightedProgress wp)
             {
-                await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов постоянной составляющей сигнала:");
-                await LogerViewModel.Instance.Write($"Коэффициент A: {A}");
-                await Devices.Crate.WriteSwFloat(Coef_T_A, A);
-                await LogerViewModel.Instance.Write($"Коэффициент B: 0");
-                await Devices.Crate.WriteSwFloat(Coef_T_B, 0);
-            }
-            public async Task WriteCoefs_T(float A, float B)
-            {
+                wp.Report(0, "Запись коэффициентов Термопреобразователя");
                 await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов Термопреобразователя:");
                 await LogerViewModel.Instance.Write($"Коэффициент A: {A}");
                 await Devices.Crate.WriteSwFloat(Coef_T_A, A);
                 await LogerViewModel.Instance.Write($"Коэффициент B: {B}");
                 await Devices.Crate.WriteSwFloat(Coef_T_B, B);
                 WriteList("Температура",A,B);
-                //settings.Add(new Settings { Name = $"Канал {Num}.Температура Коэффициент А", Value = A.ToString() });
-                //settings.Add(new Settings { Name = $"Канал {Num}.Температура Коэффициент B", Value = B.ToString() });
+                wp.Report(2, "Запись коэффициентов Термопреобразователя ✔");
             }
             //public async Task WriteCoefs_U(float A, float B)
             //{
@@ -244,8 +231,9 @@ namespace APM_Crate.Models
                 settings.Add(new Settings { Name = $"Канал {Num}.{str} Коэффициент А", Value = A.ToString() });
                 settings.Add(new Settings { Name = $"Канал {Num}.{str} Коэффициент B", Value = B.ToString() });
             }
-            public async Task Setting_IEPE()
+            public async Task Setting_IEPE(WeightedProgress wp)
             {
+
                 if (await CheckSettingFlag(SettingType.IEPE) is false)
                 {
                     float CoefA1 = await Devices.Crate.ReadSwFloat(Coef_ACC_A);
@@ -256,32 +244,35 @@ namespace APM_Crate.Models
 
                     WriteList("Ускорение", CoefA1, CoefB1);
                     WriteList("Скорость", CoefA2, CoefB2);
+                    wp.Reset();
                     return;
                 }
                 await Devices.Generator.SetFrequency(Frequency);
                 await LogerViewModel.Instance.Write($"Настройка IEPE, канал {Num}");
-                await Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Num}-го канала.\r\n" +
+                await wp.Step(2,"Сборка схемы",()=> Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Num}-го канала.\r\n" +
                     (Num) switch
                     {
                         "1" => "In-2 GND-3",
                         "2" => "In-5 GND-6",
-                    });
+                    }));
                 //$"In-2 GND-3 для 1 канала\r\n" +
                 //$"In-5 GND-6 для 2 канала");
 
-                await SourceOn();
-                await Reset(SettingType.IEPE);
+                await SourceOn(wp);
+                await Reset(SettingType.IEPE,wp);
 
-                await ValidationVoltage(DC_Value, 0.5d);
+                await ValidationVoltage(DC_Value, 0.5d,wp);
+
+
                 await Devices.Multimeter.VoltmeterMode("AC");
-                await SetVoltage(Point_1);
-                float V1 = await GetVoltageAC( );
+                await SetVoltage(Point_1,wp);
+                float V1 = await GetVoltageAC( wp);
 
                 float Signal_1 = await GetValue(ValueType.ACC);
                 float Integral_1 = await GetValue(ValueType.Speed);
-                await SetVoltage(Point_2);
-                float V2 = await GetVoltageAC( );
-                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f);
+                await SetVoltage(Point_2, wp);
+                float V2 = await GetVoltageAC(wp);
+                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f,wp);
 
                 float Signal_2 = await GetValue(ValueType.ACC);
                 float Integral_2 = await GetValue(ValueType.Speed);
@@ -291,8 +282,9 @@ namespace APM_Crate.Models
                 float A2 = (V2 - V1) * 2 / Coef / (Integral_2 - Integral_1);
                 float B2 = V1 * 2 / Coef - A2 * Integral_1;
 
-                await WriteCoefs_ACC(A1, B1);
-                await WriteCoefs_Speed(A2, B2);
+
+                await WriteCoefs_ACC(A1, B1,wp);
+                await WriteCoefs_Speed(A2, B2, wp);
 
 
                 float dc = await Devices.Crate.ReadUInt16(Physical) * 0.001f;
@@ -300,9 +292,9 @@ namespace APM_Crate.Models
                 await Devices.Multimeter.VoltmeterMode("DC");
                 float real_dc = (float)(await Devices.Multimeter.GetVoltage("DC", 1000));
                 await Devices.Generator.ChanelOn(Devices.Generator.channelNum);
-                await WriteCoefs_IEPE2(real_dc / dc);
-                await SetVoltage(Point_1);
-                V1 = await GetVoltageAC();
+                await WriteCoefs_T(real_dc / dc,0, wp);
+                await SetVoltage(Point_1, wp);
+                V1 = await GetVoltageAC(wp);
 
                 Signal_1 = await GetValue(ValueType.ACC);
                 Integral_1 = await GetValue(ValueType.Speed);
@@ -310,12 +302,12 @@ namespace APM_Crate.Models
 
 
                 await LogerViewModel.Instance.Write("Проверка настроек");
-                await CheckSetting(V1,ValueType.ACC);
+                await wp.Step(5,"Проверка настроек ускорения",()=> CheckSetting(V1,ValueType.ACC));
 
-                await SetVoltage(Point_2);
-                V2 = await GetVoltageAC();
+                await SetVoltage(Point_2, wp);
+                V2 = await GetVoltageAC(wp);
 
-                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f);
+                await WaitForChangeRegisters(ACC_RMS, Speed_RMS,Signal_1, Integral_1,0.01f,wp);
 
                 float Move = await Devices.Crate.ReadUInt16(Move_RMS) * 0.1f;
                 CountRelative(Move * Coef / 4, V2, out float relative);
@@ -325,29 +317,30 @@ namespace APM_Crate.Models
                 {
                     await LogerViewModel.Instance.Write($"Переписывание коэффициента скорости");
                     A2 += 0.04f;
-                    await WriteCoefs_Speed( A2, B2);
+                    await WriteCoefs_Speed( A2, B2, wp);
                 }
                 else if (relative >= 1)
                 {
                     await LogerViewModel.Instance.Write($"Переписывание коэффициента скорости");
                     A2 -= 0.02f;
-                    await WriteCoefs_Speed( A2, B2);
+                    await WriteCoefs_Speed( A2, B2, wp);
                 }
-                await CheckSetting( V2, ValueType.ACC);
-                await CheckSetting( V2, ValueType.Speed);
-                await CheckSetting( V2, ValueType.Move);
+                await wp.Step(5, "Проверка настроек ускорения", () => CheckSetting( V2, ValueType.ACC));
+                await wp.Step(5, "Проверка настроек скорости", () => CheckSetting( V2, ValueType.Speed));
+                await wp.Step(5, "Проверка настроек перемещения", () => CheckSetting( V2, ValueType.Move));
 
                 await LogerViewModel.Instance.Write($"✔ Настройка IEPE, канал {Num} закончена");
+                wp.Reset();
             }
-            public async Task Setting_4_20()
+            public async Task Setting_4_20(WeightedProgress wp)
             {
                 if (await CheckSettingFlag(SettingType._4_20) is false)
                 {
                     float CoefA1 = await Devices.Crate.ReadSwFloat(Coef_4_20_A);
                     float CoefB1 = await Devices.Crate.ReadSwFloat(Coef_4_20_B);
 
-
                     WriteList("Ток 4-20", CoefA1, CoefB1);
+
                     return;
                 }
                 //string starttime = String.Format($"{DateTime.Now.Hour}.{DateTime.Now.Minute}");
@@ -363,15 +356,16 @@ namespace APM_Crate.Models
                     //$"In-2 GND-3 для 1 канала\r\n" +
                     //$"In-5 GND-6 для 2 канала\r\n" +
                     //$"In-7 GND-8 для 3 канала");
-                await Reset(SettingType._4_20);
-                await SourceOn();
+                await Reset(SettingType._4_20, wp);
+                await SourceOn(wp);
                 await Validation_mA(4,0.02);
                 float I1 = await Devices.Crate.ReadSwFloat(DC);
                 await Validation_mA(20, 0.02);
                 float I2 = await Devices.Crate.ReadSwFloat(DC);
                 float A = 16 / (I2 - I1);
                 float B = 4 - A * I1;
-                await WriteCoefs_4_20(A, B);
+
+                await WriteCoefs_4_20(A, B, wp);
 
 
                 await LogerViewModel.Instance.Write("Проверка настроек");
@@ -382,7 +376,7 @@ namespace APM_Crate.Models
 
                 await LogerViewModel.Instance.Write($"✔ Настройка тока 4-20, канал {Num} закончена");
             }
-            public async Task Setting_T()
+            public async Task Setting_T(WeightedProgress wp)
             {
                 if (await CheckSettingFlag(SettingType.T) is false)
                 {
@@ -397,13 +391,14 @@ namespace APM_Crate.Models
                 await LogerViewModel.Instance.Write($"Настройка термопреобразователя, канал {Num}");
                 await Dialog.ShowBuild("T", $"Установите контакты для настройки\r\n термопреобразователя {Num}-го канала.\r\n" +
                     $"In+-9 In--8 GND-7");
-                await Reset(SettingType.T);
+                await Reset(SettingType.T, wp);
                 await Dialog.ShowParam();
                 float T1 = 0, T2 = 0;
                 float Readed_T = 0f;
                 ushort typetermo = (ushort)(TermoTypes.IndexOf(TermoType) + 1);
                 SetTermoValues(out float R1, out float R2, out float Need_T1, out float Need_T2);
                 await Devices.Crate.WriteUInt16(TypeTermo, typetermo);
+
                 await Dialog.ShowConfirm($"Установите на магазине сопротивлений 100 Ом", new Delay());
                 await Task.Delay(15000); // стоит потому что долго обновляется значение в крейте
                 T1 = await Devices.Crate.ReadUInt16(ResistTermo) * 0.001f;
@@ -412,7 +407,8 @@ namespace APM_Crate.Models
                 T2 = await Devices.Crate.ReadUInt16(ResistTermo) * 0.001f;
                 float A = 3 / (T2 - T1);
                 float B = 1 - A * T1;
-                await WriteCoefs_T(A,B);
+
+                await WriteCoefs_T(A,B, wp);
 
                 await LogerViewModel.Instance.Write("Проверка настроек");
                 await Dialog.ShowConfirm($"Установите на магазине сопротивлений {R1} Ом", new Delay());
@@ -433,7 +429,7 @@ namespace APM_Crate.Models
                 //await WriteParam(setting, starttime,endtime);
                 await LogerViewModel.Instance.Write($"✔ Настройка термопреобразователя, канал {Num} закончена");
             }
-            public async Task Setting_U()
+            public async Task Setting_U(WeightedProgress wp)
             {
                 if (await CheckSettingFlag(SettingType.U) is false)
                 {
@@ -457,13 +453,14 @@ namespace APM_Crate.Models
                 //$"In+-4 GND-5 для 2 канала\r\n" +
                 //$"In+-6 GND-7 для 3 канала\r\n" +
                 //$"In+-8 GND-9 для 4 канала");
-                await Reset(SettingType.U);
+                await Reset(SettingType.U, wp);
                 await ValidationVoltageByCalibrator(10,0.2);
                 //await Dialog.ShowConfirm("Установите на калибраторе смещение 10В");
                 await Devices.Generator.SetFrequency(Frequency);
                 await Devices.Generator.SetOffset(0);
                 await Devices.Multimeter.VoltmeterMode("AC");
                 await Devices.Generator.SetVoltage(0.5);
+
                 //await SetVoltage(0.5d);
                 await Task.Delay(5000);
                 //float V1 = await GetVoltageAC() * 2f * (float)Math.Sqrt(2f) * 0.001f;
@@ -487,8 +484,7 @@ namespace APM_Crate.Models
 
                 float A1 = (V2 - V1) / (Signal_2 - Signal_1);
                 float B1 = V1 - A1 * Signal_1;
-                await WriteCoefs_ACC(A1, B1);
-
+                await WriteCoefs_ACC(A1, B1, wp);
                 await LogerViewModel.Instance.Write("Проверка настроек");
                 await Devices.Generator.SetVoltage(0.5d);
                 await Task.Delay(5000);
@@ -669,6 +665,9 @@ namespace APM_Crate.Models
         public static bool Freq_Is_79_6 = true;
         public static bool CoefEnaibled = true;
         public static int ProgressValue = 0;
+        public static string ProgressText = "";
+        public static int ProgressValueChannel = 0;
+        public static string ProgressTextChannel = "";
 
         public static double DC_Value {get{return Coef_Is_10 ? 10d : 12d;}}
         public static double Point_1 {get{return Coef_Is_10 ? 10d : 6.67;}}
@@ -689,63 +688,48 @@ namespace APM_Crate.Models
             //CheckFilePLC.CheckSawChannel(channel2, out uint errors2);
             //await LogerViewModel.Instance.Write($"{errors1+errors2}");
         }
-        public static async Task Start(string item)
+        public static async Task Start(string item, WeightedProgress wp, WeightedProgress wp2)
         {
-            ushort type = 0;
             switch (item)
             {
                 case "241":
-                    type = 1;
-                    await Channel1.Setting_IEPE();
-                    await Channel2.Setting_4_20();
+                    await wp.Step(30, "Настройка канала 1, IEPE", ()=> Channel1.Setting_IEPE(wp2));
+                    await wp.Step(30, "Настройка канала 2, Ток 4-20", ()=> Channel2.Setting_4_20(wp2));
                     await Devices.Crate.WriteSwFloat(Crate.Registers.Coefficient, Coef);
                     break;
                 case "242":
-                    type = 2;
-                    await Channel1.Setting_IEPE();
-                    await Channel2.Setting_IEPE();
+                    await wp.Step(30, "Настройка канала 1, IEPE", ()=> Channel1.Setting_IEPE(wp2));
+                    await wp.Step(30, "Настройка канала 2, IEPE", ()=> Channel2.Setting_IEPE(wp2));
                     await Devices.Crate.WriteSwFloat(Crate.Registers.Coefficient, Coef);
                     break;
                 case "243":
-                    type = 3;
-                    await Channel1.Setting_4_20();
-                    await Channel2.Setting_4_20();
+                    await wp.Step(30, "Настройка канала 1, Ток 4-20", ()=> Channel1.Setting_4_20(wp2));
+                    await wp.Step(30, "Настройка канала 2, Ток 4-20", ()=> Channel2.Setting_4_20(wp2));
                     break;
                 case "511":
-                    type = 4;
-                    await Channel1.Setting_U();
-                    await Channel2.Setting_U();
-                    await Channel3.Setting_U();
-                    await Channel4.Setting_U();
+                    await wp.Step(15, "Настройка канала 1, U", ()=> Channel1.Setting_U(wp2));
+                    await wp.Step(15, "Настройка канала 2, U", ()=> Channel2.Setting_U(wp2));
+                    await wp.Step(15, "Настройка канала 3, U", ()=> Channel3.Setting_U(wp2));
+                    await wp.Step(15, "Настройка канала 4, U", ()=> Channel4.Setting_U(wp2));
                     break;
                 case "371":
-                    type = 5;
-                    await Channel1.Setting_IEPE();
-                    await Channel2.Setting_4_20();
-                    await Channel3.Setting_T();
+                    await wp.Step(20, "Настройка канала 1, IEPE", () => Channel1.Setting_IEPE(wp2));
+                    await wp.Step(20, "Настройка канала 2, Ток 4-20", () => Channel2.Setting_4_20(wp2));
+                    await wp.Step(20, "Настройка канала 3, Температура", () => Channel3.Setting_T(wp2));
                     await Devices.Crate.WriteSwFloat(Crate.Registers.Coefficient, Coef);
                     break;
                 case "374":
-                    type = 6;
-                    await Channel1.Setting_4_20();
-                    await Channel2.Setting_4_20();
-                    await Channel3.Setting_4_20();
+                    await wp.Step(20, "Настройка канала 1, Ток 4-20", () => Channel1.Setting_4_20(wp2));
+                    await wp.Step(20, "Настройка канала 2, Ток 4-20", () => Channel2.Setting_4_20(wp2));
+                    await wp.Step(20, "Настройка канала 3, Ток 4-20", () => Channel3.Setting_4_20(wp2));
                     break;
                 case "375":
-                    type = 7;
-                    await Channel1.Setting_IEPE();
-                    await Channel2.Setting_4_20();
-                    await Channel3.Setting_4_20();
+                    await wp.Step(20, "Настройка канала 1, IEPE", () => Channel1.Setting_IEPE(wp2));
+                    await wp.Step(20, "Настройка канала 2, Ток 4-20", () => Channel2.Setting_4_20(wp2));
+                    await wp.Step(20, "Настройка канала 3, Ток 4-20", () => Channel3.Setting_4_20(wp2));
                     await Devices.Crate.WriteSwFloat(Crate.Registers.Coefficient, Coef);
                     break;
             }
-            if (!(type is 3 || type is 4 || type is 6))
-            {
-                await LogerViewModel.Instance.Write("Проверка выборок устройства");
-                await CheckFilePLC.Start(type);
-                await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
-            }
-
         }
         public static async Task Validation_mA(double V, double relative)
         {
@@ -762,8 +746,9 @@ namespace APM_Crate.Models
             }
             while (Valid is false);
         }
-        public static async Task ValidationVoltage(double V,double relative, string type = "DC")
+        public static async Task ValidationVoltage(double V,double relative,WeightedProgress wp, string type = "DC")
         {
+            wp.Report(0, "Установка напряжения");
             bool Valid = false;
             string mes = $"При помощи магазина сопротивлений задайте {V} В";
            if(Devices.Generator.IsOpened()) await Devices.Generator.ChanelOff(Devices.Generator.channelNum);
@@ -777,6 +762,7 @@ namespace APM_Crate.Models
             }
             while (Valid is false);
             if (Devices.Generator.IsOpened()) await Devices.Generator.ChanelOn(Devices.Generator.channelNum);
+            wp.Report(2, "Установка напряжения ✔");
         }
         public static async Task ValidationVoltageByCalibrator(double V, double relative)
         {
@@ -865,10 +851,12 @@ namespace APM_Crate.Models
             Value /= 10;
             return Value;
         }
-        public static async Task SetVoltage(double V)
+        public static async Task SetVoltage(double V,WeightedProgress wp)
         {
             //Devices.Generator.SetVoltage(ConvertValue.ToPP(V));
+            wp.Report(0, $"Установка напряжения {V} AC");
             await Devices.Multimeter.SetVoltage(Devices.Generator, V, Frequency, 0.0005, 3);
+            wp.Report(2, $"Установка напряжения {V} AC ✔");
             await Task.Delay(5000);
         }
         public static async Task WaitForChangeRegisters(ushort reg, float FirstsValue, float coefreg)
@@ -883,8 +871,9 @@ namespace APM_Crate.Models
             }
             if (IsChange is false) { throw new Exception("Значения обновляются слишком долго."); }
         }
-        public static async Task WaitForChangeRegisters(ushort reg1, ushort reg2, float FirstsValue1,float FirstsValue2,float coefreg)
+        public static async Task WaitForChangeRegisters(ushort reg1, ushort reg2, float FirstsValue1,float FirstsValue2,float coefreg,WeightedProgress wp)
         {
+            wp.Report(0,$"Ожидание изменения регистров {reg1} и {reg2}");
             int sec = 0;
             bool IsChange1 = false;
             bool IsChange2 = false;
@@ -898,11 +887,15 @@ namespace APM_Crate.Models
             if(sec<60) await Task.Delay(4000);
 
             if (IsChange1 is false || IsChange2 is false) { throw new Exception("Значения обновляются слишком долго."); }
+            wp.Report(2,$"Ожидание изменения регистров {reg1} и {reg2} ✔");
         }
-        public static async Task<float> GetVoltageAC()
+        public static async Task<float> GetVoltageAC(WeightedProgress wp)
         {
+            wp.Report(0, "Чтение значения из вольтметра");
             await Devices.Multimeter.VoltmeterMode("AC");
-            return (float)(await Devices.Multimeter.GetVoltage("AC", 1000) * 1000);
+            float result = (float)(await Devices.Multimeter.GetVoltage("AC", 1000) * 1000);
+            wp.Report(1, "Чтение значения из вольтметра ✔");
+            return result;
         }
         public static void CountRelative(float value, float V, out float relative) => relative = V >= 1000 ? (value - V) / V * 100 : (value - V) / 1000 * 100; // (относительная/приведенная) погрешность
     }

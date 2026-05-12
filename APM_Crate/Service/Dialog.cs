@@ -92,8 +92,7 @@ namespace APM_Crate.Service
             //{
             //    data[i] = (byte)i;
             //}
-            int INDEX = 2 * CheckFilePLC.IndexMudule * CheckFilePLC.LengthModul;
-            data = data.Skip(2 * CheckFilePLC.IndexMudule * CheckFilePLC.LengthModul).ToArray();
+            data = data.Skip(2 * Crate.IndexSlotByBasket * CheckFilePLC.LengthModul).ToArray();
             CheckFilePLC.GetValuesChannel(data, out ushort[] Channel1);
             data = data.Skip(2 * (CheckFilePLC.LengthChannel + 4)).ToArray();
             CheckFilePLC.GetValuesChannel(data, out ushort[] Channel2);

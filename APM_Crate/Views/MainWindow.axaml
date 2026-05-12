@@ -26,6 +26,41 @@
 	  <KeyBinding Command="{Binding OpenParametersCommand}" Gesture="Ctrl+P" />
 	</Window.KeyBindings>
 
+    <Panel>
+
+		<Border 
+    Background="{DynamicResource ColorBackgroundBorder}"
+          ZIndex="1"
+          Opacity="0.65" 
+          Padding="0"
+          IsVisible="{Binding !SettingViewModel.IsEnabledButtons}">
+         <Border
+         Background="{DynamicResource ColorBackgroundBorder}">
+             <StackPanel 
+             VerticalAlignment="Center"
+             Spacing="10" Opacity="3.08">
+				 
+             <ProgressBar Value="{Binding SettingViewModel.ProgressValue}"
+        Minimum="0" Maximum="100"
+                     Height="20"/>
+                 <TextBlock Text="{Binding SettingViewModel.ProgressText}"
+    TextWrapping="Wrap"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/> 
+
+             <ProgressBar Value="{Binding SettingViewModel.ProgressValueChannel}"
+        Minimum="0" Maximum="100"
+                     Height="20"/>
+                 <TextBlock Text="{Binding SettingViewModel.ProgressTextChannel}"
+    TextWrapping="Wrap"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/> 
+             </StackPanel>
+						
+         </Border>
+
+            </Border>
+
       <Grid   ColumnDefinitions="Auto,*" ColumnSpacing="10"  >
 			  <local:DevicesUserControl
               DataContext="{Binding DevicesViewModel}"
@@ -40,7 +75,7 @@
               DataContext="{Binding SettingViewModel}"
               Grid.Row="0"/>
           
-			   <Panel Grid.Row="1" Width="263" Height="218" >
+			   <Panel Grid.Row="1" Width="263" Height="254" >
               <Button 
               ZIndex="1"
               Content="X"
@@ -70,4 +105,6 @@
           </Grid>
 
 	</Grid>
+
+    </Panel>
 </Window>

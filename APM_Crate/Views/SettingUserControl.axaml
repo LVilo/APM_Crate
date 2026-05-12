@@ -13,7 +13,7 @@
 	
 				<controls:GroupBox Header="Настройка" Color="#F0F0F0" ClipToBounds="True" IsEnabled="{Binding IsEnabledButtons}">
 							<controls:GroupBox.ContentControl >
-						<Grid  RowDefinitions="Auto,Auto,Auto,Auto" >
+						<Grid  RowDefinitions="Auto,Auto,Auto" >
 							<!--<controls:UserComboBox Header="Настраиваемый модуль:" UserItems="{Binding Modules}" UserSelectedItem="{Binding ItemModule}" />
 							<controls:UserComboBox Header="Настраиваемый тип PLC:" UserItems="{Binding PLC}" UserSelectedItem="{Binding ItemPLC}" />-->
 							<Grid Grid.Row="0"
@@ -69,10 +69,10 @@
 							<TextBox   Width="{Binding WidthTextBox}"/>
 						</DockPanel>-->
 						
-							<Button Grid.Row="2" Content="Выборки" Width="250"
-										Command="{Binding Samples_Command}"/>
+							<!--<Button Grid.Row="2" Content="Выборки" Width="250"
+										Command="{Binding Samples_Command}"/>-->
 							
-							<Button Width="250" Grid.Row="3" 
+							<Button Width="250" Grid.Row="2" 
 						Content="Начать настройку"
 							Command="{Binding SettingALL_Command}"
 							IsEnabled="{Binding IsEnabledButtons}"/>
