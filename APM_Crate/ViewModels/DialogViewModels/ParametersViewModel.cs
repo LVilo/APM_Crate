@@ -1,4 +1,5 @@
 ﻿using APM_Crate.Models;
+using APM_Crate.Models.SettingsModel;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,13 @@ namespace APM_Crate.ViewModels.DialogViewModels
     {
         public bool Coef
         {
-            get => SettingModel.Coef_Is_10;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Coef_Is_10, value); }
+            get => Setting.Coef_Is_10;
+            set { this.RaiseAndSetIfChanged(ref Setting.Coef_Is_10, value); }
         }
         public bool Freq_Is_79_6
         {
-            get => SettingModel.Freq_Is_79_6;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Freq_Is_79_6, value); }
+            get => Setting.Freq_Is_79_6;
+            set { this.RaiseAndSetIfChanged(ref Setting.Freq_Is_79_6, value); }
         }
     }
 }

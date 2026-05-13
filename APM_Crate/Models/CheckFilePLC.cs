@@ -1,4 +1,5 @@
 ﻿using APM_Crate.Models.DevicesModel;
+using APM_Crate.Models.SettingsModel.PLCs;
 using APM_Crate.ViewModels;
 using Avalonia.Remote.Protocol.Designer;
 using System;
@@ -9,7 +10,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static APM_Crate.Models.SettingModel;
 using static SkiaSharp.HarfBuzz.SKShaper;
 
 namespace APM_Crate.Models
@@ -37,9 +37,9 @@ namespace APM_Crate.Models
         }
         public static async Task<byte[]> GetDataSaw(ushort type)
         {
-
-            await Channel1.SawOn();
-            if (type is 2) await Channel2.SawOn();
+            
+            await Devices.Crate.WriteUInt16(SettingViewModel.PLC.Channel1.OnSaw, 1);
+            if (type is 2) await Devices.Crate.WriteUInt16(SettingViewModel.PLC.Channel2.OnSaw, 1);
 
             await Devices.Crate.WriteSingleRegister(3, 5);
             await Task.Delay(3000);
@@ -51,8 +51,8 @@ namespace APM_Crate.Models
             while (await GetBigEndian() is false);
             await Task.Delay(3000);
             byte[] data = await DownloadFile();
-            await Channel1.SawOff();
-            if (type is 2) await Channel2.SawOff();
+            await Devices.Crate.WriteUInt16(SettingViewModel.PLC.Channel1.OnSaw, 0);
+            if (type is 2) await Devices.Crate.WriteUInt16(SettingViewModel.PLC.Channel2.OnSaw, 0);
             return data;
         }
 

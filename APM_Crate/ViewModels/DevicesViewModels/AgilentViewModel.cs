@@ -32,12 +32,12 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             {
                 Dialog.Mult = new Delay();
                 Dialog.WhileGetVoltAsync();
-                HeaderText = "Мультиметр - Подключено";
+                //HeaderText = "Мультиметр - Подключено";
                 return true;
             }
             else
             {
-                HeaderText = "Мультиметр - Отключено";
+                //HeaderText = "Мультиметр - Отключено";
                 return false;
             }
             
@@ -46,7 +46,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         protected override async Task ClosePort_abstract()
         {
             await Devices.Multimeter.ClosePort();
-            HeaderText = "Мультиметр - Отключено";
+            //HeaderText = "Мультиметр - Отключено";
         }
         public override bool IsOpened() => Devices.Multimeter.IsOpened();
     }

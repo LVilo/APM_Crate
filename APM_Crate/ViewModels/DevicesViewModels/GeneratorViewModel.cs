@@ -61,13 +61,13 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
                 int chanel = Chanel_1 is true ? 1 : 2;
                 await Devices.Generator.SetChannel(chanel);
-                HeaderText = "Генератор - Подключено";
+                //HeaderText = "Генератор - Подключено";
                 return Devices.Generator.IsOpened();
 
             }
             else
             {
-                HeaderText = "Генератор - Отключено";
+                //HeaderText = "Генератор - Отключено";
                 return false;
             }
         }
@@ -76,7 +76,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
         {
             await Devices.Generator.ChanelOff(Devices.Generator.channelNum);
             await Devices.Generator.ClosePort();
-            HeaderText = "Генератор - Отключено";
+            //HeaderText = "Генератор - Отключено";
         }
         public override bool IsOpened() => Devices.Generator.IsOpened();
     }

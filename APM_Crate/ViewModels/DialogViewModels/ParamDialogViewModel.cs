@@ -1,5 +1,6 @@
 ﻿using APM_Crate.Models;
 using APM_Crate.Models.DevicesModel;
+using APM_Crate.Models.SettingsModel;
 using APM_Crate.Service;
 using Avalonia;
 using Avalonia.Animation;
@@ -23,13 +24,13 @@ namespace APM_Crate.ViewModels.DialogViewModels
 
         }
 
-        public static ObservableCollection<string> ItemsSource => SettingModel.TermoTypes;
+        public static ObservableCollection<string> ItemsSource => Setting.TermoTypes;
         public string ItemSelected
         {
-            get => SettingModel.TermoType;
+            get => Setting.TermoType;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.TermoType, value);
+                this.RaiseAndSetIfChanged(ref Setting.TermoType, value);
             }
         }
 

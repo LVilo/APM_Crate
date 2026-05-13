@@ -23,60 +23,60 @@ namespace APM_Crate.ViewModels.DialogViewModels
         }
         public bool SettingChannel_1
         {
-            get => SettingModel.Channel1.SettingChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Channel1.SettingChannel, value); }
+            get => SettingViewModel.PLC.Channel1.SettingChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel1.SettingChannel, value); }
         }
         public bool SettingChannel_2
         {
-            get => SettingModel.Channel2.SettingChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Channel2.SettingChannel, value); }
+            get => SettingViewModel.PLC.Channel2.SettingChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel2.SettingChannel, value); }
         }
         public bool SettingChannel_3
         {
-            get => SettingModel.Channel3.SettingChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Channel3.SettingChannel, value); }
+            get => SettingViewModel.PLC.Channel3.SettingChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel3.SettingChannel, value); }
         }
         public bool SettingChannel_4
         {
-            get => SettingModel.Channel4.SettingChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.Channel4.SettingChannel, value); }
+            get => SettingViewModel.PLC.Channel4.SettingChannel;
+            set { this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel4.SettingChannel, value); }
         }
         public bool CanSettingChannel_1
         {
-            get => SettingModel.Channel1.CanSetting;
+            get => SettingViewModel.PLC.Channel1.CanSetting;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.Channel1.CanSetting, value);
+                this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel1.CanSetting, value);
                 SettingChannel_1 = value;
             }
         }
         
         public bool CanSettingChannel_2
         {
-            get => SettingModel.Channel2.CanSetting;
+            get => SettingViewModel.PLC.Channel2.CanSetting;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.Channel2.CanSetting, value);
+                this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel2.CanSetting, value);
                 SettingChannel_2 = value;
             }
         }
         
         public bool CanSettingChannel_3
         {
-            get => SettingModel.Channel3.CanSetting;
+            get => SettingViewModel.PLC.Channel3.CanSetting;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.Channel3.CanSetting, value);
+                this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel3.CanSetting, value);
                 SettingChannel_3 = value;
             }
         }
         
         public bool CanSettingChannel_4
         {
-            get => SettingModel.Channel4.CanSetting;
+            get => SettingViewModel.PLC.Channel4.CanSetting;
             set
             {
-                this.RaiseAndSetIfChanged(ref SettingModel.Channel4.CanSetting, value);
+                this.RaiseAndSetIfChanged(ref SettingViewModel.PLC.Channel4.CanSetting, value);
                 SettingChannel_4 = value;
             }
         }

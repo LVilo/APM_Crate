@@ -29,7 +29,7 @@
 								<TextBlock Grid.Row="1" Grid.Column="0" Text="Тип PLC:"/>
 								<ComboBox Grid.Row="1" Grid.Column="1" 
 								Width="{Binding WidthComboBox}"
-										  ItemsSource="{Binding PLC}"
+										  ItemsSource="{Binding PLCSource}"
 										  SelectedItem="{Binding ItemPLC}"/>
 							</Grid>
 

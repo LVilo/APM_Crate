@@ -22,7 +22,7 @@ namespace APM_Crate.Models.DevicesModel
         public static ObservableCollection<string> Slots => ["7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"];
         public static string Slot = "7";
         public static ushort IndexSlotByBasket => (ushort)(Convert.ToUInt16(Slot) - 7);
-        public static ObservableCollection<string> PLC => ["241", "242", "243", "511", "371", "374", "375"];
+        public static ObservableCollection<string> PLCSource => ["241", "242", "243", "511", "371", "374", "375"];
         public static string ItemPLC = "241";
         public static class Registers
         {

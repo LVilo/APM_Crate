@@ -26,7 +26,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using static APM_Crate.Models.DevicesModel.Crate;
-using static APM_Crate.Models.SettingModel;
+using static APM_Crate.Models.SettingsModel.Setting;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace APM_Crate.ViewModels
@@ -35,8 +35,8 @@ namespace APM_Crate.ViewModels
     {
         [JsonIgnore]
         public ReactiveCommand<Unit, Unit> SettingALL_Command { get; }
-        [JsonIgnore]
-        public ReactiveCommand<Unit, Unit> Samples_Command { get; }
+        //[JsonIgnore]
+        //public ReactiveCommand<Unit, Unit> Samples_Command { get; }
 
 
         [JsonIgnore]
@@ -89,7 +89,7 @@ namespace APM_Crate.ViewModels
             }
         }
         [JsonIgnore]
-        public ObservableCollection<string> PLC => Crate.PLC;
+        public ObservableCollection<string> PLCSource => Crate.PLCSource;
 
         [JsonIgnore]
         public string ItemPLC
@@ -99,13 +99,13 @@ namespace APM_Crate.ViewModels
             {
                 if (IsEnabledButtons)
                 {
-                    Channel1.CanSetting = true;
-                    Channel2.CanSetting = true;
-                    Channel3.CanSetting = value is "371" or "374" or "375" or "511";
-                    Channel4.CanSetting = value is "511";
+                    PLC.Channel1.CanSetting = true;
+                    PLC.Channel2.CanSetting = true;
+                    PLC.Channel3.CanSetting = value is "371" or "374" or "375" or "511";
+                    PLC.Channel4.CanSetting = value is "511";
 
-                    Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
-                    Channel4.SettingChannel = value is "511";
+                    PLC.Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
+                    PLC.Channel4.SettingChannel = value is "511";
                     this.RaiseAndSetIfChanged(ref Crate.ItemPLC, value);
                 }
             }
@@ -115,7 +115,7 @@ namespace APM_Crate.ViewModels
         {
             ItemPLC = "241";
             SettingALL_Command = ReactiveCommand.CreateFromTask(Setting);
-            Samples_Command = ReactiveCommand.CreateFromTask(Samples);
+            //Samples_Command = ReactiveCommand.CreateFromTask(Samples);
 
         }
         private bool _IsEnabledButtons = true;
@@ -125,72 +125,90 @@ namespace APM_Crate.ViewModels
             get { return _IsEnabledButtons; }
             set { this.RaiseAndSetIfChanged(ref _IsEnabledButtons, value); }
         }
+        private int _ProgressValue;
         public int ProgressValue
         {
-            get => SettingModel.ProgressValue;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValue, value); }
+            get => _ProgressValue;
+            set { this.RaiseAndSetIfChanged(ref _ProgressValue, value); }
         }
+        private string _ProgressText;
         public string ProgressText
         {
-            get => SettingModel.ProgressText;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressText, value); }
+            get => _ProgressText;
+            set { this.RaiseAndSetIfChanged(ref _ProgressText, value); }
         }
+        private int _ProgressValueChannel;
         public int ProgressValueChannel
         {
-            get => SettingModel.ProgressValueChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressValueChannel, value); }
+            get => _ProgressValueChannel;
+            set { this.RaiseAndSetIfChanged(ref _ProgressValueChannel, value); }
         }
+        private string _ProgressTextChannel;
         public string ProgressTextChannel
         {
-            get => SettingModel.ProgressTextChannel;
-            set { this.RaiseAndSetIfChanged(ref SettingModel.ProgressTextChannel, value); }
+            get => _ProgressTextChannel;
+            set { this.RaiseAndSetIfChanged(ref _ProgressTextChannel, value); }
         }
-        private async Task Samples()
-        {
-            try
-            {
+        //private async Task Samples()
+        //{
+        //    try
+        //    {
 
-                IsEnabledButtons = false;
-                if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
+        //        IsEnabledButtons = false;
+        //        if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
 
-                // меняю состав корзины под выбранный модуль
-                await ChangeBasketForSelectModule();
-
-
-                await Task.Delay(2000);
-
-                //смотрю состояние модулей после изменения состава
-                await ValidStatusModule();
-
-                ushort type = await ValidIEPE_By_PLC();
+        //        // меняю состав корзины под выбранный модуль
+        //        await ChangeBasketForSelectModule();
 
 
-                await SettingModel.Samples(type);
+        //        await Task.Delay(2000);
 
-                //await Task.Delay(5000);
-                //await Devices.Printer.PrintText(12.ToString());
+        //        //смотрю состояние модулей после изменения состава
+        //        await ValidStatusModule();
 
-            }
-            catch (TaskCanceledException ex)
-            {
+        //        ushort type = await ValidIEPE_By_PLC();
 
-            }
-            catch (Exception ex)
-            {
-                await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
-            }
-            finally
-            {
-                IsEnabledButtons = true;
-            }
-        }
+
+        //        await Samples(type);
+
+        //        //await Task.Delay(5000);
+        //        //await Devices.Printer.PrintText(12.ToString());
+
+        //    }
+        //    catch (TaskCanceledException ex)
+        //    {
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await Dialog.ShowConfirm("❗ " +ex.Message,new Delay());
+        //    }
+        //    finally
+        //    {
+        //        IsEnabledButtons = true;
+        //    }
+        //}
         Stopwatch stopwatch = new Stopwatch();
 
         public static PLC PLC = new PLC_241();
+        private PLC GetPLCClass(string item)
+        {
+            return (item) switch
+            {
+                "241" => new PLC_241(),
+                "242" => new PLC_242(),
+                "243" => new PLC_243(),
+                "511" => new PLC_511(),
+                "371" => new PLC_371(),
+                "374" => new PLC_374(),
+                "375" => new PLC_375(),
+            };
+        }
         private async Task Setting()
         {
             try
             {
+                PLC = GetPLCClass(ItemPLC);
                 var progress = new Progress<ProgressReport>(p =>
                 {
                     ProgressValue = p.Percent;
@@ -228,7 +246,8 @@ namespace APM_Crate.ViewModels
 
                 stopwatch.Restart();
                 settings = new List<Settings>();
-                await Start(ItemPLC,wp,wp2);
+                await PLC.SettingStart(wp, wp2);
+                //await Start(ItemPLC,wp,wp2);
                 stopwatch.Stop();
                 string endtime = String.Format($"{DateTime.Now.Hour}:{DateTime.Now.Minute}");
                 Config config = new Config
@@ -252,7 +271,7 @@ namespace APM_Crate.ViewModels
                 {
                     await LogerViewModel.Instance.Write("Проверка выборок устройства");
                     await wp.Step(5, $"Проверка выборок устройства",()=> CheckFilePLC.Start(type));
-                    await CheckFilePLC.Start(type);
+                    //await CheckFilePLC.Start(type);
                     await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
                 }
                 await wp.Step(5, $"Запись в базу данных",() => PostNewDevice(config));
@@ -340,9 +359,9 @@ namespace APM_Crate.ViewModels
             {
                 await Dialog.ShowConfirm($"В выбранном контроллере записан неизвестный тип контроллера '{type}'. Настроить его как тип PLC.{ItemPLC} ?", new Delay(), true);
             }
-            if (ItemPLC != PLC[type - 1])
+            if (ItemPLC != PLCSource[type - 1])
             {
-                await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLC[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
+                await Dialog.ShowConfirm($"Выбранный тип контроллера не соответствует типу, записанному на контроллер. Настроить контроллер PLC.{PLCSource[type - 1]} как тип PLC.{ItemPLC} ?", new Delay(), true);
             }
         }
         private async Task GetSerialNumber()
@@ -373,7 +392,7 @@ namespace APM_Crate.ViewModels
                 await RestModel.Post(config);
                 //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
                 await Devices.Printer.PrintText($"C.№:{SerialNumber}.");
-                await Devices.Crate.WriteSingleRegister(Crate.Registers.SetSerialNum, SettingModel.SerialNumber);
+                await Devices.Crate.WriteSingleRegister(Crate.Registers.SetSerialNum, SerialNumber);
             }
             else
             {

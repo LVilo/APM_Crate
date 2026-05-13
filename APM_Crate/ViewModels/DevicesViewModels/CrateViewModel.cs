@@ -1,5 +1,6 @@
 ﻿using APM_Crate.Models;
 using APM_Crate.Models.DevicesModel;
+using APM_Crate.Service;
 using Microsoft.VisualBasic;
 using PortsWork;
 using ReactiveUI;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -32,10 +34,18 @@ namespace APM_Crate.ViewModels.DevicesViewModels
 
         public async Task Timer()
         {
-            while (passwordClient.IsConnected())
+            try
             {
-                await passwordClient.SetPassword();
-                await Task.Delay(1000);
+                while (passwordClient.IsConnected())
+                {
+                    await passwordClient.SetPassword();
+                    await Task.Delay(1000);
+                }
+            }
+            catch (SocketException ex)
+            {
+                Dialog.ShowMessage($"! Соединение с крейтом: {IP} разорвано");
+                await ClosePort();
             }
         }
         protected override async Task<bool> OpenPort_abstract()
@@ -50,14 +60,14 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //Devices.Crate.IPAddress = IP;
             Devices.Crate.Port = 502;
             //Devices.Crate = new Crate();
-            Devices.Crate.Connect(IP, 502);
+            await Devices.Crate.Connect(IP, 502);
 
             passwordClient.IpAddress = IP;
             passwordClient.Port = 502;
-            passwordClient.Connect(IP, 502);
+            await passwordClient.Connect(IP, 502);
             //await Devices.Crate.ReadUInt16(60026);
             Timer();
-
+            return IsOpened();
             //float dc = await Devices.Crate.ReadSwFloat(8018);
 
             // ModbusTCP cc = new ModbusTCP();
@@ -66,17 +76,14 @@ namespace APM_Crate.ViewModels.DevicesViewModels
             //await LogerViewModel.Instance.Write(reg.ToString());
             //WhileUpdateModules();
             //int[] i = Devices.Crate.ReadHoldingRegisters(60025, 1);
-            bool result = Devices.Crate.Connected;
-            if (result is true) HeaderText = "Крейт - Подключено";
-            else HeaderText = "Крейт - Отключено";
-            return result;
+            
         }
 
         protected override async Task ClosePort_abstract()
         {
-            Devices.Crate.Disconnect();
-            passwordClient.Disconnect();
-            HeaderText = "Крейт - Отключено";
+            await Devices.Crate.Disconnect();
+            await passwordClient.Disconnect();
+            //HeaderText = "Крейт - Отключено";
         }
         public override bool IsOpened() => Devices.Crate.Connected;
 

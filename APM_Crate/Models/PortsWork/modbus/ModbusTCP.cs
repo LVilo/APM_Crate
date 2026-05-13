@@ -22,28 +22,17 @@ namespace PortsWork
 
         public byte UnitId { get; set; } = 1;
 
-        public void Connect(string ip)
-        {
-            IpAddress = ip;
-            _client = new TcpClient();
-           _client.Connect(IpAddress, Port);
-            _stream = _client.GetStream();
-        }
-        public void Connect(string ip, int port)
+        public async Task Connect(string ip, int port)
         {
             IpAddress = ip;
             Port = port;
             _client = new TcpClient();
-            _client.Connect(IpAddress, Port);
+            await _client.ConnectAsync(IpAddress, Port);
             _stream = _client.GetStream();
+            _stream.ReadTimeout = 1000;
+            _stream.WriteTimeout = 1000;
         }
-        public void Connect()
-        {
-            _client = new TcpClient();
-            _client.Connect(IpAddress, Port);
-            _stream = _client.GetStream();
-        }
-        public void Disconnect()
+        public async Task Disconnect()
         {
             _stream?.Close();
             _client?.Close();
@@ -54,13 +43,13 @@ namespace PortsWork
             return _client?.Connected ?? false;
         }
 
-        public async  Task<byte[]> Exchange(byte[] pdu, int expectedLength, uint attempt = 0)
+        public async Task<byte[]> Exchange(byte[] pdu, int expectedLength, uint attempt = 0)
         {
             string mes = "";
             
             if (!IsConnected())
             {
-                Connect(IpAddress, Port);
+                await Connect(IpAddress, Port);
                 if (!IsConnected())
                 {
                     throw new Exception("TCP not connected");
@@ -72,26 +61,30 @@ namespace PortsWork
             for (int i = 0; i < frame.Length; i++)
                 mes += $"[{Convert.ToString(frame[i], 16)}] ";
             Debug.WriteLine($"{IpAddress}<<{mes}");
-
-            _stream.Write(frame, 0, frame.Length);
-
-            byte[] response = new byte[expectedLength + 7]; // +MBAP
-            int read = 0;
-
+                byte[] response = new byte[expectedLength + 7]; // +MBAP
             try
             {
+                _stream.Write(frame, 0, frame.Length);
+
+                int read = 0;
+
+
                 while (read < response.Length)
                 {
                     await Task.Delay(200);
                     read += _stream.Read(response, read, response.Length - read);
                 }
             }
+            catch (SocketException ex)
+            {
+                throw;
+            }
             catch
             {
                 if (attempt == 10)
                     throw;
 
-                Connect(IpAddress, Port);
+                await Connect(IpAddress, Port);
                 await Task.Delay(1000);
                 return await Exchange(pdu, expectedLength, attempt + 1);
             }
@@ -369,7 +362,7 @@ namespace PortsWork
             }
             catch (Exception ex)
             {
-                Connect(IpAddress, 502);
+                await Connect(IpAddress, 502);
                 await Task.Delay(1000);
                 return await ReadHoldingRegisters(reg, quantity);
             }
@@ -397,9 +390,13 @@ namespace PortsWork
                 //    if (attamts == 10) break;
                 //}
             }
+            catch(SocketException ex)
+            {
+                throw new SocketException();
+            }
             catch (Exception ex)
             {
-                Connect(IpAddress, 502);
+                await Connect(IpAddress, 502);
                 await Task.Delay(1000);
                 await WriteSingleRegister(reg, value);
                 //await LogerViewModel.Instance.Write(IPAddress);

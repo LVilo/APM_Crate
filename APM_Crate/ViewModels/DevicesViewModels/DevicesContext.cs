@@ -1,4 +1,5 @@
 ﻿using APM_Crate.Models;
+using APM_Crate.Models.DevicesModel;
 using APM_Crate.Models.RestApiModel;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -132,10 +133,12 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 {
                     //DeviceStateColor = "#1DEC1D";
                     await LogerViewModel.Instance.Write($"{PortItem} подключен.");
+                    HeaderText = HeaderText.Replace("Отключено", "Подключено");
                 }
                 else
                 {
                     await ClosePort_abstract();
+                    HeaderText = HeaderText.Replace("Подключено", "Отключено");
                     //DeviceStateColor = "#F0F0F0";
                     await LogerViewModel.Instance.Write($"Не удалось подключиться к {PortItem}.");
                 }
@@ -157,6 +160,7 @@ namespace APM_Crate.ViewModels.DevicesViewModels
                 IsEnabled = false;
                 await ClosePort_abstract();
                 await LogerViewModel.Instance.Write($"{PortItem} отключен.");
+                    HeaderText = HeaderText.Replace("Подключено", "Отключено");
                 //DeviceStateColor = "#F0F0F0";
             }
             catch (Exception ex)
