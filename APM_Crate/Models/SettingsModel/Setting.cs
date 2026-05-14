@@ -45,7 +45,7 @@ namespace APM_Crate.Models.SettingsModel
         public static double Point_2 { get { return Coef_Is_10 ? 3000d : 100d; } }
         public static float Coef { get { return Coef_Is_10 ? 10f : 6.67f; } }
         public static double Frequency { get { return Freq_Is_79_6 ? 79.6d : 80d; } }
-        public static ushort SerialNumber { get; set; }
+        public static string SerialNumber;
         public static List<Settings> settings { get; set; }
 
         protected abstract Task Preparing();
@@ -65,7 +65,7 @@ namespace APM_Crate.Models.SettingsModel
             LogerViewModel.Instance.Write($"Настройка {Name}, канал {Channel.Num}");
             await Preparing();
             await WP.Step(5,"Сброс коэффициентов", ResetCoefs);
-            await WP.Step(20,"",CountCoefs);
+            await WP.Step(20,"Расчет коэффициентов",CountCoefs);
             await WriteCoefsAbstract();
             await CheckSettingAbstract();
             await WriteListValuesSetting();
@@ -134,6 +134,7 @@ namespace APM_Crate.Models.SettingsModel
                 case CoefType.Current: reg_A = Channel.Coef_4_20_A; reg_B = Channel.Coef_4_20_B; str = "Тока 4-20"; break;
                 case CoefType.T: reg_A = Channel.Coef_T_A; reg_B = Channel.Coef_T_B; str = "Температуры"; break;
             }
+            await LogerViewModel.Instance.Write($"Запись коэффициентов {str}. A-({A}),B-({B})");
             WP.Report(0, $"Запись коэффициентов {str}. A-({A}),B-({B})");
             //await LogerViewModel.Instance.Write($"Канал {Num}. Запись коэффициентов 4-20:");
             //await LogerViewModel.Instance.Write($"Коэффициент A: {A}");

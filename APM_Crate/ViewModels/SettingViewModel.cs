@@ -99,13 +99,7 @@ namespace APM_Crate.ViewModels
             {
                 if (IsEnabledButtons)
                 {
-                    PLC.Channel1.CanSetting = true;
-                    PLC.Channel2.CanSetting = true;
-                    PLC.Channel3.CanSetting = value is "371" or "374" or "375" or "511";
-                    PLC.Channel4.CanSetting = value is "511";
-
-                    PLC.Channel3.SettingChannel = value is "371" or "374" or "375" or "511";
-                    PLC.Channel4.SettingChannel = value is "511";
+                    
                     this.RaiseAndSetIfChanged(ref Crate.ItemPLC, value);
                 }
             }
@@ -191,9 +185,9 @@ namespace APM_Crate.ViewModels
         Stopwatch stopwatch = new Stopwatch();
 
         public static PLC PLC = new PLC_241();
-        private PLC GetPLCClass(string item)
+        private void SetPLCClass(string item)
         {
-            return (item) switch
+            PLC =  (item) switch
             {
                 "241" => new PLC_241(),
                 "242" => new PLC_242(),
@@ -203,12 +197,23 @@ namespace APM_Crate.ViewModels
                 "374" => new PLC_374(),
                 "375" => new PLC_375(),
             };
+            PLC.Channel1.CanSetting = true;
+            PLC.Channel2.CanSetting = true;
+            PLC.Channel3.CanSetting = ItemPLC is "371" or "374" or "375" or "511";
+            PLC.Channel4.CanSetting = ItemPLC is "511";
+
+            PLC.Channel3.SettingChannel = ItemPLC is "371" or "374" or "375" or "511";
+            PLC.Channel4.SettingChannel = ItemPLC is "511";
         }
         private async Task Setting()
         {
             try
             {
-                PLC = GetPLCClass(ItemPLC);
+                SetPLCClass(ItemPLC);
+                ProgressText = "";
+                ProgressValueChannel = 0;
+                ProgressTextChannel = "";
+                ProgressValue = 0;
                 var progress = new Progress<ProgressReport>(p =>
                 {
                     ProgressValue = p.Percent;
@@ -257,24 +262,24 @@ namespace APM_Crate.ViewModels
                     OrderNumber = OrderNumber,
                     Settings = settings,
                 };
-                ushort type = (ItemPLC) switch
-                {
-                    "241" => 1,
-                    "242" => 2,
-                    "243" => 3,
-                    "511" => 4,
-                    "371" => 5,
-                    "374" => 6,
-                    "375" => 7,
-                };
-                if (!(type is 3 || type is 4 || type is 6))
-                {
-                    await LogerViewModel.Instance.Write("Проверка выборок устройства");
-                    await wp.Step(5, $"Проверка выборок устройства",()=> CheckFilePLC.Start(type));
-                    //await CheckFilePLC.Start(type);
-                    await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
-                }
-                await wp.Step(5, $"Запись в базу данных",() => PostNewDevice(config));
+                //ushort type = (ItemPLC) switch
+                //{
+                //    "241" => 1,
+                //    "242" => 2,
+                //    "243" => 3,
+                //    "511" => 4,
+                //    "371" => 5,
+                //    "374" => 6,
+                //    "375" => 7,
+                //};
+                //if (!(type is 3 || type is 4 || type is 6))
+                //{
+                //    //await LogerViewModel.Instance.Write("Проверка выборок устройства");
+                //    //await wp.Step(5, $"Проверка выборок устройства",()=> CheckFilePLC.Start(type));
+                //    //await CheckFilePLC.Start(type);
+                //    //await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
+                //}
+                await wp.Step(10, $"Запись в базу данных",() => PostNewDevice(config));
                 //await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
                 await LogerViewModel.Instance.Write($"✔ Настройка заняла {stopwatch.Elapsed:mm\\ss}");
 
@@ -396,7 +401,7 @@ namespace APM_Crate.ViewModels
             }
             else
             {
-                await LogerViewModel.Instance.Write("Добавление новой записи настройки устройства. Старая запись станет не актуальной");
+                await LogerViewModel.Instance.Write("Добавлена новая запись настройки устройства. Старая запись помечена актуальной.");
                 List<Config> list = await RestModel.GetListRecord(50, SerialNumber, null,null,RestModel.DeviceFamily);
                 foreach(var d in list)
                 {

@@ -145,7 +145,7 @@ namespace APM_Crate.Models.DevicesModel
                 try
                 {
                     PrintPage += handler;
-                    await Task.Run(() => Print());
+                    await Task.Run(Print);
                 }
                 finally
                 {

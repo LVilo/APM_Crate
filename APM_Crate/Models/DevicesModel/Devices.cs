@@ -21,6 +21,8 @@ namespace APM_Crate.Models.DevicesModel
         public static PortMultimeter Multimeter { get; set; } = new PortMultimeter();
         public static Crate Crate {  get; set; } = new Crate();
         public static Printer Printer {  get; set; } = new Printer();
+        public static SG004AProtocol sg004 { get; set; } = new SG004AProtocol();
+
         //public static RestModel Rest { get; set; } = new RestModel("");
 
         public static async Task<Port> SetMeasureDeviceName(Port device, string name)

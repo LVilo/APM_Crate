@@ -17,14 +17,14 @@ namespace APM_Crate.Models.SettingsModel
         protected float Coef_B {  get; set; }
         protected override async Task Preparing()
         {
-            await Dialog.ShowBuild("U", $"Установите контакты для настройки TIK-PLC 511.41 {Channel.Num}-го канала \r\n" +
+            await WP.Step(10, "Сборка схемы", () => Dialog.ShowBuild("U", $"Установите контакты для настройки TIK-PLC 511.41 {Channel.Num}-го канала. " +
                     (Channel.Num) switch
                     {
                         "1" => "In-2 GND-3",
                         "2" => "In-4 GND-5",
                         "3" => "In-6 GND-7",
                         "4" => "In-8 GND-9"
-                    });
+                    }));
             //$"In+-2 GND-3 для 1 канала\r\n" +
             //$"In+-4 GND-5 для 2 канала\r\n" +
             //$"In+-6 GND-7 для 3 канала\r\n" +

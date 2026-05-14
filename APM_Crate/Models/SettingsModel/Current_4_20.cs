@@ -17,13 +17,13 @@ namespace APM_Crate.Models.SettingsModel
 
         protected override async Task Preparing()
         {
-            await Dialog.ShowBuild("4_20", $"Установите контакты для настройки тока 4-20 {Channel.Num}-го канала.\r\n" +
+            await WP.Step(20, "Сборка схемы", () => Dialog.ShowBuild("4_20", $"Установите контакты для настройки тока 4-20 {Channel.Num}-го канала. " +
                     (Channel.Num) switch
                     {
                         "1" => "In-2 GND-3",
                         "2" => "In-5 GND-6",
                         "3" => "In-7 GND-8"
-                    });
+                    }));
             //$"In-2 GND-3 для 1 канала\r\n" +
             //$"In-5 GND-6 для 2 канала\r\n" +
             //$"In-7 GND-8 для 3 канала");
@@ -31,9 +31,11 @@ namespace APM_Crate.Models.SettingsModel
         }
         protected override async Task CountCoefs()
         {
-            await Validation_mA(4, 0.02);
+            await WP.Step(15,"Установка 4 мА",()=> Validation_mA(4, 0.02));
+            await Task.Delay(2000);
             float I1 = await GetValue(ValueType.DC_Value);
-            await Validation_mA(20, 0.02);
+            await WP.Step(15, "Установка 20 мА", () => Validation_mA(20, 0.02));
+            await Task.Delay(2000);
             float I2 = await GetValue(ValueType.DC_Value);
             Coef_A = 16 / (I2 - I1);
             Coef_B = 4 - Coef_A * I1;
@@ -49,7 +51,7 @@ namespace APM_Crate.Models.SettingsModel
             double mA = await Devices.Multimeter.GetAmperage();
 
             if ((I - mA) / mA * 100 > 1) throw new Exception("Канал тока 4-20 настроился не корректно");
-            WP.Report(2,"Проверка настроек тока ✔");
+            WP.Report(15,"Проверка настроек тока ✔");
         }
 
 

@@ -28,6 +28,7 @@ namespace APM_Crate.ViewModels
         public static AgilentViewModel Agilent { get; set; } = new AgilentViewModel();
         //public static CNVViewModel CNV { get; set; } = new CNVViewModel();
         public static GeneratorViewModel Generator { get; set; } = new GeneratorViewModel();
+        public static SG004ViewModel SG004 { get; set; } = new SG004ViewModel();
         public static CrateViewModel Crate { get; set; } = new CrateViewModel();
         public static PrinterViewModel Printer { get; set; } = new PrinterViewModel();
         //public static SG004ViewModel SG004 { get; set; } = new SG004ViewModel();
@@ -77,6 +78,7 @@ namespace APM_Crate.ViewModels
                     Agilent.Ports = ports;
                     Generator.Ports = ports;
                     Crate.Ports = ports;
+                    SG004.Ports = ports;
                     await Printer.UpdatePrinters();
                     //SG004.Ports = ports;
                     //TIK_BIS.Ports = ports;

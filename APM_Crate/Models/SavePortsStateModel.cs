@@ -14,6 +14,7 @@ namespace APM_Crate.Models
     {
         public AgilentViewModel AgilentViewModel { get; set; }
         public GeneratorViewModel GeneratorViewModel { get; set; }
+        public SG004ViewModel SG004ViewModel { get; set; }
         public CrateViewModel CrateViewModel { get; set; }
         public PrinterViewModel PrinterViewModel { get; set; }
         public string RestAPI_IP {  get; set; }

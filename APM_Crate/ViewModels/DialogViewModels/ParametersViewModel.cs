@@ -21,5 +21,10 @@ namespace APM_Crate.ViewModels.DialogViewModels
             get => Setting.Freq_Is_79_6;
             set { this.RaiseAndSetIfChanged(ref Setting.Freq_Is_79_6, value); }
         }
+        public string SerialNumber
+        {
+            get => Setting.SerialNumber;
+            set { this.RaiseAndSetIfChanged(ref Setting.SerialNumber, value); }
+        }
     }
 }

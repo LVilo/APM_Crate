@@ -1,5 +1,6 @@
 ﻿using APM_Crate.Models.DevicesModel;
 using APM_Crate.Service;
+using APM_Crate.ViewModels.DevicesViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace APM_Crate.Models.SettingsModel
 
         protected override async Task Preparing()
         {
-            await Dialog.ShowBuild("T", $"Установите контакты для настройки\r\n термопреобразователя {Channel.Num}-го канала.\r\n" +
-                    $"In+-9 In--8 GND-7");
-            await Dialog.ShowParam();
+            await WP.Step(10, "Сборка схемы", () => Dialog.ShowBuild("T", $"Установите контакты для настройки термопреобразователя {Channel.Num}-го канала. " +
+                    $"In+-9 In--8 GND-7"));
+            await WP.Step(5, "Запись типа датчика температуры",Dialog.ShowParam);
             float Readed_T = 0f;
             ushort typetermo = (ushort)(TermoTypes.IndexOf(TermoType) + 1);
             SetTermoValues();
@@ -32,14 +33,18 @@ namespace APM_Crate.Models.SettingsModel
         }
         protected override async Task CountCoefs()
         {
-            await Dialog.ShowConfirm($"Установите на магазине сопротивлений 100 Ом", new Delay());
+            float resit1 = 100f;
+            float resit2 = 390f;
+            await WP.Step(10, $"Установка {resit1} Ом", ()=> SG004ViewModel.Work.WriteResistance(resit1));
+            //await Dialog.ShowConfirm($"Установите на магазине сопротивлений 100 Ом", new Delay());
             await Task.Delay(15000); // стоит потому что долго обновляется значение в крейте
-            float T1 = await GetValue(ValueType.ResistT);
-            await Dialog.ShowConfirm($"Установите на магазине сопротивлений 400 Ом", new Delay());
+            float R1 = await GetValue(ValueType.ResistT);
+            await WP.Step(10, $"Установка {resit2} Ом", () => SG004ViewModel.Work.WriteResistance(resit2));
+            //await Dialog.ShowConfirm($"Установите на магазине сопротивлений 400 Ом", new Delay());
             await Task.Delay(25000); // стоит потому что долго обновляется значение в крейте
-            float T2 = await GetValue(ValueType.ResistT);
-            float A = 3 / (T2 - T1);
-            float B = 1 - A * T1;
+            float R2 = await GetValue(ValueType.ResistT);
+            Coef_A = (resit2- resit1) /100 / (R2 - R1);
+            Coef_B = resit1/100 - Coef_A * R1;
         }
         protected override async Task WriteCoefsAbstract()
         {
@@ -48,18 +53,20 @@ namespace APM_Crate.Models.SettingsModel
         protected override async Task CheckSettingAbstract()
         {
             WP.Report(0, "Проверка настроек температуры");
-            await Dialog.ShowConfirm($"Установите на магазине сопротивлений {Resist_1} Ом", new Delay());
+            await WP.Step(5,$"Установка {Resist_1} Ом",()=> SG004ViewModel.Work.WriteResistance(Resist_1));
+            //await Dialog.ShowConfirm($"Установите на магазине сопротивлений {Resist_1} Ом", new Delay());
             await Task.Delay(15000);// стоит потому что долго обновляется значение в крейте
             float Readed_T = await GetValue(ValueType.T);
             float relative = Math.Abs(Readed_T - Need_T_1);
             if (relative > 1) throw new Exception($"Точка 1 не прошла проверку, значение отклонено от нормы на {relative}");
 
-            await Dialog.ShowConfirm($"Установите на магазине сопротивлений {Resist_2} Ом", new Delay());
+            await WP.Step(5,$"Установка {Resist_2} Ом",()=> SG004ViewModel.Work.WriteResistance(Resist_2));
+            //await Dialog.ShowConfirm($"Установите на магазине сопротивлений {Resist_2} Ом", new Delay());
             await Task.Delay(15000);// стоит потому что долго обновляется значение в крейте
             Readed_T = await GetValue(ValueType.T);
             relative = Math.Abs(Readed_T - Need_T_2);
             if (relative > 1) throw new Exception($"Точка 2 не прошла проверку, значение отклонено от нормы на {relative}");
-            WP.Report(2,"Проверка настроек температуры ✔");
+            WP.Report(10,"Проверка настроек температуры ✔");
         }
 
 
@@ -137,7 +144,7 @@ namespace APM_Crate.Models.SettingsModel
                 case 7:
                     Resist_1 = 18.52f;
                     Resist_2 = 387.55f;// было 390.48f
-                    Need_T_1 = -200;
+                    Need_T_1 = -200;     
                     Need_T_2 = 840;// было 850
                     break;
             }

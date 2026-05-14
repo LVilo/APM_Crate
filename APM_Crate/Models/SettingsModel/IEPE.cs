@@ -23,7 +23,7 @@ namespace APM_Crate.Models.SettingsModel
         protected override async Task Preparing()
         {
             await Devices.Generator.SetFrequency(Frequency);
-            await WP.Step(10,"Сборка схемы",()=> Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Channel.Num}-го канала.\r\n" +
+            await WP.Step(10,"Сборка схемы",()=> Dialog.ShowBuild("IEPE", $"Установите контакты для настройки IEPE {Channel.Num}-го канала. " +
                 (Channel.Num) switch
                 {
                     "1" => "In-2 GND-3",

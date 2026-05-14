@@ -28,7 +28,7 @@
 	  <Grid RowDefinitions="Auto,Auto">
 		  <ctrl:GroupBox Header="Параметры настройки" Grid.Row="0">
 			  <ctrl:GroupBox.ContentControl>
-                  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" RowSpacing="0">
+                  <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" RowSpacing="0">
 					  
 								<TextBlock Grid.Row="0" Grid.Column="0" Text="Коэффициент:" />
 								<RadioButton Grid.Row="0" Grid.Column="1" Content="10" GroupName="coef" IsChecked="{Binding Coef}" Padding="0"/>
@@ -37,6 +37,9 @@
 								<TextBlock Grid.Row="1" Grid.Column="0" Text="Частота:" />
 								<RadioButton Grid.Row="1" Grid.Column="1" Content="79,6" GroupName="freq" IsChecked="{Binding Freq_Is_79_6}" Padding="0"/>
 								<RadioButton Grid.Row="1" Grid.Column="2" Content="80" GroupName="freq" Padding="0"/>
+
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Серийный номер:" />
+								<TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SerialNumber}"/>
 							
                   </Grid>
 				 

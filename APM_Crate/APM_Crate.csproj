@@ -66,6 +66,9 @@
     <Compile Update="Controls\UserTextBox.axaml.cs">
       <DependentUpon>UserTextBox.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\DevicesViews\SG004View.axaml.cs">
+      <DependentUpon>SG004View.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\DevicesViews\CrateView.axaml.cs">
       <DependentUpon>CrateView.axaml</DependentUpon>
     </Compile>

@@ -64,6 +64,7 @@ namespace APM_Crate.Models
         public void Reset()
         {
             _current = 0;
+            Report(0, "");
         }
     }
 }

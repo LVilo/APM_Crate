@@ -28,6 +28,7 @@
 
 					<local:GeneratorView DataContext="{Binding Generator}" Grid.Row="1"/>
 					<local:AgilentView DataContext="{Binding Agilent}" Grid.Row="2"/>
+					<!--<local:AgilentView DataContext="{Binding SG004}" Grid.Row="3"/>-->
 					<local:CrateView DataContext="{Binding Crate}" Grid.Row="3"/>
 					<local:PrinterView DataContext="{Binding Printer}" Grid.Row="4"/>
 					<!--<local:SG004View DataContext="{Binding SG004}" />-->

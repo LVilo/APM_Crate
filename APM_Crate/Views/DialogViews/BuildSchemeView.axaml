@@ -40,6 +40,7 @@
     <!-- Верхний текст -->
     <Border>
 		<TextBlock 
+        TextWrapping="Wrap"
         Text="{Binding Messege}"
         HorizontalAlignment="Left"
         Margin="10,10"
