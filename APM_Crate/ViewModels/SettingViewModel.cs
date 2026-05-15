@@ -58,6 +58,7 @@ namespace APM_Crate.ViewModels
                 //throw new ArgumentException(nameof(OrderNumber), "Not a valid E-Mail-Address");
             }
         }
+        public static ushort SerialNumber { get; set; }
 
         //private string? _SerialNumber = "";
 
@@ -239,6 +240,7 @@ namespace APM_Crate.ViewModels
                 await wp.Step(5, $"Изменение состава корзины под слот {Slot}", ChangeBasketForSelectModule);
                 await wp.Step(5, $"Валидация состояния модуля в слоте {Slot}", ValidStatusModule);
                 await wp.Step(5, $"Валидация типа контроллера", ValidTypePLC);
+
                 await wp.Step(5, $"Чтение серийного номера", GetSerialNumber);
 
 
@@ -279,7 +281,13 @@ namespace APM_Crate.ViewModels
                 //    //await CheckFilePLC.Start(type);
                 //    //await LogerViewModel.Instance.Write("✔ Выборки соответствуют правильной форме");
                 //}
+
+
+
+
                 await wp.Step(10, $"Запись в базу данных",() => PostNewDevice(config));
+
+
                 //await SaveRegistersModel.MakeReportAsync(ItemPLC, OrderNumber, starttime,endtime,stopwatch.Elapsed);
                 await LogerViewModel.Instance.Write($"✔ Настройка заняла {stopwatch.Elapsed:mm\\ss}");
 
@@ -297,6 +305,7 @@ namespace APM_Crate.ViewModels
             {
                 IsEnabledButtons = true;
                 ProgressValue = 0;
+                SerialNumber = 0;
             }
         }
         private async Task ChangeBasketForSelectModule()
@@ -325,7 +334,7 @@ namespace APM_Crate.ViewModels
         }
         private async Task ValidDevices()
         {
-            if(await RestModel.GetAPIStatus() is false) throw new Exception("RestAPI не отвечает на сообщения, проверьте подключение с сервером.");
+            //if(await RestModel.GetAPIStatus() is false) throw new Exception("RestAPI не отвечает на сообщения, проверьте подключение с сервером.");
             if (Devices.Crate.Connected is false) throw new Exception("Необходимо подключится к крейту");
             switch (ItemPLC)
             {
@@ -371,9 +380,15 @@ namespace APM_Crate.ViewModels
         }
         private async Task GetSerialNumber()
         {
-            SerialNumber = await Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
-            if (SerialNumber is not 0xFFFF)
+            ushort serialnum = await Devices.Crate.ReadUInt16(Crate.Registers.SerialNum);
+
+            if (serialnum is not 0xFFFF)
             {
+                if(SerialNumber is not 0)
+                {
+                    await Dialog.ShowConfirm($"В контроллере записан серийный номер {serialnum}, переписать его на {SerialNumber} ?", new Delay());
+                }
+                else SerialNumber = serialnum;
                 await LogerViewModel.Instance.Write("В устройстве записан серийный номер. Выберите каналы для перенастройки устройства");
                 //в устройстве записан серийный номер
                 await Dialog.ShowResetting();
@@ -385,8 +400,32 @@ namespace APM_Crate.ViewModels
             }
             else
             {
-                SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
-                IsResetting = false;
+                if (SerialNumber is not 0)
+                {
+                    ushort LastSerial = Convert.ToUInt16(await RestModel.GetLastSerialNumber());
+                    if (SerialNumber > LastSerial)
+                    {
+                        await Dialog.ShowConfirm($"Настройка контроллера не по порядку. Следующая настройка начнется с этого серийного номера, продолжить ?", new Delay());
+                    }
+                    else
+                    {
+                        List<Config> list = await RestModel.GetListRecord(50, SerialNumber, null, null, RestModel.DeviceFamily);
+                        if (list.Count > 0)
+                        {
+                            await Dialog.ShowConfirm($"Контроллер с серийным номером {SerialNumber} уже существует. Создать новую запись ?(старая запись станет неактуальной)", new Delay());
+                            IsResetting = true;
+                        }
+                        else
+                        {
+                            await Dialog.ShowConfirm($"Контроллер с серийным номером {SerialNumber} отсутствует в базе данных, дальнейшая настройка может создать конфликты серийных номеров. Создать новую запись ?", new Delay());
+                        }
+                    }
+                }
+                else
+                {
+                    SerialNumber = Convert.ToUInt16(await RestModel.GetLastSerialNumber() + 1);
+                    IsResetting = false;
+                }
             }
         }
         private async Task PostNewDevice(Config config)
@@ -396,7 +435,7 @@ namespace APM_Crate.ViewModels
                 await LogerViewModel.Instance.Write("Запись нового устройства в базу данных");
                 await RestModel.Post(config);
                 //await SQLModel.WriteNewDevice(SettingModel.SerialNumber,OrderNumber,ItemPLC);
-                await Devices.Printer.PrintText($"C.№:{SerialNumber}.");
+                //await Devices.Printer.PrintText($"C.№:{SerialNumber}.");
                 await Devices.Crate.WriteSingleRegister(Crate.Registers.SetSerialNum, SerialNumber);
             }
             else

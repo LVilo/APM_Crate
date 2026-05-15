@@ -29,20 +29,20 @@ namespace APM_Crate.Models.SettingsModel
             //$"In+-4 GND-5 для 2 канала\r\n" +
             //$"In+-6 GND-7 для 3 канала\r\n" +
             //$"In+-8 GND-9 для 4 канала");
-            await ValidationVoltageByCalibrator(10, 0.2);
+            await WP.Step(10, "Установка 10 В DC", () => ValidationVoltageByCalibrator(10, 0.2));
             await Devices.Generator.SetFrequency(Frequency);
             await Devices.Generator.SetOffset(0);
             await Devices.Multimeter.VoltmeterMode("AC");
         }
         protected override async Task CountCoefs()
         {
-            await Devices.Generator.SetVoltage(0.5);
+            await WP.Step(10, "Установка 500 мВ AC", () => Devices.Generator.SetVoltage(0.5));
             await Task.Delay(5000);
 
             float V1 = (float)await Devices.Multimeter.GetVoltage("AC", 1000);
             float Signal_1 = await GetValue(ValueType.ACC_RMS);
             //float Signal_1 = await Devices.Crate.ReadUInt16(ACC_PP) * 0.01f;
-            await Devices.Generator.SetVoltage(20);
+            await WP.Step(10, "Установка 20 В AC", () =>  Devices.Generator.SetVoltage(20));
             //await SetVoltage(20);
             await Task.Delay(8000);
             await WaitForChangeRegisters(Channel.ACC_RMS, Signal_1, 0.01f);
@@ -79,7 +79,7 @@ namespace APM_Crate.Models.SettingsModel
             float value_2 = await GetValue(ValueType.ACC_RMS);
             CountRelative(value_2, V2, out float relative_2);
             if (relative_2 >= 1) throw new Exception($"Ускорение канала {Channel.Num} настроено не корректно. Значение отклонено на {Math.Round(relative_2, 2)}%");
-            WP.Report(2,"Проверка настроек ✔");
+            WP.Report(5,"Проверка настроек ✔");
         }
 
 

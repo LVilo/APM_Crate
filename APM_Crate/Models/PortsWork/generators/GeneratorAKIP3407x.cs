@@ -21,15 +21,11 @@ namespace PortsWork
 
 		public override async Task<bool> OpenPort()
 		{
-			Console.WriteLine("------------OpenPort");
-
             try
 			{
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Linux.Acsessusb(PortName);
                 if ( !IsOpen )
 				{
-                    Console.WriteLine("------------if");
-                    Console.WriteLine(GetName());
                     Open();
 					 await Sleep( 100 );
 					await ChangeSignalType( SignalType.Sine );				

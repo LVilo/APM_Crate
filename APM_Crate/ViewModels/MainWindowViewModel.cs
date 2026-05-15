@@ -41,6 +41,10 @@ namespace APM_Crate.ViewModels
             {
                 await Dialog.ShowParameters();
             }
+            catch (TaskCanceledException ex)
+            {
+
+            }
             catch (Exception ex)
             {
                 await LogerViewModel.Write($"❗ {ex.Message}");
@@ -51,6 +55,10 @@ namespace APM_Crate.ViewModels
             try
             {
                 await Dialog.ShowRestAPI_IP();
+            }
+            catch (TaskCanceledException ex)
+            {
+
             }
             catch (Exception ex)
             {

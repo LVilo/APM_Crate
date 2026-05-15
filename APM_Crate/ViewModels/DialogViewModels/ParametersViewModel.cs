@@ -11,20 +11,38 @@ namespace APM_Crate.ViewModels.DialogViewModels
 {
     public class ParametersViewModel : DialogViewModel
     {
+
+        private bool _Coef;
         public bool Coef
         {
-            get => Setting.Coef_Is_10;
-            set { this.RaiseAndSetIfChanged(ref Setting.Coef_Is_10, value); }
+            get => _Coef;
+            set { this.RaiseAndSetIfChanged(ref _Coef, value); }
         }
+        private bool _Freq_Is_79_6;
         public bool Freq_Is_79_6
         {
-            get => Setting.Freq_Is_79_6;
-            set { this.RaiseAndSetIfChanged(ref Setting.Freq_Is_79_6, value); }
+            get => _Freq_Is_79_6;
+            set { this.RaiseAndSetIfChanged(ref _Freq_Is_79_6, value); }
         }
+        private string _SerialNumber;
         public string SerialNumber
         {
-            get => Setting.SerialNumber;
-            set { this.RaiseAndSetIfChanged(ref Setting.SerialNumber, value); }
+            get => _SerialNumber;
+            set { this.RaiseAndSetIfChanged(ref _SerialNumber, value); }
+        }
+
+        public ParametersViewModel()
+        {
+            Coef = Setting.Coef_Is_10;
+            Freq_Is_79_6 = Setting.Freq_Is_79_6;
+            SerialNumber = SettingViewModel.SerialNumber.ToString();
+        }
+        protected override bool MethodAfterClickConfirm()
+        {
+            SettingViewModel.SerialNumber = Convert.ToUInt16(SerialNumber);
+            Setting.Freq_Is_79_6 = Freq_Is_79_6;
+            Setting.Coef_Is_10 = Coef;
+            return true;
         }
     }
 }

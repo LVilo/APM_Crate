@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using APM_Crate.Models.SettingsModel;
+using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Threading.Tasks;

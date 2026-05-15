@@ -45,7 +45,6 @@ namespace APM_Crate.Models.SettingsModel
         public static double Point_2 { get { return Coef_Is_10 ? 3000d : 100d; } }
         public static float Coef { get { return Coef_Is_10 ? 10f : 6.67f; } }
         public static double Frequency { get { return Freq_Is_79_6 ? 79.6d : 80d; } }
-        public static string SerialNumber;
         public static List<Settings> settings { get; set; }
 
         protected abstract Task Preparing();

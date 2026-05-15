@@ -87,11 +87,11 @@ namespace APM_Crate.Models.RestApiModel
         {
             return await client.GetFromJsonAsync<Config>($"{IP}{mes}/{ID}");
         }
-        public static async Task Put(string Id,Config config)
-        {
-            HttpResponseMessage response = await client.PutAsJsonAsync($"{IP}{mes}/{Id}", config);
-            response.EnsureSuccessStatusCode();
-        }
+        //public static async Task Put(string Id,Config config)
+        //{
+        //    HttpResponseMessage response = await client.PutAsJsonAsync($"{IP}{mes}/{Id}", config);
+        //    response.EnsureSuccessStatusCode();
+        //}
         public static async Task Delete(string Id)
         {
             HttpResponseMessage response = await client.DeleteAsync($"{IP}{mes}/{Id}");

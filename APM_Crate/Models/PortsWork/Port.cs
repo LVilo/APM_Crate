@@ -79,28 +79,6 @@ namespace PortsWork
 		/// <returns>Успешность открытия порта для работы</returns>
 		public virtual async Task<bool> OpenPort()
 		{
-			//if (PortName.Remove(PortName.Length -1, 1) == "/dev/usbtmc")
-			//{
-			//             Console.WriteLine("---------if");
-			//             try
-			//	{
-			//		if (!IsOpen)
-			//		{
-			//			Linux.Acsessusb(usbtmc._path);
-			//			usbtmc.Open();
-			//		}
-			//                 Console.WriteLine($"Открыто устройство {PortName}");
-			//                 return true;
-			//             }
-			//	catch (Exception ex)
-			//             {
-			//                 Console.WriteLine($"Ошибка при открытии {PortName}: {ex.Message}");
-			//                 return false;
-			//             }
-			//}
-			//else
-			//{
-			//             Console.WriteLine("---------else");
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Linux.Acsessusb(PortName);
 			try
 			{
@@ -123,11 +101,7 @@ namespace PortsWork
 		/// </summary>
 		public virtual async Task ClosePort()
 		{
-            //if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
-            //{
-            //    usbtmc.Close();
-            //}
-            /*else */ Close();
+             Close();
         }
 
 		public virtual bool IsOpened()
@@ -141,30 +115,12 @@ namespace PortsWork
 		/// <param name="message">Команда для записи на устройство</param>
 		protected virtual async Task WriteMessage( string message )
 		{
-			//         if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
-			//         {
-			//             usbtmc.WriteMessage(message);
-			//         }
-			//else
-			
-				//if(!CheckPort())
 				await CheckPort();
 			DiscardOutBuffer();
 			DiscardInBuffer();
-			//Thread.Sleep(50);
 			WriteLine(message);
             
 		}
-		//private bool CheckPort()
-		//{
-  //          DiscardInBuffer();
-  //          DiscardOutBuffer();
-  //          WriteLine("*IDN?");
-  //          WaitPortAnswer(2000);
-		//	string result = ReadLine();
-		//	if (result is "") return false;
-		//	else return true;
-  //      }
         /// <summary>
         /// Чтение с внешнего устройства
         /// </summary>
@@ -172,21 +128,11 @@ namespace PortsWork
         /// <returns>Ответ внешнего устройства</returns>
         public virtual async Task<string> ReadMessage( string message )
 		{
-            Console.WriteLine("---------ReadMessage");
-            //         if (PortName.Remove(PortName.Length - 1, 1) == "/dev/usbtmc")
-            //{
-            //	 return usbtmc.ReadMessage( message );
-            //}
-            //else
-            //{
-            
 				await CheckPort() ;
                 DiscardOutBuffer();
                 DiscardInBuffer();
                 WriteLine(message);
             return await WaitPortAnswer(2000);
-            
-            //}
         }
 
 		/// <summary>
